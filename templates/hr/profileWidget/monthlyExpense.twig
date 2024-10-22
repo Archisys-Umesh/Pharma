@@ -1,0 +1,40 @@
+<div class="card-box">
+    <h4 class="header-title m-t-0 m-b-30">Monthly Expense</h4>
+
+    <canvas id="bar"></canvas>
+</div>
+
+
+<script>
+    
+    
+        var ctx = document.getElementById("bar").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ monthlyExp.labels|json_encode|raw }},
+            datasets: [
+                {
+                    label: "Monthly Expense ",
+                    backgroundColor: "rgba(24, 138, 226, 0.3)",
+                    borderColor: "#188ae2",
+                    borderWidth: 1,
+                    hoverBackgroundColor: "rgba(24, 138, 226,0.6)",
+                    hoverBorderColor: "#188ae2",
+                    data: {{ monthlyExp.data|json_encode|raw }}
+                }
+            ]
+        },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+        
+        </script>

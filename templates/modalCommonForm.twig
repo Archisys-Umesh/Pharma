@@ -1,0 +1,97 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+    <script>
+   
+    $(document).ready(function(){
+     
+        $("#Mode").tagsinput({
+                allowDuplicates: true,
+        });
+
+        $("#AttStrTw").change(function(){
+            $('#AttExpCheck').prop('checked',false);
+        });
+        $("#AttEndTw").change(function(){
+            $('#AttExpCheck').prop('checked',false);
+        });
+         
+        $('#MultipleSelectBranchCode').click(function(){
+            $('#BranchCode').multiSelect('select_all');
+            return false;
+        });
+        $('#MultipleDeSelectBranchCode').click(function(){
+            $('#BranchCode').multiSelect('deselect_all');
+            return false;
+        });
+        $('#MultipleSelectDesignation').click(function(){
+            $('#Designation').multiSelect('select_all');
+            return false;
+        });
+        $('#MultipleDeSelectDesignation').click(function(){
+            $('#Designation').multiSelect('deselect_all');
+            return false;
+        });
+        $('#MultipleSelectOrgUnit').click(function(){
+            $('#OrgUnits').multiSelect('select_all');
+            return false;
+        });
+        $('#MultipleDeSelectOrgUnit').click(function(){
+            $('#OrgUnits').multiSelect('deselect_all');
+            return false;
+        });
+
+        {# $('#SgpiStatus').click(function() {
+            if ($(this).is(':checked')) {
+                $('#Inputs').prop('disabled', true);
+                $('#InputQty').prop('disabled', true);
+            }else{
+                $('#Inputs').prop('disabled', false);
+                $('#InputQty').prop('disabled', false);
+            }
+        }); #}
+         $('#AgendaType').change(function() {
+            $("#AgendaSubType").select2({
+                placeholder: "Select a Agenda",
+                allowClear: true
+            });
+            $("#AgendaSubType.select2").trigger("reset").trigger("change");
+            $('#AgendaSubType').val('');
+        });
+        
+    });
+    $('#SgpiStatus').on('change', function() {
+        if($(this).is(":checked")) {
+            $('#ms-Inputs').hide();
+            $('label[for="Inputs"]').hide();
+        }else{
+            $('#ms-Inputs').show();
+            $('label[for="Inputs"]').show();
+        }
+    });
+    
+    function agendacontrolType($data)
+    {
+        $('#AgendaType').change(function() {
+            $("#AgendaSubType").select2({
+                placeholder: "Select a Agenda",
+                allowClear: true
+            });
+            $("#AgendaSubType.select2").trigger("reset").trigger("change");
+            $('#AgendaSubType').val('');
+        });
+        $('[name="AgendaSubTypeId"]').html($data.subtype);
+
+        {# var agendatype = $('#AgendaType').val();
+        if(agendatype == 'FW'){
+            $('#CreateSurvey').prop( "disabled", true );
+        }
+        if(agendatype == 'NCA'){
+            $('#CreateSurvey').prop( "disabled", false );
+        } #}
+    }
+    {# $("#org_unit").on #}
+</script>   
+{% endblock %}
+

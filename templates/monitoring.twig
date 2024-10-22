@@ -1,0 +1,53 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+
+{% block page %}
+<style>
+    caption { 
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>
+{% for table in tables %}  
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <table id="{{ table['key'] }}_datatable" class="table table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <caption>{{ table['label'] }}</caption>
+                <thead>
+                    <tr>
+                        {% for column in table['columns'] %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>         
+            </table>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    $(function() {
+        $DataTableUrl = "{{request.getPath()}}?action=list&";
+
+        function setDataTable(key) {
+            $('#'+key+'_datatable').DataTable({
+                ajax: {
+                    "url" : $DataTableUrl + 'key=' + key,
+                }
+            }); 
+        }
+
+        {% for table in tables %} 
+            setDataTable("{{ table['key'] }}")
+        {% endfor %}
+    });
+</script>
+{% endblock %}

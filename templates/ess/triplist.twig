@@ -1,0 +1,437 @@
+{% extends "app.twig" %}
+
+{% set formAction = request.getPath() ~ "?action=form&pk=" %}
+{% if actionFunc %}
+{% set formAction = router.getPath(actionFunc,{id:''}) %}
+{% endif %}    
+
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+<div class="row">
+        <div class="col-sm-4">           
+            {% if isNotTop%}
+             <a href="{{formAction}}0" data-toggle="ajaxModal" class="btn btn-success m-b-20"><i class="zmdi zmdi-plus"></i> Add {{form_name}}</a>                                
+             {% else %}
+                 <div class="clearfix p-20"></div>
+            {% endif %}
+        </div>
+        
+        <div class="col-sm-8">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline" id="gridFilters">
+                        {%if showStatus %}
+                        <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm filterRadio" id="StatusList" name="filterRadio">
+                                {%if isNotTop %}
+                                <option value="A">My Trips</option>
+                                {% endif %}
+                                <option value="P" {% if page == "P" %} selected="selected" {%endif%}>Team Trips</option>
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="form-group" id="hidemonth">
+                            <label>Month :</label>
+                            <select class="form-control input-sm filterdate filterRadio newfilterdate" id="filterdate" name="filterdate">
+                                {%if tripFilterDate|length > 0 %}    
+                                    {% for key,value in tripFilterDate %}
+                                        <option value="{{key}}">{{value}}</option>
+                                    {%endfor%}    
+                                    
+                                {%else%}    
+                                    <option value="{{"now"|date("Y-m")}}">{{"now"|date("M-Y")}}</option>
+                                {%endif%}
+                            </select>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div><!-- end col-->
+    </div>
+<div class="row">
+    
+    <div class="col-sm-12" id="tripListView">        
+        <div class="card-box table-responsive">                        
+            <div class="clearfix p-b-10"></div>
+            <table id="{{form_name|lower}}_datagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        {% for col,key in cols %}
+                        <th>{{col}}</th>
+                        {% endfor %}                        
+                        <th>View</th>
+                    </tr>
+                </thead>                                
+            </table>
+        </div>
+    </div><!-- end col -->    
+    
+    <div class="col-sm-4" id="tripQuickView" style="display:none">
+    
+    </div>
+    
+</div>    
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    
+    ${{form_name|lower}}_datagrid = "";
+    $valKeys = [];
+    {% if valKeys %}
+        {% for val,keys in valKeys %}
+            $valKeys['{{val}}'] = {{keys|json_encode|raw}};
+        {% endfor %}                                        
+    {% endif%}
+    
+    $dateFields = [];
+    {% if dateFields %}
+        $dateFields = {{dateFields|json_encode|raw}};        
+    {% endif%}
+        
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter=&filterdate=";
+    $filter = "";
+    $filterdate = "";
+    $dateFilterUrl = "{{request.getPath()}}?action=datefilter";
+    $QuickViewUrl = "{{request.getPath()}}?action=quickView&tripid=";
+    $deleteUrl = "{{request.getPath()}}?action=deleteTrip&tripid=";
+    $(document).ready(function(){                
+       
+        {#$(".filterRadio").change(function(){           
+            $filter = $('.filterRadio').val();
+            tripnewfilterdate();
+            showLoader();
+            setTimeout(function(){ 
+                $filterdate = $('.filterdate').val();
+                getTriplist($DataTableUrl,$filter,$filterdate);
+            }, 1500);
+            
+       });#}
+       $(".filterRadio").change(function(){           
+            $filter = $('.filterRadio').val();
+            $filterdate = $('.filterdate').val();
+            
+            showLoader();
+            setTimeout(function(){ 
+                $filterdate = $('.filterdate').val();
+                getTriplist($DataTableUrl,$filter,$filterdate);
+            }, 1500);
+       });
+       $("#StatusList").change(function(){           
+            tripnewfilterdate();
+            
+       });
+       $(".filterRadio").first().prop("checked","checked");
+       $filter = $(".filterRadio").first().val();              
+       $filterdate = $(".filterdate").first().val();              
+       
+       tripDatatable($DataTableUrl ,"{{page}}",$filterdate)
+        
+        {#$tripFilter = localStorage.getItem("tripFilter");
+        if(!$tripFilter){
+            $tripFilter = 0;
+        }
+        
+        if($tripFilter == 1){
+            $(".filterRadio_1").click();
+            tripDatatable($DataTableUrl , $tripFilter)
+        }else if($tripFilter == 2){
+            
+            $(".filterRadio_2").click();
+            tripDatatable($DataTableUrl , $tripFilter)
+            
+        }else if($tripFilter == 3){
+            $(".filterRadio_3").click();
+            tripDatatable($DataTableUrl , $tripFilter)
+        }else if($tripFilter == 4){
+            $(".filterRadio_4").click();
+            tripDatatable($DataTableUrl , $tripFilter)
+        }else {
+            $(".filterRadio_").click();
+            tripDatatable($DataTableUrl , $tripFilter)
+        }#}
+        
+        
+        {#$(".filterRadio").each(function() {
+            if($(this).val() == $tripFilter){
+                console.log(this);
+                console.log("filterRadio_"+$(this).val());
+                $(this).attr("checked", true);
+            }
+        });#}
+       
+    });
+    
+    
+function tripnewfilterdate(){
+    $filter = $('.filterRadio').val();
+            
+    quickPost($dateFilterUrl,{"filter" : $filter},function(res){
+        var options;
+        $('.newfilterdate').html("");
+
+
+        if($.makeArray(res).length > 0){
+            $("#hidemonth").show();
+            $.each(res, function(index, object) {
+                options += '<option value="' + index + '">' + object + '</option>';
+            });
+        }else{
+            options = '<option value="{{"now"|date("Y-m")}}">{{"now"|date("M-Y")}}</option>';
+            $("#hidemonth").hide();
+        }
+        $('.newfilterdate').html(options);
+
+    });
+}    
+function tripDatatable($DataTableUrl , $filter,$filterdate){
+
+
+        
+    $curmonth = "{{ now|date('Y-m') }}";
+    $("#filterdate option").each(function(){
+        if($curmonth == $(this).val()){
+            $filterdate = $curmonth;
+            $(this).attr('selected','selected');
+        }
+        
+    });
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&filterdate="+$filterdate;
+    
+     jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function ( a ) {
+            var ukDatea = a.split('/');
+            return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+        },
+
+        "date-uk-asc": function ( a, b ) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "date-uk-desc": function ( a, b ) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+        } );
+    
+    
+    
+    ${{form_name|lower}}_datagrid = $('#{{form_name|lower}}_datagrid').DataTable({
+            ajax: {
+                "url" : $DataTableUrl,
+                "complete" : function(d)
+                {                    
+                    //$('.filterRadio:checked').parent().find("span").html("(" + d.responseJSON.data.length + ")");                
+                    hideLoader();
+                }
+            },
+            {% if defaultOrderIdx%}
+                    "order": [[ {{defaultOrderIdx}}, "asc" ]],
+            {% else %}
+                "order": [[ 0, "asc" ],[ 1, "asc" ]],
+            {% endif %}
+            
+            "aoColumns": [                    
+                {% for col,key in cols %}                                             
+                    { "data" : "{{pk}}","sType": "date-uk",render: function ( data, type, row ) {
+                        return replacements("{{key}}",row.{{key}});
+                    }},
+                {% endfor %}                                        
+                { "data" : "{{pk}}","sType": "date-uk",render: function ( data, type, row ) {                            
+                        $str = "";
+                        
+                        if(canEdit(row)) {
+                            if($('.filterRadio').val() == "A"){
+                                $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs editbtn' href='#' remote='{{formAction}}"+row.{{pk}}+"'><i class='zmdi zmdi-edit'></i></a>";
+                            }
+                        }
+                        {% if singleFunc %}
+                            $str = $str + " <a class= 'singleView' href='{{router.getPath(singleFunc,{id:""})}}"+row.{{pk}}+"'><i class='fa fa-eye'></i></a>";
+                        {% endif%}
+                        {% if rowButtons %}
+                            {% for path,icon in rowButtons %}
+                                {% if 'ajaxModal' in icon %}
+                                    $str = $str + " <a onclick='return loadModalURL(this)' 'title='Manage' class='btn btn-default btn-xs'  href='#' remote='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'><i class='{{icon}}'></i></a>";
+                                {% else %}
+                                    $str = $str + " <a href='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'title='Manage' class='btn btn-default btn-xs'><i class='{{icon}}'></i></a>";
+                                {% endif %}
+                            {% endfor %}
+                        {% endif%}
+                            
+                            $str = $str + " <a target='_blank' class= 'btn btn-default btn-xs' title='PDF Report' href='{{router.getPath('ess_trips_report',{id:""})}}"+row.{{pk}}+"'><i class='fa fa-file-pdf-o'></i></a>";
+                        return $str;
+                }}
+            ],
+            {% if colorRows %}
+            "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                
+                $(nRow).attr("pk",aData.{{pk}});
+                
+                {% for col,keys in colorRows %}                        
+                    if(aData.TripStatus == {{col}}){
+                        $('td', nRow).css('background-color', {{keys|json_encode|raw}});
+                    }
+                {%endfor%}
+            },
+            {% endif %}
+            "fnDrawCallback": function(settings, json) {
+                                        
+                    
+                    $("#{{form_name|lower}}_datagrid tr").click(function(){     
+                        clickrow(this);        
+                    });
+                     
+            },        
+                    
+        dom: "lBfrtip",        
+        buttons: [{
+            extend: "excel",
+            className: "btn-sm"
+        }],
+        "fnDrawCallback": function(oSettings) {
+          if ($('#trip_datagrid tr').length < 11) {              
+                $('.dataTables_paginate').hide();
+            }
+        },
+
+        responsive: !0,
+        "order": [[0,'asc']],            
+        
+        });
+        //getTriplist($DataTableUrl , $filter)
+        
+}
+function getTriplist($DataTableUrl , $filter,$filterdate){
+    {#$("#filterdate option").each(function(){
+        console.log($(this).val());
+    });#}
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&filterdate="+$filterdate;
+    showLoader();
+    ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+    
+}    
+function loadGrid($msg)
+{
+    
+    showLoader();
+    ${{form_name|lower}}_datagrid.ajax.reload();
+    toastr["success"]($msg, "");
+    
+}
+
+function replacements($key,$val)
+{        
+    if($valKeys[$key] != undefined)
+    {    
+        return $valKeys[$key][$val];
+    }
+    else if($dateFields.indexOf($key) > -1) // is Datetime
+    {
+        return propelDate($val,0);
+        /*$d = new Date($val);
+        return $d.toLocaleString();
+        */
+    }
+    else {
+        return $val;
+    }
+}
+function canEdit($row){
+
+    {% if canEditIf %}
+            return findinString($row.{{canEditIf.col}},"{{canEditIf.val}}");
+    {% else%}
+            return true;
+    {% endif%}
+    
+}
+function clickrow(row)
+{
+    $pk = $(row).attr("pk");
+    quickTripView($pk);
+    $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+    $(this).addClass("selected");
+    return false;
+}
+
+   
+$(document).ready(function() {
+   
+    $.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function (a){
+            return parseInt(moment(a, "DD/MM/YYYY").format("X"), 10);
+        },
+        "date-uk-asc": function (a, b) {
+            return a - b;
+        },
+        "date-uk-desc": function (a, b) {
+            return b - a;
+        }
+    });
+
+
+
+});
+
+ function quickTripView($pk)
+    {
+        if($pk > 0 ) 
+        {
+            showLoader();    
+            $.get($QuickViewUrl+$pk,function(data){
+                
+                
+                $("#tripListView").removeClass("col-md-12").addClass("col-md-8");
+                hideLoader();
+                $("#tripQuickView").show();        
+                $("#tripQuickView").html(data);                                
+                
+
+            });
+        
+        }
+    }
+    
+    function closeQuickView()
+    {
+            $("#tripListView").removeClass("col-md-8").addClass("col-md-12");
+            $("#tripQuickView").html("");
+            $("#tripQuickView").hide();  
+            $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+    }
+    
+    function deletTrip($pk,$msg)
+    {
+        if(confirm($msg)) {        
+            
+            $.get($deleteUrl+$pk,function(data){
+                showLoader();
+                $("#tripListView").removeClass("col-md-8").addClass("col-md-12");
+                $("#tripQuickView").html("");
+                $("#tripQuickView").hide();  
+                $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+                loadGrid();
+                hideLoader();        
+            });
+        
+        }
+    }
+
+</script>    
+
+<style>
+    #{{form_name|lower}}_datagrid tbody tr {cursor: pointer;}                
+    #{{form_name|lower}}_datagrid tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #{{form_name|lower}}_datagrid tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+</style>
+    
+
+
+{% endblock %}

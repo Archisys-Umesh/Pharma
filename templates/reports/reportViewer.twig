@@ -1,0 +1,226 @@
+{% extends "app.twig" %}
+{% block title %} {{ title }} {% endblock %}
+{% block page %}
+
+    <div class="row col-sm-12">
+        <div class="card-box">
+            <div class="col-sm-7">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters">
+                            {{ filters | raw}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5 pull-right" style="display: flex;">
+                <a href="#" class="btn btn-success btn-md waves-effect waves-light m-r-10" data-overlaycolor="#36404a" id="btnSearch">
+                    Show
+                    <i class="fa fa-search"></i>
+                </a>
+                {#{% if Download %}
+                    <a href="#" class="btn btn-success btn-md waves-effect waves-light" data-overlaycolor="#36404a" id="btnDownload">
+                        Download <i class="fa fa-download"></i>
+                    &nbsp;</a>
+                {% endif %}#}
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+                <table id="datatable-scroller" class="table  table-bordered dt-responsive nowrap buttonTable"
+                       cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        {% for col,key in cols %}
+                            <th>{{col}}</th>
+
+                        {% endfor %}
+
+
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div><!-- end col -->
+    </div>
+    <!-- end row -->
+
+{% endblock %}
+
+{% block script %}
+
+    <script type="text/javascript">
+
+        $DataTableUrl = "?action=result&";
+        $filter = "";
+        $(document).ready(function() {
+
+            $('<style>#s2id_emplistwidth150 { width:150px!important; margin-left:10px!important; }</style>').appendTo('head');
+
+            ${{reportname|lower}}_datagrid = $('#datatable-scroller').DataTable({
+
+                processing: true,
+                serverSide: true,
+                lengthMenu: [
+                    [10, 20, 50,100],
+                    [10, 20, 50,100]
+                ],
+                pageLength: 10,
+                ajax: {
+                    "url": "?action=result",
+                    "type": "GET",
+                    /*"complete" : function(d)
+                    {
+                        $('.filterRadio:checked').parent().find("span").html("(" + d.responseJSON.data.length + ")");
+                        hideLoader();
+                    }*/
+                },
+                {% if defaultOrderIdx%}
+                "order": [[ {{defaultOrderIdx}}, "desc" ]],
+                {% else %}
+                "order": [[ 0, "desc" ]],
+                {% endif %}
+                columns: [
+                    {% for col,key in cols %}
+                    { "data": "{{key}}", render: function(data, type, row) {
+                            return replacements("{{key}}", row.{{key}});
+                        }},
+                    {% endfor %}
+                ],
+                dom: '<"top"l>rt<"bottom"ip><"clear">'
+
+            });
+
+
+
+            $("#btnSearch").click(function(){
+                $filter = $('#gridFilters').serialize();
+                loadGrid();
+
+            });
+
+
+            {# $("#btnDownload").click(function(){
+              $filter = $('#gridFilters').serialize();
+              window.location = $DataTableUrl + $filter + "&download=true";
+              //loadGrid();
+             }); #}
+
+            {# $("#btnDownload").click(function() {
+            var filterParams = $('#gridFilters').serialize();
+            var downloadUrl = $DataTableUrl + '?' + filterParams + "&download=true";
+            window.location = downloadUrl;
+             }); #}
+
+
+
+
+            $("#gridFilters :input").change(function(){
+
+                console.log("Input Changed .. Implement Dependend Dropdowns");
+
+            });
+
+
+        });
+
+        $valKeys = [];
+        {% if valKeys %}
+        {% for val,keys in valKeys %}
+        $valKeys['{{val}}'] = {{keys|json_encode|raw}};
+        {% endfor %}
+        {% endif%}
+
+        function replacements($key,$val)
+        {
+
+            if($valKeys[$key] != undefined)
+            {
+                return $valKeys[$key][$val];
+            }
+            else {
+                return $val;
+            }
+        }
+
+        function loadGrid()
+        {
+            // showLoader();
+            ${{reportname|lower}}_datagrid.ajax.url($DataTableUrl + $filter).load();
+        }
+
+        function clickrow(row)
+        {
+            $td = $(row).children();
+
+            {% set i = 0 %}
+
+            $rowpost = {
+                "RowId" : "",
+                {% for col,key in cols %}
+                "{{key}}": "",
+                {% endfor %}  };
+
+            $rowpost.RowId = $(row).attr("id");
+            {% for col,key in cols %}
+            $rowpost.{{key}} = $($td[{{i}}]).text();
+            {% set i = i + 1 %}
+            {% endfor %}
+
+            {% if RowClick %}
+
+            window.open("?action=RowClick&"+$.param($rowpost), '_blank').focus();
+
+            {% endif %}
+            return false;
+        }
+
+        $('#TerritoryId').change(function(e) {
+            $('#BeatId option').remove();
+            var beat = $(this).val();
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "{{router.baseUrl('contact/getTerrId/')}}"+beat,
+                    success: function (data) {
+                        $("#BeatId").find('option').remove();
+                        $("#BeatId").append('<option value="-1" selected>--- Select Beat ---</option>');
+                        $.each(data.data, function(key, value) {
+                            $('#BeatId')
+                                .append($("<option></option>")
+                                    .attr("value", key)
+                                    .text(value));
+                        });
+                    }
+                });
+        });
+
+
+    </script>
+
+    {% if RowClick %}
+
+        <style>
+
+            #datatable-scroller tr:hover
+            {
+                cursor:pointer;
+                background-color: #b3e6ff !important;
+                font-weight:bold;
+            }
+            #s2id_PositionId{
+                margin-left:15px!important;
+            }
+            #s2id_BeatId{
+                margin-left:15px!important;
+            }
+
+        </style>
+
+    {% endif %}
+
+{% endblock %}

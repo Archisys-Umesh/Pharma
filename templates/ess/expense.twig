@@ -1,0 +1,578 @@
+{% extends "app.twig" %}
+{% block title %} Expenses {% endblock %}
+{% block page %}
+
+<div class="row">   
+    <div class="col-sm-4">            
+        {% if isNotTop and defaultEmp == 0%}            
+        <a href="{{router.getPath('ess_expenseForm',{id:0})}}" class="btn btn-success m-b-20"><i class="zmdi zmdi-plus"></i> Add Expenses</a>
+        {%elseif defaultEmp != 0 %}
+            <h4 class="p-l-r-10">{{selectedEmployee.FirstName}} {{selectedEmployee.LastName}} {{selectedEmployee.EmployeeCode}}</h4>
+        {% else %}    
+            <div class="clearfix p-20"></div>
+        {% endif %}  
+    </div> 
+     <div class="col-sm-8">
+            {% if defaultEmp == 0 %}
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    
+                    <form class="form-inline" id="gridFilters">
+                        <div class="form-group">
+                            <label>Filter By :</label>
+                            <select class="form-control input-sm" id="StatusList" name="status"  style='width: 180px!important;'>
+                                {% if isNotTop %}            
+                                <optgroup label="My Expenses">
+                                    
+                                    <option value="1" id="sel1">Created</option>
+                                    <option value="2" id="2">Submited</option>
+                                    <option value="3" id="3">Approved</option>
+                                    <option value="4" id="4">Rejected</option>
+                                    <option value="7" id="5">Cancelled</option>                                    
+                                    <option value="A">-- ALL --</option>
+
+                                   
+                                    {% endif %}
+                                    {#<option value="10">Proceed for Payment</option>#}
+                                </optgroup>
+                                 
+                                <optgroup label="Team Expenses">
+                                  <option value="P" {% if page == "P" %} selected="selected" {% endif %}>--To be Approved by Me--</option>
+                                </optgroup>
+                                    
+                            </select>
+                        </div>
+                         {% if isNotTop %}
+                        <div class="form-group" id="empform" {% if(page !="P" and isNotTop) %} style="display: none" {% endif %}>
+                            <label>Employee :</label>
+                            <select class="form-control input-sm" id="employeeList" name="employee">                                
+                                
+                                
+                                 {%for state in empList %}
+                                 <option value="{{state.id}}" {% if empListid == state.id %} selected="selected" {%endif%} >{{state.name}}</option>
+                                 {%endfor%}
+                               
+                            </select>
+                        </div> 
+                        {% endif %}
+                         
+                            <input type="hidden" name="month" id="month" value="{{setcurrntmonth}}" selectedMonth="{{setcurrntmonth}}">    
+                        {#<div class="form-group">
+                            <label>Month :</label>                            
+                            <select class="form-control input-sm" name="month" id="month">
+                                {{monthList|raw}}                            
+                            </select>
+                        </div>#}
+                    </form>
+                    
+                </div>
+            </div>
+            {% else %}                   
+                <form class="form-inline" id="gridFilters">
+                    <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" id="StatusList" name="status">
+                               
+                                                           
+                                    <option value="A">-- ALL --</option>
+                                    <option value="PA" {% if page == "PA" %} selected="selected" {% endif %}>--Pending For Approval--</option>
+                               
+                            </select>
+                        </div>
+                    <input type="hidden" value="{{defaultEmp}}" name="employee">
+                    <input type="hidden" name="month" id="month" value="{{setcurrntmonth}}" selectedMonth="{{setcurrntmonth}}">    
+                </form>
+                
+            {% endif %}
+            
+            
+        </div><!-- end col-->
+</div>    
+    
+<div class="col-md-12" id="expenseList">
+            <div class="card-box table-responsive">
+                <div class="">                
+                    {%  for key,val in monthLists  %}
+                        <button type="button" name="btnmonth" value="{{key}}" class="btn waves-effect w-md waves-light m-b-5 btnmonth" btnmonth="{{key}}" btnval="{{val}}">{{val}}
+                            <span class="btn_{{val}}">(0)</span>
+                        </button>
+                    {% endfor%}
+                </div>
+                
+                <table id="datagrid" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>                    
+                            <th><input type="checkbox" class="datatableCheckbox"/></th>                            
+                            {#<th>ExpenseID</th>#}
+                            <th>Date</th>
+                            <th>Working</th>
+                            {#<th>Budget</th> #}                       
+                            <th>Requested</th>
+                            <!--<th>Add</th>-->
+                            <th>Final</th>
+                            <th>Status</th>
+                            <th>Employee</th>
+                            {#<th>Currency</th>#}
+                            {#<th>Action</th>#}
+                        </tr>
+                    </thead>
+
+                </table> 
+            <div class="">
+                    {%if monthlySubmissions == true%}
+                            
+                            <a href="#" onclick="return myFunction()" class="congpoup btn btn-default " id="expansesSubmit">Submit for Approval</a>
+                        
+                             <a href="#" class="btn btn-default bulkActions hide cssbuttongo" matchStatus = "1" moveStatus="2" id="expansesSubmit">Submit for Approval</a>
+                     {%else%}
+                     <a href="#" class="btn btn-default bulkActions" matchStatus = "1" moveStatus="2" id="expansesSubmit">Submit for Approval</a>
+                     {%endif%}
+                    {#{% if isTopLevel %}#}
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "P" moveStatus="3">Approve</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "P" moveStatus="4">Reject</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "PA" moveStatus="3">Approve</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "PA" moveStatus="4">Reject</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "4" moveStatus="1">Re Open</a>
+                    {#  {%endif%}#}
+                </div>
+        </div>
+     </div>
+    <div class="col-md-4" id="expenseQuickView" style="display:none">
+</div>
+
+{%if monthlySubmissions == true %}
+<style>
+    td.select-checkbox {
+    display: none !important;
+}
+
+</style>{%endif%}
+{% endblock %}
+{% block script %}
+    <script>
+     
+        $dataUrl = "{{request.getPath()}}?action=list";
+        $bulkUrl = "{{request.getPath()}}?action=bulk";
+        $quickUrl = "{{request.getPath()}}?action=quickView&expid=";
+        $deleteUrl = "{{request.getPath()}}?action=deleteExp&expid=";
+        $statusList = {{statusList|json_encode|raw}};
+        {#$submitCurrentMonth = {{ config["ESS"]['submitCurrentMonth'] ? 'TRUE' : 'FALSE' }};#}
+        $submitCurrentMonth = {{ monthlySubmissions |json_encode|raw }};
+        $minimumClaimAmount = {{config["ESS"]['minimumClaimAmount']|json_encode}}
+        var $grid = "";
+        var $trips;
+        jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function ( a ) {
+            var ukDatea = a.split('/');
+            return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+        },
+
+        "date-uk-asc": function ( a, b ) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "date-uk-desc": function ( a, b ) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+        } );
+
+        $(document).ready(function(){
+            if (localStorage.getItem("monthbtn") != null) {
+                $curmonth = localStorage.getItem('monthbtn');
+                $("#month").val($curmonth);
+            }
+             var StatusListnsm =  localStorage.getItem("StatusListnsm");
+             var employeeListnsm =  localStorage.getItem("employeeListnsm");                
+                 if(employeeListnsm != null || StatusListnsm != null){               
+                    $("#StatusList").select2("destroy").select2();
+                    $('#StatusList').val(StatusListnsm).trigger('change'); 
+
+                    $("#employeeList").select2("destroy").select2();
+                    $('#employeeList').val(employeeListnsm).trigger('change'); 
+
+                    if(StatusListnsm == "P"){
+                    $("#empform").show();
+                    }else{
+                        $("#empform").hide();
+                    }  
+
+                   }    
+
+            var dt = new Date();
+            
+            $("#StatusList").change(function(){
+            var StatusListnsm = $(this).val(); 
+                localStorage.setItem("StatusListnsm", StatusListnsm)
+
+               if($(this).val() == "P"){
+                   $("#empform").show();
+               }else{
+                   $("#empform").hide();
+               }             
+            });
+
+            $("#employeeList").change(function(){
+            var employeeListnsm = $(this).val(); 
+                localStorage.setItem("employeeListnsm", employeeListnsm)                      
+            });
+
+            $curmonth = $("#month").val();
+            $( ".btnmonth" ).each(function( index ) {
+                $a = $(this).attr("btnmonth");
+                if (localStorage.getItem("monthbtn") != null) {
+                    $curmonth = localStorage.getItem('monthbtn');
+                }
+                if($curmonth == $a){
+                    $(this).addClass("btn-success");
+                    loadGrid();
+                }
+            });
+            $("#gridFilters select").change(function(){                
+                
+                loadGrid();
+               
+            });
+            $grid =  $('#datagrid').dataTable({
+
+                "aoData": {"data":[]}, 
+                "aoColumns": [
+                                        
+                    { "data": "ExpId","render": function ( data, type, row ) {   
+                        
+                            $sl = $("#StatusList").val();                            
+                            if($sl == "1" ||$sl == "4" || $sl == "P" || $sl == "PA") {
+                                // && row.ExpenseAdditionalAmt == 0
+                                var dts = new Date(row.ExpenseDate);
+                                $creMonth = dts.getMonth()+1;
+                                $nextMonth = dt.getMonth()+1;
+                                
+                                if($creMonth != $nextMonth) {
+                                        return "<input type='checkbox' name='checkboxcked' ExpId = "+data+" class='nodeCheckbox' checked disabled />";
+                                }else if($submitCurrentMonth){                                          
+                                        return "<input type='checkbox' name='checkboxcked' ExpId = "+data+" class='nodeCheckbox' {%if monthlySubmissions == true %} checked {% endif%} disabled />";
+                                    
+                                }else {                                    
+                                    return "";
+                                }
+                            }
+                            else 
+                            {
+                                return "";
+                            }
+                        }, 
+                    },
+                       {#{ "data": "ExpId","render": function ( data, type, row ) {                            
+                            return "V"+pad(data,6,"0");
+                        }, 
+                    },#}
+                    { "data": "ExpenseDate","sType": "date-uk","render": function ( data, type, row ) {                            
+                            return propelDate(data,1);
+                        }, 
+                    },
+                    //{ "data": "ExpenseTrip" ,"render": function ( data, type, row ) {                            
+                            //if(data == 0)
+                            //{
+                                //return "HQ";
+                            //}
+                            //else(data > 0) 
+                            //{
+                                //return $trips[data];
+                            //}
+                            
+                                
+                        //}, 
+                    //},
+                    { "data": "TripType" },
+                    {#{ "data": "ExpId","render": function ( data, type, row ) {                            
+                            return row.BudgetGroup.Groupcode+" " + row.BudgetGroup.GroupName ;
+                        }, 
+                    },#}
+                    { "data": "ExpenseReqAmt" },
+                    <!--{ "data": "ExpenseAdditionalAmt" },-->
+                    { "data": "ExpenseFinalAmt" },
+                    { "data": "ExpenseStatus","render": function ( data, type, row ) {
+                            return $statusList[data];
+                        },  
+                    },
+                    { "data": "EmployeeId","render": function ( data, type, row ) {
+                            return row.Employee.FirstName+" " + row.Employee.LastName+" | " + row.Employee.EmployeeCode;
+                        }, 
+                    },                    
+                    
+                   {# { "data": "ExpId","render": function ( data, type, row ) {
+                            return "<a href='{{router.getPath("ess_expenseSingle",{id:""})}}"+data+"'><i class='fa fa-eye'></i></a>" ;
+                        }, 
+                     
+                    },#}
+                ],
+                
+                select: true,
+
+                'order': [1, 'asc'],
+                "rowCallback": function( row, data, dataIndex ) {
+                        
+                    $(row).attr("ExpId",data.ExpId);
+                    if(data.ExpenseAdditionalAmt > 0) {
+                        $(row).addClass("danger");
+                    }
+                    
+                },
+                 
+            });
+             loadGrid();            
+            
+            datatableCheckboxManager($grid);
+            
+            
+            
+            $(".btnmonth").click(function(){
+                $(".btnmonth").removeClass("btn-info");
+                $(".btnmonth").removeClass("btn-success");
+                
+                $(this).addClass("btn-success");
+                $month = $(this).attr("btnmonth");
+                $("#month").val($month);
+                localStorage.setItem('monthbtn', $month);
+                $("#month").val($month);
+                loadGrid();
+                $btnval = $(this).attr("btnval");
+                
+            });
+            $(".bulkActions").click(function(){
+                
+                $moveStatus = $(this).attr("moveStatus");
+                $month = $("#month").val();
+                $empId = $("#employeeList").val();
+                var rows = $grid.fnGetNodes();
+                var ExpId = [];
+                $('input[type="checkbox"]:checked', rows).each(function(idx,obj){
+                                        
+                    ExpId.push($(obj).attr('ExpId'));                    
+                });
+                if(ExpId.length > 0)
+                {
+                    quickPost($bulkUrl,{"ExpId" : ExpId,"moveStatus":$moveStatus,"month":$month,"empId":$empId},function(res){
+                       loadGrid(); 
+                       
+                        if($moveStatus == 3)
+                        {
+                            if(res.status == 1){
+                                toastr["info"]("Expenses have been approved and Pending for Audit");
+                            }else if(res.status == 0){
+                                toastr["info"]("Please pick all expenses and then give your approval.");
+                            }else{
+                                toastr["error"]("Expenses can not be approved as balance is not sufficient");
+                            }
+                            
+                        }
+                        else if($moveStatus == 2)
+                        {
+                            toastr["info"]("Your Expenses have been submitted for approval");
+                        }
+                        else if($moveStatus == 4)
+                        {
+                            toastr["error"]("Expenses have been rejected");
+                        }
+                        
+                    });
+                }else{
+                    toastr["error"]("Please select atleast one expense.");
+                }
+            });
+                     
+            
+            {% if setMonth %} 
+                    
+                $("#month").val("{{setMonth}}");                
+                $("#empform").val("{{emp}}");
+                
+            {% endif %}
+                
+            {% if setApprove %} 
+                    
+                //$setStatus = $("#StatusList").val();
+                console.log("#sel"+"{{setStatus}}");
+                $("#"+"{{setStatus}}").attr("selected","selected");
+                $("#StatusList").trigger("change");
+            
+            {% endif %}
+            
+        
+            $('#datagrid tbody').on('click', 'tr', function () {
+                var expid = $(this).attr("expid");
+                $('#datagrid tr').removeClass("selected");
+                $(this).addClass("selected");
+                quickExpView(expid);
+            } );
+            
+        });
+       
+      
+      function loadGrid()
+      {
+          $(".bulkActions").hide();
+          showLoader();
+          //console.log($("#gridFilters").serialize());
+          quickPost($dataUrl,$("#gridFilters").serialize(),function(res){           
+                            
+                $.each(res.count,function(idx,val){                    
+                    $(".btn_"+idx).html("("+val+")");                    
+                    
+                });
+                $trips = res.trips;
+                $('#datagrid').dataTable().fnClearTable();
+                
+                
+                if(res.list.length > 0) {
+                    
+                    $('.congpoup').show();
+                    $('#datagrid').dataTable().fnAddData(res.list);
+                    $status = $("#StatusList").val();
+                    $(".bulkActions[matchStatus="+$status+"] ").show();
+                    $month = $("#month").val().split("|");
+                    var dt = new Date($month[0]);
+                    var dts = new Date();
+                    $creMonth = dts.getMonth()+1;
+                    $nextMonth = dt.getMonth()+1;
+                    var Estatus = JSON.stringify(res.list[0]["ExpenseStatus"]);
+                    if($creMonth != $nextMonth) {
+                                                                        
+                        if($status != "P")
+                        {
+                            $("#expansesSubmit").show();
+                            
+                        }                        
+                        
+                    }
+                    else if($submitCurrentMonth){
+                        if($status == "P" || $status == "PA")
+                        {
+                            $("#expansesSubmit").hide();
+                            
+                        }else{
+                            $("#expansesSubmit").show();
+                            
+                        }
+                    }else{
+                        $("#expansesSubmit").hide();
+                    }
+                    $StatusList = $("#StatusList").val()
+                    if($StatusList == "3"){
+                        $("#expansesSubmit").hide();
+                        $('.congpoup').hide();
+                    }
+                    if($StatusList == "2"){
+                        $("#expansesSubmit").hide();
+                        $('.congpoup').hide();
+                    }
+                    if($StatusList == "7"){
+                        $("#expansesSubmit").hide();
+                        $('.congpoup').hide();
+                    }
+                    if($StatusList == "8"){
+                        $("#expansesSubmit").hide();
+                        $('.congpoup').hide();
+                    }
+                    if($StatusList == "A"){
+                        $("#expansesSubmit").hide();
+                        $('.congpoup').hide();
+                    }
+                    if($StatusList == "P"){
+
+                        $('.congpoup').hide();
+                        if(Estatus == 3){
+                           
+                            $('.bulkActions').hide()
+                        }
+                        if(Estatus == 10){
+                            $('.bulkActions').hide()
+                        }
+                        
+                    }
+                    
+                }else{
+                     $('.congpoup').hide();
+                }
+               
+                closeQuickView();
+                hideLoader();
+          });
+          
+      }
+      
+    $( document ).ready(function() {
+
+        $("input:checkbox[class=datatableCheckbox]:checked").each(function () {
+            $('.sorting_disabled').hide();
+            $('td.select-checkbox').hide();
+        });
+
+    });
+        
+    function myFunction() {    
+        if(confirm('This is the final submission of the month - Do you want to submit the expense?')) {        
+         $('.cssbuttongo').trigger('click');
+         //$('.congpoup').hide();
+        }        
+     }
+    function deleteExpense($expid,$msg)
+    {
+        if(confirm($msg)) {        
+            
+            $.get($deleteUrl+$expid,function(data){
+                showLoader();
+                $("#expenseList").removeClass("col-md-8").addClass("col-md-12");
+                $("#expenseQuickView").html("");
+                $("#expenseQuickView").hide();  
+                $('#datagrid tr').removeClass("selected");
+                loadGrid();
+                hideLoader();        
+            });
+        
+        }        
+    }
+    function quickExpView($expid)
+    {
+        if($expid > 0 ) 
+        {                    
+            showLoader();
+            $.get($quickUrl+$expid,function(data){
+
+                $("#expenseList").removeClass("col-md-12").addClass("col-md-8");
+                $("#expenseQuickView").html(data);
+                $("#expenseQuickView").show();        
+                hideLoader();
+
+            });
+        
+        }
+    }
+    
+    function closeQuickView()
+    {
+            $("#expenseList").removeClass("col-md-8").addClass("col-md-12");
+            $("#expenseQuickView").html("");
+            $("#expenseQuickView").hide();  
+            $('#datagrid tr').removeClass("selected");
+    }
+
+    </script>
+<style>
+        
+    #datagrid tbody tr 
+    {
+        cursor: pointer;
+    }
+    #datagrid tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #datagrid tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+    
+</style>
+
+
+{% endblock %}

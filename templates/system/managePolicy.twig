@@ -1,0 +1,195 @@
+{% extends "app.twig" %}
+{% block title %} Manage Policies - {{pm.PolicyName}} | {{pm.PolicyCode}} {% endblock %}
+{% block page %}
+
+<div class="row">
+    <div class="col-sm-12 editable">
+        <div class="card-box table-responsive">                        
+            <div class="btn-group p-b-10 pull-right">
+                <a href="{{router.getPath('sys_policyKeyForm')}}" data-toggle="ajaxModal" class="btn btn-default" id="btnAdd"> +Add New Key </a>                
+                <a href="#" class="btn btn-success" id="btnSave"> Save </a>
+            </div>
+            <div class="clearfix"></div>
+            <table id="mainTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                                                
+                        
+                        <th>Group</th>
+                        <th>Key</th>
+                        <th>Limit for Employee</th>
+                        <th>Limit for Auditor</th> 
+                        <th>ByPass</th>
+                        <th>Is Readonly</th>
+                    </tr>
+                </thead>                                
+            </table>
+            
+        </div>
+    </div><!-- end col -->
+        
+</div>
+<!-- end row -->
+    
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>
+        
+    $dtable = "";
+    
+    $(document).ready(function(){   
+
+    $dtable = $('#mainTable').DataTable({
+            ajax: "{{request.getPath()}}?action=list",                 
+            "columns": [
+                /*{"data" : "enabled",render: function ( data, type, row ) {                            
+                        $checked = "";
+                        if(data == 1)
+                        {
+                            $checked = "checked";
+                        }
+                        return "<input type='checkbox' name = 'keys[]' value='"+row.keys+"' "+$checked+" class='checkbox enabled'>";
+                }},*/
+                {"data" : "group"},
+                {"data" : "keys"},
+                {"data" : "limit1"},
+                {"data" : "limit2"},
+                {"data" : "noCheck",render: function ( data, type, row ) {                            
+                        $checked = ""; if(data == 1) { $checked = "checked"; }
+                        
+                        return "<input type='checkbox' name = 'noCheck[]' value='"+row.keys+"' "+$checked+" class='checkbox noCheck'>";
+                }},
+                {"data" : "is_readonly",render: function ( data, type, row ) {                            
+                        $checked = ""; if(data == 1) { $checked = "checked"; }
+                        
+                        return "<input type='checkbox' name = 'is_readonly[]' value='"+row.keys+"' "+$checked+" class='checkbox is_readonly'>";
+                }},
+                
+            ],
+            "fnDrawCallback": function(settings, json) {
+                    
+                    setTimeout(function(){
+                        startEditing();                        
+                    },1000);
+                     
+            },
+            createdRow: function( row, data, dataIndex ) {
+                
+                //$( row ).find('td:eq(1)').attr('readonly', '1');
+                //$( row ).find('td:eq(2)').attr('readonly', '1');                
+            }
+        });
+        
+       $("#btnSave").click(function(){
+       
+          $("#btnSave").html("Saving ...");
+          $("#btnSave").attr("disabled","true");
+          $data = [];                    
+          $error = false;
+          $dtable.$("tr").each(function(){
+              
+              /*$name = $(this).find(".enabled").val();*/
+              /*$enabled = $(this).find(".enabled").prop('checked');*/
+              
+              $name = $(this).find('td:eq(1)').html();              
+              $noCheckFlag = $(this).find(".noCheck").prop('checked');
+              $isReadonlyFlag = $(this).find(".is_readonly").prop('checked');
+              $limit1 = $(this).find('td:eq(2)').html()*1;
+              $limit2 = $(this).find('td:eq(3)').html()*1;
+              $row = {"keys" : $name, "limit1":$limit1, "limit2":$limit2, "noCheck" : $noCheckFlag, "is_readonly" : $isReadonlyFlag };
+              $data.push($row);
+                
+                              
+              
+          });          
+          
+          /*
+          $('#mainTable tbody tr').each(function(idx,obj){
+              
+              $name = $(this).find(".enabled").val();
+              $enabled = $(this).find(".enabled").prop('checked');
+              $noCheckFlag = $(this).find(".noCheck").prop('checked');
+              if($enabled) {
+                  
+                $limit1 = $(this).find('td:eq(3)').html();
+                $limit2 = $(this).find('td:eq(4)').html();
+                $noCheck = $noCheckFlag;
+                
+                $row = {"key" : $name, "limit1":$limit1,"limit2" : $limit2, "noCheck" : $noCheck };
+                $data.push($row);
+                
+              }
+              
+          });
+          */
+          if(!$error) {          
+          $.ajax({
+            type: "POST",
+            dataType: "JSON",
+            url: "{{request.getUri()}}?action=save",
+            data : {data : $data},
+            success: function(){
+                
+                $("#btnSave").html("Save");
+                $("#btnSave").removeAttr("disabled");
+                
+                //reloadGrid();
+                
+            },
+            
+            });
+           }
+           else 
+           {
+                $("#btnSave").html("Save");
+                $("#btnSave").removeAttr("disabled");
+           }
+          
+          
+       });
+
+     }); 
+    function startEditing()
+    {
+        $('#mainTable').editableTableWidget({ preventColumns: [ 1,2 ] });
+                
+        
+        $('#mainTable td').on('focus',function(e) {        
+            $(this).addClass("focus-cell");                    
+        });
+        
+        $('#mainTable td').on('blur',function(e) {        
+            $(this).removeClass("focus-cell");        
+        });
+        
+        $('#mainTable td').on('change', function(evt, newValue) {
+            
+         //$(this).parent().find(".enabled").attr("checked");
+         
+        //return false; // reject change	
+            
+        });
+        
+        //$('#mainTable td')[3].focus();
+            
+    }
+    function reloadGrid()
+    {
+        $dtable.ajax.reload();
+        startEditing();
+        
+    }
+    function newKeySaved()
+    {
+        $dtable.ajax.reload();
+        startEditing();
+    }
+    </script>
+    <style>
+
+        .focus-cell {
+            border-color: red !important;
+         
+        }
+        
+    </style>
+{% endblock %}

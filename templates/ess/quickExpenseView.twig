@@ -1,0 +1,129 @@
+<div class="card-box table-responsive">            
+    <div class="col-md-12">                            
+        
+    <div class="pull-right">                                                                                    
+            <a href="#" onclick="closeQuickView()" class=""><i class="fa fa-remove"></i></a>                                        
+    </div>
+    <h3>{{exp.ExpenseDate|date('d-m-Y')}} : #V00{{exp.PrimaryKey}}</h3>        
+    <h4 class="m-t-0 m-b-10"> Working : 
+                        {% if exp.ExpenseTrip == 0 %}
+                            HQ  Working
+                        {% endif%}
+                        {% if exp.ExpenseTrip > 0 %}
+                            {{ trip_type[trip.TripType] }}
+                        {% endif%}                        
+                    </h4>
+                    <p>Place of Work : {{exp.ExpensePlacewrk}}</p>                    
+                    {% if trip %}
+                        <p class="text-muted m-b-0"><i>{{trip.TripOriginName}} to {{trip.TripDestinationName}}</i></p>
+                        <p class="text-muted m-b-0"><i>{{trip.TripStartDate|date('d-m-Y h:m a')}} -- {{trip.TripEndDate|date('d-m-Y h:m a')}}</i></p>
+                        <p class="text-muted m-b-20"><i>{{trip.TripReason}} </i></p>
+                    {% endif%}
+    <table class="table table-bordered m-0">
+        <thead>
+        <tr>
+            <th>Requested</th>
+            <th>Final</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{currencySumbol}} {{exp.ExpenseReqAmt}}</td>
+            <td>{{currencySumbol}} {{exp.ExpenseFinalAmt}}
+            </td>
+        </tr>
+        </tbody>
+        </table>
+    <div class="table-responsive ">
+        <table class="table m-t-30">
+            <thead>
+            <tr>
+                <th>Head</th>
+                <th>Requested</th>
+                <th>Final</th>                                
+            </tr></thead>
+            <tbody>
+                {% for r in rows %}                    
+                    <tr expId ="{{r.getExpenseMaster().ExpenseId}}">                                                
+                        
+                        <td>                            
+                            {{r.getExpenseMaster().ExpenseName}}                                                        
+                            {% if r.ExpNote != ""%} <br/><small class="text-danger">{{r.ExpNote}}</small> {% endif %}
+                        </td>                        
+                        <td>
+                            {{r.ExpIlAmount}} 
+                            {%if r.getExpenseMaster().Israteapplied == 1%}
+                                @ {{r.ExpRateQty}} 
+                            {% endif %}
+
+                        </td>  
+                        {% if role == 'NSM' and r.IsReadonly == false%}
+                            <td>
+                                <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('ess_changeReq',{id:r.ExpListId})}}?action=auth'>
+                                    {{currencySumbol}} {{r.ExpAprAmount}}&nbsp;<i class="fa fa-pencil" style="color:#337ab7"></i>
+                                </a>
+                            </td> 
+                        {% else %}
+                            {% if level == 1 and r.IsReadonly == false %}
+                                <td>
+                                    <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('ess_changeReq',{id:r.ExpListId})}}?action=auth'>
+                                        {{currencySumbol}} {{r.ExpAprAmount}}&nbsp;<i class="fa fa-pencil" style="color:#337ab7"></i>
+                                    </a>
+                                </td>                        
+                            {% else %}
+                                <td>{{r.ExpFinalAmount}}</td> 
+                            {% endif %}
+                        {% endif %}
+
+                        
+                    </tr>                    
+                {% endfor %}            
+            </tbody>
+        </table>
+       
+        {% if exp.ExpenseNote != "" %}
+         <div class="form-group">
+                <label class="col-md-2 control-label">Remarks</label>
+                <div class="col-md-10">
+                    {{exp.ExpenseNote}}
+                </div>
+            </div>
+        {% endif %}
+            
+        
+        
+    </div>
+    </div>
+<div class="col-md-12 p-20">                            
+    
+    <div class="pull-right">               
+        {% if exp.ExpenseStatus in [1,2] %}
+        <a href="#" class="btn btn-danger deleteExpense"><i class="fa fa-trash-o"></i> Delete </a>                                                
+        {% endif %}
+        <a href="{{router.getPath('ess_expenseSingle',{id:exp.ExpId}) }}" class="btn btn-purple w-md waves-effect waves-light">
+            {% if level == 0 %} <i class="fa fa-pencil"></i>  Edit {% else %} <i class="zmdi zmdi-eye"></i>  Full View  {% endif %}</a>                                 
+        
+    </div>
+                        
+</div>
+                            
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    
+    $(".deleteExpense").click(function(){
+        
+        deleteExpense({{exp.ExpId}},"Are you sure you want to delete expense for {{exp.ExpenseDate|date('d-m-Y')}} : #V00{{exp.PrimaryKey}} ?");
+    });
+    
+});
+
+function reloadExpenseSingle()
+{    
+    loadGrid();
+    quickExpView({{exp.ExpId}});
+}
+
+</script>

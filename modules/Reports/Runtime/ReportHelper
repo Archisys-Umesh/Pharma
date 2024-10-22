@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Reports\Runtime;
+
+use App\System\App;
+use Modules\Outlets\Exceptions\InvalidArgumentException;
+
+
+class ReportHelper {
+
+    protected $app;
+
+    public function __construct(App $app) {
+        $this->app = $app;
+    }
+
+    public function getSalesPerformance()
+    {
+        
+    }
+}

@@ -1,0 +1,54 @@
+
+<div class="col-lg-8">
+    <div class="card-box">
+        <h4 class="header-title mt-0 m-b-30">
+            <a href="{{ router.getPath('hr_empTrip') }}">    Employees on Trips </a>
+        </h4>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            {#<th></th>#}
+                            <th>Employee Name</th>
+                            {#<th>Type</th>
+                            <th>Origin</th>          #}              
+                            <th>Destination</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        {%  for td in TripData  %}
+                        <tr>
+                            {#<td><span class="round"><img src="{{request.baseUri()}}" /></span></td>#}
+                            <td>{{td.empName}}</td>
+                            {#<td>{{td.type}}</td>
+                            <td>{{td.origin}}</td>#}
+                            <td>{{td.destination}}</td>
+                            <td>{{td.tripstartdate}}</td>
+                            <td>{{td.tripenddate}}</td>
+                            <td>{{td.tripstatus}}</td>
+                            <td><a target="_blank" href="/ess/trips/single/{{td.TripId}}" title="View Detail" class="btn btn-default btn-xs"><i class="zmdi zmdi-eye"></i></a></td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+</div><!-- end col-->
+
+<script type ='text/javascript'>
+            
+      
+      
+        setTimeout(function(){
+            
+            $dtable = $('#datagrid').DataTable();            
+            
+        },1000);
+                            
+
+</script>
+

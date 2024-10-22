@@ -1,0 +1,1088 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.css" rel="stylesheet" />
+    {%if tripCurrency %}
+     <div class="row m-b-15">                
+        <div class="col-sm-12">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                        <div class="form-group">
+                            <label>Currency :</label>                            
+                            <select class="form-control input-xl" name="currency" onchange="javascript: form.submit();">
+                                {{tripCurrency|raw}}                            
+                            </select>
+                        </div>
+                    </form>
+                </div>     
+            </div>
+        </div>
+    </div>
+    {%endif%}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card-box">
+                <label>Submitted Date</label>
+                {% if LastSubmittedDate != "" %}
+                    <h4>{{LastSubmittedDate}}</h4>
+                {% else %}
+                    <h4>Submission Pending</h4>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-box">
+                <label>Approved Date</label>
+                {% if LastApprovedDate != "" %}
+                    <h4>{{LastApprovedDate}}</h4>
+                {% else %}
+                    <h4>Approval Pending</h4>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-box">
+                <label>Audited Date</label>
+                {% if LastAuditedDate != "" %}
+                    <h4>{{LastAuditedDate}}</h4>
+                {% else %}
+                    <h4>Audit Pending</h4>
+                {% endif %}
+            </div>
+        </div>     
+    </div>
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+            
+            <div class="btn-group m-b-30">
+            
+            </div>
+
+            <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        
+                        {#<th>Validated</th>#}
+                        {# <th>Sr No.</th> #}
+                        <th>Employee</th>
+                        <th>Date</th>                        
+                        <th>Trip Locations</th>
+                        <th>Day Type</th>
+                        {# <th>Call Count</th> #}
+                        <th>Trip Type</th>
+                        <th>Expense List Notes</th>
+                        
+                        {% for id,title in heads %}
+                        <th>{{title}}</th>
+                        {% endfor %}
+                        
+                        <th style="background-color: cornsilk;font-weight: bold">Requested</th>
+                        <th style="background-color: cornsilk;font-weight: bold">Approved</th>
+                        <th style="background-color: cornsilk;font-weight: bold">Audited</th>
+                        <th>User Remark</th>
+                        <th>Auditor Remark</th>
+                        <th>Image</th>
+                        <th>Download Images</th>
+                        <th>Expense Log</th>
+                    </tr>
+                </thead> 
+                <tbody>
+                    {# {% set myVal = 0 %} #}
+                    {%  for r in rows  %}
+                        {# {% set myVal = myVal + 1 %} #}
+                        
+                        <tr {% if r.Additional != 0 %} style="background-color: lightblue !important;" 
+                            {# {% elseif r.isWeekend %} class="danger"  #}
+                            {% elseif r.carCount < 0 %} style="background-color: rgb(247 191 222) !important;"
+                            {% elseif r.AttendanceId != null and r.Holiday == true %} style="background-color: lightblue !important;"
+                            {% elseif r.AttendanceId != null and r.WeekOff == true %} style="background-color: lightblue !important;"
+                            {% elseif r.AttendanceId and r.Leave == true %} style="background-color: lightblue !important;"
+                            {% elseif r.CallCount < 4 or r.CallCount < 4 and r.NCA == 0.5 %} style="background-color: rgb(247 191 222) !important;"
+                            {% elseif r.DoVerify == true %} style="background-color: cornsilk;"
+                            {% endif %}>
+                            {#<td> 
+                                {% if expStatus in [3,6] %}
+                                <div class="checkbox checkbox-primary checkbox-single checkbox-circle">
+                                    <input type="checkbox" class="checkread" id="singleCheckbox21_{{r.Expid}}" {% if(r.Readflag == 1) %} checked="" {%endif%} aria-label="Single checkbox Two" expid="{{r.Expid}}" readflag="{{r.Readflag}}">
+                                        <label></label>
+                                    </div>
+                                {%endif%}
+                            </td>#}
+                            {# <td>{{myVal}}</td>  #}
+                            <td>{{r.Employee}}</td> 
+                            <td>
+                                <a id="EXP-{{r.Expid}}" href="{{ router.getPath("ess_expenseSingle",{id:r.Expid}) }}" target="_blank">{{r.Date | date("d-m-Y")}}  [{% if r.Days == "" %}{{r.Day}}{% else %}{{r.Days}}{% endif %}]</a>
+                            </td>                            
+                            <td>
+                                <a href="{{ router.getPath('hr_dailyCallsbyattendance',{id:r.AttendanceId}) }}">
+                                    {% if r.origincity != "" %}
+                                    {{r.origincity}} <br/>to {{r.destinationcity}} <br/> 
+                                    {% endif %}
+                                    {% if r.Holiday == true or r.WeekOff == true or r.Leave == true %}
+                                        <b>{{r.Type}} - {{r.Day}}</b>
+                                    {% else %}
+                                        ({{r.working}})
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td>
+                            {% if r.CallCount == null or r.CallCount == ''%}
+                                <b>({{0}})</b>
+                            {% else %}
+                                {{r.DayType}} ({{r.CallCount}})
+                            {% endif %}
+
+                                {# {% if r.Type != 'WeekOff' and r.Type != 'Holiday' and r.Type != 'Leave' %}
+                                    {{r.DayType}} ({{r.CallCount}})
+                                {% else %}
+                                    <b>({{0}})</b>
+                                {% endif %} #}
+                            </td>
+                            {# <td>{{r.CallCount}}</td> #}
+                            <td>{{r.TripType}}</td>
+                            <td>
+                                {% set expNote = r.ExpListNote[0]|split('|') %}
+                                {{expNote[0]}}</br><b>{{expNote[1]}}</b></br><b>{{expNote[2]}}</b>
+                            </td>
+                            {%  for id,title in heads %}
+                                <td>
+                                    {% if r.Exp[id] %}
+                                    {% set requested = r.Exp[id].ExpIlAmount %}
+                                    {% set add = r.Exp[id].ExpReqAmount %}
+                                    {% set tax = r.Exp[id].ExpTaxAmount %}
+                                    {#{% set tax = r.Exp[id].ExpClaimedTax %}#}
+                                    {% set totalRequested = r.Exp[id].ExpIlAmount + tax + add %}
+                                    {% set totalApproved = r.Exp[id].ExpAprAmount %}
+                                    {% set totalAudited = r.Exp[id].ExpAuditAmount %}
+                                    {% set final = r.Exp[id].ExpFinalAmount %}
+                                    {#{% set requested = 200.00 %}
+                                    {% set add = 10.00 %}
+                                    {% set tax = 5.00 %}
+                                    {% set totalRequested = 200 + add + tax %}
+                                    {% set totalApproved = 190.00 %}
+                                    {% set totalAudited = 190.00 %}
+                                    {% set final = 190 %}#}
+                                    {#requested set #}
+                                    {%if(requested) > 0 %}
+                                    {%if totalRequested != requested %}
+                                        {#Req1 : #}<span title="Requested">{{requested}}</span><br/>
+                                    {%elseif totalRequested != totalApproved %}
+                                        {#Req2 : #}<span title="Requested" style="text-decoration:line-through;">{{requested}}</span><br/>
+                                    {%elseif totalRequested != totalAudited %}
+                                        {#Req3 : #}<span title="Requested" {%if totalRequested != final %}style="text-decoration:line-through;"{%endif%}>{{requested}}</span><br/>
+                                    {%else %}
+                                        {#Req4 : #}<span title="Requested">{{requested}}</span><br/>
+                                    {% endif %}
+                                    {% endif %}
+                                    {#Additional set #}
+                                    {%if(add) > 0 %}
+                                        Add:-<span title="Additional">{{add}}</span> </br>
+                                    {% endif %}
+                                    {#Tax set #}
+                                    {%if(tax) > 0 %}
+                                        GST:-<span title="GST">{{tax}}</span></br>
+                                    {% endif %}
+                                    {#requested + Additional + tax set #}
+                                    {%if(tax) > 0 or add > 0%}
+                                        ----------<br/>
+                                        {#total : #}<span title="Total Requested" {%if totalApproved !=  final%}style="text-decoration:line-through;"{%endif%}>{{totalRequested}}</span></br>
+                                    {% endif %}
+                                    {#Approved set #}
+                                    {%if(totalApproved) > 0 and totalApproved != final and totalRequested != totalApproved%}
+                                        {#App1 :#}<span {%if totalApproved != final or totalAudited == totalRequested%} style="text-decoration:line-through;"{%endif%} title="Approval">{{totalApproved}}</span></br>
+                                    {% endif %}
+                                    {#Audited set #}
+                                    {%if(totalAudited) != "" and totalAudited != final %}
+                                        {#Aud : #}<span {%if totalRequested == totalAudited%} style="text-decoration:line-through;"{%endif%} title="Audited">{{totalAudited}}</span></br>
+                                    {% endif %}
+                                    {#Final set #}
+                                    {# {{router.baseUrl}}/hr/auditorFrom/{{id:r.Exp[id].ExpListId}} #}
+                                    {%if(final) > 0 %}
+                                        {% if expStatus in [3,6] %}
+                                            <b class="text-danger">
+                                                <a onclick='return loadModalURL(this)' href='#' remote='{{router.getPath('hr_auditorFrom',{id:r.Exp[id].ExpListId})}}?'>
+                                                    Auditor:<span title="Final Audited">{{final}}</span>
+                                                </a>
+                                            </b>    
+                                            {%else%}
+                                            <b>Auditor:<span title="Final Audited">{{final}}</span>
+                                            </b>
+                                        {%endif%}
+                                    {%else%}
+                                        {% if expStatus in [3,6] %}
+                                            <b class="text-danger">
+                                                <a onclick='return loadModalURL(this)' href='#' remote='{{router.getPath('hr_auditorFrom',{id:r.Exp[id].ExpListId})}}?'>
+                                                    Auditor:<span title="Final Audited">{{final}}</span>
+                                                </a>
+                                            </b>    
+                                            {%else%}
+                                            <b>Auditor:<span title="Final Audited">{{final}}</span>
+                                            </b>
+                                        {%endif%}
+                                    {% endif %}
+                                    {%if r.Exp[id].ExpNote or  r.Exp[id].ExpRemark%}    
+                                    </br>
+                                    <a onclick='return loadModalURL(this)' href='#' remote='{{router.getPath('hr_expRemark',{id:r.Exp[id].ExpListId})}}?action=audit'>Note</a></br>
+                                    {% endif %}
+                                    <span class="ExpCount">({{expenseDetails}})</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %} 
+                            <td style="background-color: cornsilk;font-weight: bold">{{r.Requested}}</td>
+                            <td style="background-color: cornsilk;font-weight: bold">{{r.Approved}}</td>
+                            <td style="background-color: cornsilk;font-weight: bold">{{r.Final}}</td>
+                            <td>{{r.remark}}</td>
+                            <td>{{r.ExpAuditorNote[0]}}</td>
+                            <td>
+                                <section class="img-gallery-magnific">
+                                    {% for image in r.image %}
+                                        {% for img in image %}
+                                            <div class="magnific-img">
+                                                <a class="image-popup-vertical-fit" href="{{ img }}">
+                                                    <img src="{{ img }}" />
+                                                </a>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </section>
+                                <div class="clear"></div>
+                            </td>
+                            <td>
+                                {% if r.DownloadImage != null %}
+                                    <button class="btn btn-primary" onclick="downloadAll('{{r.DownloadImage}}')">Download</button>
+                                {% endif %}
+                            </td>
+                            <td>
+                            {% if r.Expid != null and r.Expid != '' %}
+                                <a onclick='return loadModalURL(this)' href='#' remote='{{router.getPath('hr_expRemarkLog',{id:r.Expid})}}'><i class="fa fa-bell" aria-hidden="true"></i></a></br>
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}      
+                </tbody>                
+                <tfoot>
+                    <tr style="background-color: cornsilk;font-weight: bold"> 
+                        {# <td></td> #}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><span class="pull-right">Total : </span></td>                        
+                        {% for id,total in headTotals %} 
+                        <td>{{total}}</td>
+                        {% endfor %}
+                        <td>{{ExpenseReqAmt}}</td>
+                        <td>{{ExpenseApprovedAmt}}</td>
+                        <td>{{ExpenseFinalAmt}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <table class="table table-bordered nowrap buttonTable">
+                {#<tr>
+                        <td colspan="{{headcountSecond}}" class="text-center"><button class="btn btn-success">Send to account / Finance</button></td>
+                        <td colspan="{{headcountSecond}}" class="text-center"><button class="btn btn-success">Hold / Resign </button></td>
+                        <td colspan="{{headcountSecond}}" class="text-center"><button class="btn btn-success">Send to AGM</button></td>
+                    </tr>#}
+                <tr>
+                <td colspan="{{headcount}}" >
+                    <label>Total Requested Amount : </label> <span class="btn btn-default" >{{ExpenseReqAmt}}</span> 
+                    {# <label>Approver Change : </label> <span class="btn btn-default" >{{ExpenseApprovedAmt}} ( {{ ExpenseApprovedAmt - ExpenseReqAmt}} )</span> #}
+                    <label>Total Approved Amount : </label> <span class="btn btn-default" >{{ExpenseApprovedAmt}}</span>
+                    <label>Total Audited Amount  : </label> <span class="btn btn-danger" >{{ ExpenseFinalAmt}}</span>
+                    {# {% if Paymentsystem == 0 %}
+                        <label>Auditor Change : </label> <span class="btn btn-danger" >{{ ExpenseFinalAmt }} ( {{ ExpenseFinalAmt - ExpenseApprovedAmt}} )</span>
+                    {% else %}
+                        <a href="{{router.getUrl()}}/hr/settlementAudit/{{employee}}/{{trip}}" data-toggle="ajaxModal"><label>Auditor Change : </label> <span class="btn btn-danger" >{{ ExpenseFinalAmt }} ( {{ ExpenseFinalAmt - ExpenseApprovedAmt}} )</span></a>                    
+                    {% endif %} #}
+                </td>
+            </tr>
+           
+            </table>
+              <div class="row">
+                <div class="col-md-3">
+                    <div class="card-box">
+                        <label>Number of HQ Working Days:
+                            <span>{{noofHQ}}</span>
+                        </label> 
+                    </div>
+                </div>
+                 <div class="col-md-3">
+                    <div class="card-box">                      
+                        <label>Number of Ex-HQ Working Days:
+                            <span>{{noofExHQ}}</span>
+                        </label>   
+                    </div>
+                </div>
+                 <div class="col-md-3">
+                    <div class="card-box">                      
+                        <label>Number of OS Working Days:
+                            <span>{{noofOS}}</span>
+                        </label>  
+                    </div>
+                </div>
+                 <div class="col-md-3">
+                    <div class="card-box">                      
+                        <label>Number of LOS Working Days:
+                            <span>{{noofLOS}}</span>
+                        </label>
+                    </div>
+                </div>
+               </div>
+            {% if Paymentsystem == 0 %}
+                <div class="">
+                    <a href='#' id="processPayment" class="btn btn-success m-b-5 auditBtn" id="auditBtn" matchStatus = "3" moveStatus="10"> Proceed for Payment</a>
+                    <a href='#' id="holdResign" class="btn btn-danger m-b-5 auditBtn" id="auditBtn" matchStatus = "3" moveStatus="9" > Hold/Resign</a>              
+               </div>
+            {% endif %}
+            {# 
+            {% if expStatus == 3%}
+            <div class="btn-group">
+                <a href='#' class="btn btn-success" id="auditBtn" moveStatus="6">Audit</a>                
+                <a href='#' class="btn btn-danger" id="cancelBtn" moveStatus="7">Cancel</a>               
+            </div>
+            {%endif%}
+            {% if expStatus == 6 and auth.checkPerm("ess_validate")%}
+            <div class="btn-group">
+                <a href='#' class="btn btn-success" id="auditBtn" moveStatus="8">Validate</a>                
+                <a href='#' class="btn btn-danger" id="cancelBtn" moveStatus="7">Cancel</a>               
+            </div>
+            {%endif%}
+            #}
+        </div>
+    </div>
+</div>
+<!-- end row -->
+{% endblock %}
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.js"></script>
+    <script type ='text/javascript'>
+        var orgUrl=document.location.href;
+        var orgUnitId=orgUrl.split('&')[4].split('=')[1];
+
+        $ExpenseUrl = "{{request.getPath()}}?action=load&";
+        $filterUrls = "{{request.getPath()}}?action=filters";
+        $processUrl = "{{request.getPath()}}?action=process";
+        $validateUrl = "{{request.getPath()}}?action=validate";
+        $moveUrl = "{{router.getUrl()}}/hr/moveToAudit/"+orgUnitId+"?action=move";
+
+        $processtoPayUrl = "{{router.getUrl()}}/hr/moveToAudit/"+orgUnitId;
+        
+        $(document).ready(function(){
+
+            $('.img-gallery-magnific').each(function(){
+                $(this).magnificPopup({
+                    delegate : 'a',
+                    type: 'image',
+                    mainClass: 'mfp-with-zoom', 
+                    gallery:{
+                        enabled:true,
+                        navigateByImgClick: true,
+                        preload: [0,1]
+                    },
+                    zoom: {
+                        enabled: true, 
+                        duration: 300,
+                        easing: 'ease-in-out',
+                        opener: function(openerElement) {
+                            return openerElement.is('img') ? openerElement : openerElement.find('img');
+                        }
+                    }
+                });
+            });
+            
+
+            // Reload with scroll
+            var url=document.location.href;
+            var id=url.split('#')[1];
+            if(id != null && id != '' && id != 'undefind'){
+                var rowpos = $('#table tr:last').position();
+                $("#EXP-"+id).scrollTop(rowpos.top);
+            }
+            
+            $(".checkread").click(function(){
+               $expid = $(this).attr('expid');
+               $readflagattar = $(this).attr('readflag');
+               if($readflagattar == 1){
+                   $readflag = 0;
+               }else{
+                   $readflag = 1;
+               }
+                showLoader();
+                quickPost($validateUrl,{"expid":$expid,"readflag":$readflag},function(data){
+                    hideLoader();
+                });
+            });
+           $data = $("#gridFilters").serializeArray();
+            
+            {#monthSelect();
+            $("#monthSelect").change(function(){                                
+                monthSelect();
+            });#}
+            
+            $("#designationSelect").change(function(){                                
+                designationSelect();
+            });
+            
+            $("#datagrid").DataTable({
+                spans:true,
+                dom: "Bfrt",
+                buttons: [{
+                    extend: "excel",
+                    className: "btn-sm"
+                    },{
+                    extend: "print",
+                    className: "btn-sm"
+                }],
+                order: [[ 1, "asc" ]],
+                responsive: false,                
+                scrollX:        true,
+                scrollCollapse: true,
+                paging:         false,
+                fixedColumns:   {
+                    leftColumns: 5,  
+                }
+            });
+
+            // Proceed to payment button
+            $(".auditBtn").click(function(){
+                showLoader();
+                $moveStatus = $(this).attr("moveStatus"); 
+               
+                var url = window.location.href;
+                var employee = url.split('&')[2].split('=');
+                var EmpId = [employee[1]];
+
+                var month = url.split('?')[1].split('&');
+                var monthSplit = month[0].split('=');
+                $month = monthSplit[1];
+                
+                if(EmpId.length > 0)
+                {
+                   
+                    quickPost($moveUrl,{"EmpId":EmpId,"moveStatus":$moveStatus,"month":$month},function(res){   
+                        document.location.href = $processtoPayUrl;                                              
+                        // getExpenses();
+                        // if($moveStatus == 9){
+                        //     toastr["info"]("Expense put on Hold");
+                        // }else{
+                        //     toastr["info"]("Expense audited successfully and sended to finance team.");
+                        // }
+                        // hideLoader();
+                    });
+                }else{
+                    toastr["error"]("Please select atleast one expense.");
+                    hideLoader();
+                }
+                
+            });
+            
+            $("#cancelBtn").click(function(){
+                $status = $(this).attr("moveStatus");
+                process("C",$status); 
+                return false;
+            });
+            
+        });
+        function getExpenses()
+       {   
+           showLoader();
+           $dtable.ajax.url( $ExpenseUrl+$("#gridFilters").serialize() ).load();
+          
+       }
+        function checkToggle()
+        {
+           $flag = $(".checkall").is(":checked");
+           $('.expChk').prop('checked',$flag);
+        }
+        {#function monthSelect()
+        {
+            $month = $("#monthSelect").val();
+            $key = "designation";
+            quickPost($filterUrls,{"key":$key,"month":$month},function(data){
+
+                $("#designationSelect").html(data.ddl);
+                designationSelect();
+            });
+        }#}
+        function designationSelect()
+        {
+            $month = $("#monthSelect").val();
+            $designation = $("#designationSelect").val();
+            $key = "employee";
+            quickPost($filterUrls,{"key":$key,"month":$month,"designation":$designation},function(data){
+
+                $("#employeeSelect").html(data.ddl);
+                
+                if($("#employeeSelect option").length == 0)
+                {
+                    $("#searchBtn").prop("disabled","true");
+                }
+                else 
+                {
+                    $("#searchBtn").removeAttr("disabled");
+                }
+
+            });
+        }
+        function process($flag,$status)
+        {
+                //var rows = $("#datagrid").fnGetNodes();
+                showLoader();
+                var ExpId = [];
+                $('.expChk:checked').each(function(idx,obj){                                        
+                    ExpId.push($(obj).attr('expid'));                                        
+                });
+                
+                if(ExpId.length > 0)
+                {
+                    quickPost($processUrl,{"ExpId" : ExpId,"flag":$flag,"status":$status},function(res){
+                        if($status == 6){
+                            toastr["info"]("Expenses Audited Successfully.");
+                        }else{
+                            toastr["info"]("Expenses Validate Successfully.");
+                        }
+                        document.location.reload();
+                    });
+                }
+        }
+        
+        function reloadAuditGrid(expid)
+        {    
+            localStorage.setItem('AuditExpId', "#EXP-"+expid);
+            setTimeout(function(){ 
+                document.location.href = '{{url}}'; 
+                location.reload(true);
+            },2000);
+            
+        }
+        
+        function scrollIntoView(element, container) {
+            var containerTop = $(container).scrollTop(); 
+            var containerBottom = containerTop + $(container).height(); 
+            var elemTop = element.offsetTop;
+            var elemBottom = elemTop + $(element).height(); 
+            if (elemTop < containerTop) {
+                $(container).scrollTop(elemTop);
+            } else if (elemBottom > containerBottom) {
+                $(container).scrollTop(elemBottom - $(container).height());
+            }
+        }
+
+        {# function download(item) {
+            
+            var fileName = item.split(/(\\|\/)/g).pop();
+
+            var image = new Image();
+            //image.crossOrigin = "anonymous";
+            image.src = item;
+            image.onload = function() {
+            
+                // use canvas to load image
+                var canvas = document.createElement('canvas');
+                canvas.width = this.naturalWidth;
+                canvas.height = this.naturalHeight;
+                canvas.getContext('2d').drawImage(this, 0, 0);
+                
+                // grab the blob url
+                var blob;
+                if (image.src.indexOf(".jpg") > -1) {
+                blob = canvas.toDataURL("image/jpeg");
+                } else if (image.src.indexOf(".png") > -1) {
+                blob = canvas.toDataURL("image/png");
+                } else if (image.src.indexOf(".gif") > -1) {
+                blob = canvas.toDataURL("image/gif");
+                } else {
+                blob = canvas.toDataURL("image/png");
+                }
+
+                // create link, set href to blob
+                var a = document.createElement('a');
+                a.title = fileName;
+                a.href = blob;
+                a.style.display = 'none';
+                a.setAttribute("download", fileName);
+                a.setAttribute("target", "_blank");
+                document.body.appendChild(a);
+                console.log(a);
+                // click item
+                a.click();
+            }
+        } #}
+
+        function download(url) {
+            var a = document.createElement("a");
+            a.setAttribute('href', url);
+            a.setAttribute('download', '');
+            a.setAttribute('target', '_blank');
+            a.click();
+        }
+
+        function downloadAll(item) {
+            var str_array = item.split(',');
+            for(var i = 0; i < str_array.length; i++) {
+                download(str_array[i]);
+            }
+        }
+    </script>
+
+    <style>
+        .bx-wrapper{
+            height:110px;
+            width:110px;
+        }
+        .bx-wrapper img{
+            height:100px;
+            width:100px;
+        }
+        .bx-pager{
+            display: none;
+        }
+
+        tr {background-color: white;}
+        td,th {font-size: 12px;}
+        #myModal .modal-content{
+            width:100%;
+            height: 100%;
+            border-radius: 0;
+            background: #fff;
+        }
+        #myModal .modal-footer{
+            left: 0;
+            width: 100%;
+        }
+        .section{
+            width: 100%;
+            height: 100%;
+        }
+        .right-section{
+            float: right;
+        }
+        .expChk{
+            display: none;
+        }
+
+        @import url('https://fonts.googleapis.com/css?family=Abel');
+        
+        
+        a{
+        outline: 0 !important;
+        }
+        .magnific-img img {
+            width: 30px;
+            height: auto;
+        }
+        .mfp-bottom-bar,*{
+        font-family: 'Abel', sans-serif;
+        }
+        .magnific-img {
+            display: inline-block;
+            width: 100%;
+            position: absolute;
+        }
+        .img-gallery-magnific{
+            position: relative;
+            width: 70px;
+        }
+        a.image-popup-vertical-fit {
+            cursor: -webkit-zoom-in;
+        }
+        .mfp-with-zoom .mfp-container,
+        .mfp-with-zoom.mfp-bg {
+        opacity: 0;
+        -webkit-backface-visibility: hidden;
+        /* ideally, transition speed should match zoom duration */
+        -webkit-transition: all 0.3s ease-out;
+        -moz-transition: all 0.3s ease-out;
+        -o-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+        }
+
+        .mfp-with-zoom.mfp-ready .mfp-container {
+            opacity: 1;
+        }
+        .mfp-with-zoom.mfp-ready.mfp-bg {
+            opacity: 0.98;
+        }
+
+        .mfp-with-zoom.mfp-removing .mfp-container,
+        .mfp-with-zoom.mfp-removing.mfp-bg {
+        opacity: 0;
+        }
+        .mfp-arrow-left:before {
+            border-right: none !important;
+        }
+        .mfp-arrow-right:before {
+            border-left: none !important;
+        }
+        button.mfp-arrow, .mfp-counter {
+            opacity: 0 !important;
+            transition: opacity 200ms ease-in, opacity 2000ms ease-out;
+        }
+        .mfp-container:hover button.mfp-arrow, .mfp-container:hover .mfp-counter{
+        opacity: 1 !important;
+        }
+
+
+        /* Magnific Popup CSS */
+        .mfp-bg {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1042;
+        overflow: hidden;
+        position: fixed;
+        background: #0b0b0b;
+        opacity: 0.8; }
+
+        .mfp-wrap {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1043;
+        position: fixed;
+        outline: none !important;
+        -webkit-backface-visibility: hidden; }
+
+        .mfp-container {
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        padding: 0 8px;
+        box-sizing: border-box; }
+
+        .mfp-container:before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle; }
+
+        .mfp-align-top .mfp-container:before {
+        display: none; }
+
+        .mfp-content {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 auto;
+        text-align: left;
+        z-index: 1045; }
+
+        .mfp-inline-holder .mfp-content,
+        .mfp-ajax-holder .mfp-content {
+        width: 100%;
+        cursor: auto; }
+
+        .mfp-ajax-cur {
+        cursor: progress; }
+
+        .mfp-zoom-out-cur, .mfp-zoom-out-cur .mfp-image-holder .mfp-close {
+        cursor: -moz-zoom-out;
+        cursor: -webkit-zoom-out;
+        cursor: zoom-out; }
+
+        .mfp-zoom {
+        cursor: pointer;
+        cursor: -webkit-zoom-in;
+        cursor: -moz-zoom-in;
+        cursor: zoom-in; }
+
+        .mfp-auto-cursor .mfp-content {
+        cursor: auto; }
+
+        .mfp-close,
+        .mfp-arrow,
+        .mfp-preloader,
+        .mfp-counter {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none; }
+
+        .mfp-loading.mfp-figure {
+        display: none; }
+
+        .mfp-hide {
+        display: none !important; }
+
+        .mfp-preloader {
+        color: #CCC;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        text-align: center;
+        margin-top: -0.8em;
+        left: 8px;
+        right: 8px;
+        z-index: 1044; }
+        .mfp-preloader a {
+            color: #CCC; }
+            .mfp-preloader a:hover {
+            color: #FFF; }
+
+        .mfp-s-ready .mfp-preloader {
+        display: none; }
+
+        .mfp-s-error .mfp-content {
+        display: none; }
+
+        button.mfp-close,
+        button.mfp-arrow {
+        overflow: visible;
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        -webkit-appearance: none;
+        display: block;
+        outline: none;
+        padding: 0;
+        z-index: 1046;
+        box-shadow: none;
+        touch-action: manipulation; }
+
+        button::-moz-focus-inner {
+        padding: 0;
+        border: 0; }
+
+        .mfp-close {
+        width: 44px;
+        height: 44px;
+        line-height: 44px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        text-decoration: none;
+        text-align: center;
+        opacity: 0.65;
+        padding: 0 0 18px 10px;
+        color: #FFF;
+        font-style: normal;
+        font-size: 28px;
+        font-family: Arial, Baskerville, monospace; }
+        .mfp-close:hover,
+        .mfp-close:focus {
+            opacity: 1; }
+        .mfp-close:active {
+            top: 1px; }
+
+        .mfp-close-btn-in .mfp-close {
+        color: #333; }
+
+        .mfp-image-holder .mfp-close,
+        .mfp-iframe-holder .mfp-close {
+        color: #FFF;
+        right: -6px;
+        text-align: right;
+        padding-right: 6px;
+        width: 100%; }
+
+        .mfp-counter {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #CCC;
+        font-size: 12px;
+        line-height: 18px;
+        white-space: nowrap; }
+
+        .mfp-arrow {
+        position: absolute;
+        opacity: 0.65;
+        margin: 0;
+        top: 50%;
+        margin-top: -55px;
+        padding: 0;
+        width: 90px;
+        height: 110px;
+        -webkit-tap-highlight-color: transparent; }
+        .mfp-arrow:active {
+            margin-top: -54px; }
+        .mfp-arrow:hover,
+        .mfp-arrow:focus {
+            opacity: 1; }
+        .mfp-arrow:before,
+        .mfp-arrow:after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin-top: 35px;
+            margin-left: 35px;
+            border: medium inset transparent; }
+        .mfp-arrow:after {
+            border-top-width: 13px;
+            border-bottom-width: 13px;
+            top: 8px; }
+        .mfp-arrow:before {
+            border-top-width: 21px;
+            border-bottom-width: 21px;
+            opacity: 0.7; }
+
+        .mfp-arrow-left {
+        left: 0; }
+        .mfp-arrow-left:after {
+            border-right: 17px solid #FFF;
+            margin-left: 31px; }
+        .mfp-arrow-left:before {
+            margin-left: 25px;
+            border-right: 27px solid #3F3F3F; }
+
+        .mfp-arrow-right {
+        right: 0; }
+        .mfp-arrow-right:after {
+            border-left: 17px solid #FFF;
+            margin-left: 39px; }
+        .mfp-arrow-right:before {
+            border-left: 27px solid #3F3F3F; }
+
+        .mfp-iframe-holder {
+        padding-top: 40px;
+        padding-bottom: 40px; }
+        .mfp-iframe-holder .mfp-content {
+            line-height: 0;
+            width: 100%;
+            max-width: 900px; }
+        .mfp-iframe-holder .mfp-close {
+            top: -40px; }
+
+        .mfp-iframe-scaler {
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+        padding-top: 56.25%; }
+        .mfp-iframe-scaler iframe {
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            background: #000; }
+
+        /* Main image in popup */
+        img.mfp-img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        display: block;
+        line-height: 0;
+        box-sizing: border-box;
+        padding: 40px 0 40px;
+        margin: 0 auto; }
+
+        /* The shadow behind the image */
+        .mfp-figure {
+        line-height: 0; }
+        .mfp-figure:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 40px;
+            bottom: 40px;
+            display: block;
+            right: 0;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            background: #444; }
+        .mfp-figure small {
+            color: #BDBDBD;
+            display: block;
+            font-size: 12px;
+            line-height: 14px; }
+        .mfp-figure figure {
+            margin: 0; }
+
+        .mfp-bottom-bar {
+        margin-top: -36px;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        cursor: auto; }
+
+        .mfp-title {
+        text-align: left;
+        line-height: 18px;
+        color: #F3F3F3;
+        word-wrap: break-word;
+        padding-right: 36px; }
+
+        .mfp-image-holder .mfp-content {
+        max-width: 100%; }
+
+        .mfp-gallery .mfp-image-holder .mfp-figure {
+        cursor: pointer; }
+
+        @media screen and (max-width: 800px) and (orientation: landscape), screen and (max-height: 300px) {
+        /**
+            * Remove all paddings around the image on small screen
+            */
+        .mfp-img-mobile .mfp-image-holder {
+            padding-left: 0;
+            padding-right: 0; }
+        .mfp-img-mobile img.mfp-img {
+            padding: 0; }
+        .mfp-img-mobile .mfp-figure:after {
+            top: 0;
+            bottom: 0; }
+        .mfp-img-mobile .mfp-figure small {
+            display: inline;
+            margin-left: 5px; }
+        .mfp-img-mobile .mfp-bottom-bar {
+            background: rgba(0, 0, 0, 0.6);
+            bottom: 0;
+            margin: 0;
+            top: auto;
+            padding: 3px 5px;
+            position: fixed;
+            box-sizing: border-box; }
+            .mfp-img-mobile .mfp-bottom-bar:empty {
+            padding: 0; }
+        .mfp-img-mobile .mfp-counter {
+            right: 5px;
+            top: 3px; }
+        .mfp-img-mobile .mfp-close {
+            top: 0;
+            right: 0;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            text-align: center;
+            padding: 0; } }
+
+        @media all and (max-width: 900px) {
+        .mfp-arrow {
+            -webkit-transform: scale(0.75);
+            transform: scale(0.75); }
+        .mfp-arrow-left {
+            -webkit-transform-origin: 0;
+            transform-origin: 0; }
+        .mfp-arrow-right {
+            -webkit-transform-origin: 100%;
+            transform-origin: 100%; }
+        .mfp-container {
+            padding-left: 6px;
+            padding-right: 6px; } }
+    </style>
+{% endblock %}    
+{# empty Twig template #}

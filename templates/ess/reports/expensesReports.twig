@@ -1,0 +1,138 @@
+{% extends "app.twig" %}
+{% block title %} Expense Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>Month :</label>                            
+                                <select class="form-control input-sm" name="month" id="monthSelect">
+                                    {{monthList|raw}}                            
+                                </select>                            
+                            </div>                        
+                            {#<div class="form-group col-md-3">
+                                <label>Currency :</label>                            
+                                <select class="form-control input-sm" name="currency" id="currency">
+                                    {{currency|raw}}                            
+                                </select>                            
+                            </div> #}
+                            <div class="form-group col-md-2">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="expenseReport" value="View" />                             
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="12" style="text-align:center;" style="font-size: 20px;">Expense Report | {{ reportname }}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Employee Name</th>
+                                <td colspan="9">{{Name}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Employee Code</th>
+                                <td colspan="9">{{empcode}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Designation</th>
+                                <td colspan="9">{{Designation}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">State</th>
+                                <td colspan="9">{{State}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Head Quarter/ Location</th>
+                                <td colspan="9">{{Location}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Currency</th>
+                                <td colspan="9">{{currSelected}}</td>
+                            </tr>
+                            {% if costnumber %}
+                            <tr>
+                                <th colspan="3">Cost Center</th>
+                                <td colspan="9">{{ costnumber }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                
+                                <th style="text-align:center;">Budget</th>
+                                <th style="text-align:center;">Purpose</th>
+                                <th style="text-align:center;">Basic Amount</th>
+                                
+                                <th style="text-align:center;">Total Amount</th>
+                                <th style="text-align:center;">Deduction by Approver</th>
+                                <th style="text-align:center;">Net Payable Amount</th>
+                                <th style="text-align:center;">Company Card</th>
+                            </tr>
+                            {% set auditdudtotal = 0 %}
+                            {% for r in heads %}
+                                
+                            <tr>
+                               
+                               <td style="text-align:center;">{{r.Budget}} </td>
+                               <td style="text-align:center;">{{r.exphead}} </td>
+                               <td style="text-align:center;">{{r.basicAmount}}</td>
+                               
+                               <td style="text-align:center;">{{r.basicaddgst}} </td>
+                               <td style="text-align:center;">{{r.basicaddgst - r.diductionbyapproval}}</td>
+                               <td style="text-align:center;">{{r.netpayableamount}}</td>
+                               <td style="text-align:center;">{{r.cmpcardAmount}}</td>
+                            </tr>
+                            {%endfor%}
+                            <tr>
+                                <th colspan="2">Total</th>
+                                <th style="text-align:center;">{{totalBasic}}</th>
+                                
+                                <th style="text-align:center;">{{totalAmount}}</th>
+                                <th style="text-align:center;">{{totalDidbyapp}}</th>
+                                <th style="text-align:center;">{{netpayableamount}}</th>
+                                <th style="text-align:center;">{{totalCmpCard}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="3">Net Payable Amount <span class="netpayment">({{currSelected}})</span></th>
+                                <th colspan="9">{{netpayableamount}}</th>
+                            </tr>
+                        </thead>
+                        <tfoot >
+                            <tr>
+                                <th colspan="6" style="text-align:right;">Signature</th>
+                                <th colspan="6" style="text-align:right;"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print"> <i class="fa fa-print"></i>Print</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+    </script>
+{% endblock %} 

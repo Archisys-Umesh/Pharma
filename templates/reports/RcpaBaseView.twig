@@ -1,0 +1,84 @@
+{% extends 'reports/partials/partials.twig' %}
+
+{% block content %}
+  <div class="row text-center">
+    <h3>{{ Title }}</h3>
+  </div>
+
+  <div class="col-md-12" style="overflow-x:auto;height:93%;">
+  {# <button id="rcpaBaseBtnExport" class="btn btn-success" style="padding: 5px;width: 5%;margin-bottom: 10px;">Export</button> #}
+    <table>
+      <tr>
+        <th>Divison Name</th>
+        <th>ZM Location</th>
+        <th>RM Location</th>
+        <th>AM Location</th>
+        <th>MR Location</th>
+        <th>Employee Name</th>
+        <th>Employee Code</th>
+        <th>REPCODE</th>
+        <th>Role</th>
+        <th>MONTH</th>
+        <th>RETAILER NAME</th>
+        <th>CPCODE</th>
+        <th>SPECIALITY</th>
+        <th>PATCHNAME</th>
+        <th>DOCTOR NAME</th>
+        <th>DPCODE</th>
+        <th>BRAND GROUP</th>
+        <th>RCPA QUANTITY</th>
+        <th>RCPA VALUE</th>
+        <th>Own Qty</th>
+        {% for data in RcpaComData %}
+            <th>{{ data }}{{' - Qty'}}</th>
+        {% endfor %}
+        <th>Comp Total Qty</th>
+        <th>Own Value</th>
+        {% for data in RcpaComData %}
+            <th>{{ data }}{{' - Value'}}</th>
+        {% endfor %}
+        <th>Comp Total Value</th>
+        <th>Total Potential</th>
+      </tr>
+      {% for data in RcpaData %}
+        <tr>
+          <td>{{ data['Bu'] }}</td>
+          <td>{{ data['Level3'] }}</td>
+          <td>{{ data['Level2'] }}</td>
+          <td>{{ data['Level1'] }}</td>
+          <td>{{ data['Location'] }}</td>
+          <td>{{ data['EmployeeName'] }}</td>
+          <td>{{ data['EmployeeCode'] }}</td>
+          <td>{{ data['Id'] }}</td>
+          <td>{{ data['Role'] }}</td>
+          <td>{{ data['Month'] }}</td>
+          <td>{{ data['RetailerName'] }}</td>
+          <td>{{ data['RetailerCode'] }}</td>
+          <td>{{ data['Speciality'] }}</td>
+          <td>{{ data['PatchName'] }}</td>
+          <td>{{ data['DoctorName'] }}</td>
+          <td>{{ data['DoctorCode'] }}</td>
+          <td>{{ data['Brand'] }}</td>
+          <td>{{ data['RcpaQty'] }}</td>
+          <td>{{ data['RcpaValue'] }}</td>
+          <td>{{ data['OwnQty'] }}</td>
+          <td>{{ data['Comp1Qty'] }}</td>
+          <td>{{ data['Comp2Qty'] }}</td>
+          <td>{{ data['Comp3Qty'] }}</td>
+          <td>{{ data['Comp4Qty'] }}</td>
+          <td>{{ data['Comp5Qty'] }}</td>
+          <td>{{ data['Comp1Qty'] + data['Comp2Qty'] + data['Comp3Qty'] + data['Comp4Qty'] + data['Comp5Qty'] }}</td>
+          <td>{{ data['OwnValue'] }}</td>
+          <td>{{ data['Comp1Value'] }}</td>
+          <td>{{ data['Comp2Value'] }}</td>
+          <td>{{ data['Comp3Value'] }}</td>
+          <td>{{ data['Comp4Value'] }}</td>
+          <td>{{ data['Comp5Value'] }}</td>
+          <td>{{ data['Comp1Value'] + data['Comp2Value'] + data['Comp3Value'] + data['Comp4Value'] + data['Comp5Value'] }}</td>
+          <td>{{ data['TotalPotential'] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+  </div>
+{% endblock %}

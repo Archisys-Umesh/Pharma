@@ -1,0 +1,54 @@
+{% extends 'reports/partials/partials.twig' %}
+
+{% block content %}
+  <div class="row text-center">
+    {# <h3>{{ Title }}</h3> #}
+  </div>
+  <div class="col-md-12" style="margin-top:15px;overflow-x:auto;height:93%;">
+
+    <table>
+         <tr>
+          <th>ORGUNIT</th>
+          <th>MRLocation</th>
+          <th>DOCTORCODE</th>
+          <th>DOCTOR_NAME</th>
+          <th>SPECIALITY</th>
+          <th>BRAND_NAME</th>
+          <th>PATCH</th> 
+          <th>CUT_OFF</th>
+          <th>LM_RCPA_VALUE</th>
+          <th>CM_RCPA_VALUE</th>
+          <th>LM_VISITS</th>
+          <th>CM_VISITS</th>
+          <th>LM_RCPA</th>
+          <th>CM_RCPA</th>
+          <th>CM_RXBER_STATUS</th>
+        </tr> 
+         {% for data in result %}
+        <tr>
+          <td>{{ data['UnitName'] }}</td>
+          <td>{{ data['MrLocation'] }}</td>
+          <td>{{ data['DoctorCode'] }}</td>
+          <td>{{ data['DoctorName'] }}</td>
+          <td>{{ data['SPECIALITY'] }}</td>
+          <td>{{ data['Brand'] }}</td>
+          <td>{{ data['Patch'] }}</td>
+          <td>{{ data['CutOff'] }}</td>
+          <td>{{ data['LmRcpaValue'] }}</td>
+          <td>{{ data['CmRcpaValue'] }}</td>
+          <td>{{ data['LmVisit'] }}</td>
+          <td>{{ data['CmVisit'] }}</td>
+          <td>{{ data['LmRcpa'] }}</td>
+          <td>{{ data['CmRcpa'] }}</td>
+          <td>{{ data['CmRxberCat'] }}</td>
+          
+          
+        </tr>
+      {% endfor %}
+        {# <tr>
+          <h2 style="text-align: center;color: red;">This report is currently under construction.</h2>
+        </tr> #}
+    </table>
+    {# <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4> #}
+  </div>
+{% endblock %}

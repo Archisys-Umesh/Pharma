@@ -1,0 +1,164 @@
+{% extends "app.twig" %}
+{% block title %} Grade Master {% endblock %}
+{% block page %}
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card-box table-responsive">            
+            <div class="">                
+                <a href="{{request.getPath()}}?action=form&pk=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add Grade</a>                                                
+                <a href="{{router.getPath("sys_policyMaster")}}" class="btn btn-default right"><i class="zmdi zmdi-key"></i> Policy Master</a>                                
+            </div>
+            
+            <div class="btn-group m-b-30">
+                
+            </div>
+
+            <table id="datagrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                        
+                        <th>Name</th>                        
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                                
+            </table>
+        </div>
+    </div><!-- end col -->
+    
+    <div class="col-sm-8 policyGrid">
+        <div class="card-box table-responsive">            
+            <div class="">                
+                <a href="#" id="lnkPolicy" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Link Existing Policy</a>                                
+                <a href="{{router.getPath("sys_policyMaster")}}?action=form&pk=" id="lnkNewPolicy" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> New Policy</a>                                
+                <div class="pull-right" id="gradeTitle"></div>
+            </div>
+
+            <div class="btn-group m-b-30">
+            
+            </div>
+
+            <table id="policyGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                        
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Currency</th>
+                        <th>Start Date</th>                                              
+                        <th>End Date</th>                                              
+                        <th>Action</th>
+                    </tr>
+                </thead>        
+            </table>
+        </div>
+    </div><!-- end col -->
+        
+</div>
+<!-- end row -->
+    
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>
+        
+    $dtable = "";
+    $policyTable = "";
+    $urlPolicyAdd = "{{request.getPath()}}?action=linkAdd&pk=0&grade_id=";
+    $urlNewPolicy = "{{router.getPath("sys_policyMaster")}}?action=form&pk=0&grade_id=";
+    $currencyMaster = {{currency|json_encode|raw}};
+    $(document).ready(function(){
+        
+    $(".policyGrid").hide();
+
+    $dtable = $('#datagrid').DataTable({
+            ajax: "{{request.getPath()}}?action=list",                 
+            "columns": [
+                {"data" : "GradeName"},                
+                {"data" : "Gradeid" ,render: function ( data, type, row ) {                            
+
+                        return "<a onclick='loadModalURL(this)'title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{request.getPath()}}?action=form&pk="+row.Gradeid+"'><i class='zmdi zmdi-edit'></i></a>";
+                }},
+                
+                
+            ],
+            "rowCallback": function( row, data, dataIndex ) {
+                
+                    $(row).attr( 'grade_id', data.Gradeid);
+                
+            },
+            "fnDrawCallback": function(settings, json) {
+                    
+                    $("#datagrid tr").click(function(){
+     
+                        clickrow(this);
+        
+                    });
+                     
+            },
+            
+        });
+        
+     
+        
+    });
+    function clickrow(row)
+    {
+        $gradeId = $(row).attr("grade_id");
+        $title = $(row).children("td:first").html();
+        $("#gradeTitle").html($title);
+        $("#lnkPolicy").attr("href",$urlPolicyAdd + $gradeId );
+        $("#lnkNewPolicy").attr("href",$urlNewPolicy + $gradeId );
+
+        if($policyTable == "") {
+            getPolicies($gradeId);
+        }
+        else 
+        {
+            refreshPolicy($gradeId);
+        }
+    }
+    function reloadGridGrade()
+    {
+        $dtable.ajax.reload();
+    }
+    function getPolicies($grade_id)
+    {
+        $policyTable = $('#policyGrid').DataTable({
+            ajax: "{{request.getPath()}}?action=policyList&grade="+$grade_id,                 
+            "columns": [
+                {"data" : "PolicyMaster.PolicyName"},                                                
+                {"data" : "PolicyId" ,render: function ( data, type, row ) {                            
+                        return "<a href='{{router.getPath("sys_managePolicy",{id:""})}}"+row.PolicyId+"'>"+row.PolicyMaster.PolicyCode+"</a>";
+                }},
+                {"data" : "PolicyMaster.CurrencyId",render:function(data, type, row){
+                        return $currencyMaster[data];
+                }}, 
+                {"data" : "StartDate" ,render: function ( data, type, row ) {   
+                    console.log(data);                         
+                        return propelDate(data,1);
+                }},                                                
+                {"data" : "EndDate" ,render: function ( data, type, row ) {                            
+                        return propelDate(data,1);
+                }},                              
+                {"data" : "GpId" ,render: function ( data, type, row ) {                            
+
+                        return "<a onclick='loadModalURL(this)' href='#' remote='{{request.getPath()}}?action=linkAdd&pk="+row.GpId+"&grade_id="+row.Gradeid+"'><i class='zmdi zmdi-edit'></i></a>";
+                }}
+            ],
+                        
+        });
+        $(".policyGrid").show();
+    }
+    function refreshPolicy($grade_id)
+    {
+        $policyTable.ajax.url("{{request.getPath()}}?action=policyList&grade="+$grade_id).load();
+    }
+    function loadGrid()
+    {
+        $policyTable.ajax.reload();
+    }
+    
+    </script>
+    <style>
+            #datagrid tr {cursor: pointer;}
+    </style>
+{% endblock %}

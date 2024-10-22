@@ -1,0 +1,96 @@
+{% extends "app.twig" %}
+{% block title %} Company Card Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            
+                            <div class="form-group col-md-2">
+                                <label>From Date :</label>                            
+                                <input class="form-control input-sm datepicker readonly" name="fromdate" type="text" {% if fromdate is defined %} value="{{fromdate}}"{%endif%} required="required">
+                            </div>                        
+                            <div class="form-group col-md-2">
+                                <label>To Date :</label>                            
+                                <input class="form-control input-sm datepicker readonly" name="todate"  type="text" {% if todate is defined %} value="{{todate}}"{%endif%} required="required">
+                            </div>
+                            <div class="form-group col-md-2"  id="btnSearch">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="ccReport" value="View" />                             
+                                <a href="{{request.getPath()}}" class="btn btn-info" />Reset</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            
+                            <tr>
+                                <th style="text-align:center;">Date</th>
+                                <th style="text-align:center;">Employee Name</th>
+                                <th style="text-align:center;">Designation</th>
+                                <th style="text-align:center;">HQ</th>
+                                <th style="text-align:center;">Expenses Head</th>
+                                <th style="text-align:center;">Requested</th>
+                                <th style="text-align:center;">Approved</th>
+                                <th style="text-align:center;">Audited/Final</th>
+                                <th style="text-align:center;">Note</th>   
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in data%}
+                            <tr>
+                                <td style="text-align:center;">{{d.date}}</td>
+                                <td style="text-align:center;">{{d.empFirstName}} {{d.empLastName}} | {{d.empCode}}</td>
+                                <td style="text-align:center;">{{d.Designation}}</td>
+                                <td style="text-align:center;">{{d.hq}}</td>
+                                <td style="text-align:center;">{{d.exphead}}</td>
+                                <td style="text-align:center;">{{d.requested}}</td>
+                                <td style="text-align:center;">{{d.approved}}</td>
+                                <td style="text-align:center;">{{d.final}}</td>
+                                <td style="text-align:center;">{{d.note}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print" > <i class="fa fa-print"></i>Print</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        $dtable = "";
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+            $(".readonly").on('keydown paste', function(e){
+                e.preventDefault();
+            });
+            $dtable = $('#datagrid').DataTable({
+                bLengthChange: false,
+                dom: "lBfrtip",
+                buttons: [{
+                    extend: "excel",
+                    className: "btn-sm"
+                }],
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+    </script>
+{% endblock %} 

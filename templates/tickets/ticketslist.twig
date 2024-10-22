@@ -1,0 +1,321 @@
+{% extends "app.twig" %}
+
+{% set formAction = request.getPath() ~ "?action=form&pk=" %}
+{% if actionFunc %}
+{% set formAction = router.getPath(actionFunc,{id:''}) %}
+{% endif %}    
+
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+    
+
+<div class="row">
+    
+    <div class="{% if listFilters %} col-sm-10 {% else %} col-sm-12 {% endif %}">        
+        <div class="card-box table-responsive">            
+            <div class="col-sm-12 p-0">
+                <div class="col-sm-2">                
+                    <a href="{{formAction}}0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add {{form_name}}</a>                                
+                </div>
+                {% if auth.checkPerm("ticket_manager")%}
+                {% if moreButtons %}
+                    {% for title,path in moreButtons %}
+                    <div class="col-sm-2">  <!--change in col-sm 1 replace with 2-->              
+                        <a href="{{router.getPath(path[0])}}" data-toggle="{{path[1]}}" class="btn btn-default"><i class="zmdi zmdi-settings"></i> {{title}}</a>                                
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% endif %}
+                <form class="form-inline" id="gridFilters">
+                    <div class="col-sm-2 pull-right">                
+                        <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" id="systemStatus" name="systemStatus">
+                                {#<optgroup label="My Requests">#}
+                                    <option value="1">Raised</option>
+                                    <option value="2">Submited</option>
+                                    <option value="3">In Progress</option>
+                                    <option value="4">Resolved</option>
+                                    <option value="5">Closed</option>
+                                    <option value="6">Cancelled</option>
+                                    <option value="7">Hold</option>
+                                {#</optgroup>
+                                <optgroup label="Team Requests">
+                                    <option value="P">--To be Action by Me--</option>
+                                </optgroup>#}
+                            </select>
+                        </div>
+                    </div>            
+                    <div class="col-sm-2 pull-right">                
+                        <div class="form-group">
+                            <label>Type :</label>
+                            <select class="form-control input-sm" id="StatusList" name="status">
+                                <option value="M" >My Ticket</option>
+                                <option value="P" >Team ticket</option>
+                            </select>
+                        </div>
+                    </div>            
+                </form>
+            </div>
+            <div class="clearfix p-b-10"></div>
+
+            <table id="{{form_name|lower}}_datagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class='checkall' onclick="checkToggle()" /></th>
+                        {% for col,key in cols %}
+                        <th>{{col}}</th>
+                        {% endfor %}                        
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                                
+            </table>
+            <div class="">
+                <a href="#" class="btn btn-default bulkActions myticket" matchStatus = "1" moveStatus="2" id="expansesSubmit">Submit</a>
+                <a href="#" class="btn btn-default bulkActions teamticket" matchStatus = "P" moveStatus="3">In Progress</a>
+                <a href="#" class="btn btn-default bulkActions teamticket" matchStatus = "P" moveStatus="4">Resolved</a>
+                <a href="#" class="btn btn-default bulkActions teamticket" matchStatus = "P" moveStatus="5">Closed</a>
+                <a href="#" class="btn btn-default bulkActions teamticket" matchStatus = "P" moveStatus="6">Cancelled</a>
+                <a href="#" class="btn btn-default bulkActions teamticket" matchStatus = "P" moveStatus="7">Hold</a>
+            </div>            
+        </div>
+    </div><!-- end col -->    
+    {% if listFilters %}  
+    <div class="col-sm-2">
+        <div class="card-box">            
+            <h5> Filters </h5>
+            <hr/>
+            {% for val,keys in listFilters %}
+                <div class="radio">
+                    <input type="radio" name="filterRadio" id="{{keys}}" value="{{val}}" class="filterRadio">
+                    <label for="{{keys}}">
+                        {{keys}} <span></span>
+                    </label>
+                </div>
+            {%  endfor %}            
+        </div>
+    </div>
+    {% endif%}
+</div>    
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    
+    ${{form_name|lower}}_datagrid = "";
+    $valKeys = [];
+    {% if valKeys %}
+        {% for val,keys in valKeys %}
+            $valKeys['{{val}}'] = {{keys|json_encode|raw}};
+        {% endfor %}                                        
+    {% endif%}
+    
+    $dateFields = [];
+    {% if dateFields %}
+        $dateFields = {{dateFields|json_encode|raw}};        
+    {% endif%}
+        
+    $DataTableUrl = "{{request.getPath()}}?action=list&status=M&systemStatus=1&filter=";
+    $filter = "";
+    
+    $(document).ready(function(){
+        $status = $("#StatusList").val();
+        getStatusBtn($status);
+        $("#gridFilters select").change(function(){
+            $status = $("#StatusList").val();
+            $systemStatus = $("#systemStatus").val();
+            $DataTableUrl = "{{request.getPath()}}?action=list&status="+$status+"&systemStatus="+$systemStatus+"&filter=";
+            showLoader();
+            getStatusBtn($status);
+            ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+        });
+        
+       
+       $(".filterRadio").first().prop("checked","checked");
+       $filter = $(".filterRadio").first().val();              
+       
+       ${{form_name|lower}}_datagrid = $('#{{form_name|lower}}_datagrid').DataTable({
+            ajax: {
+                "url" : $DataTableUrl + $filter,
+                "complete" : function(d)
+                {            
+                    if( d.responseJSON.data.length == 0){
+                        $(".bulkActions").hide();
+                    }
+                    $('.filterRadio:checked').parent().find("span").html("(" + d.responseJSON.data.length + ")");                
+                    hideLoader();
+                }
+            },
+            {% if defaultOrderIdx%}
+                    "order": [[ {{defaultOrderIdx}}, "desc" ]],
+            {% else %}
+                "order": [[ 0, "desc" ]],
+            {% endif %}
+            
+            "columns": [
+                { "data": "TicketId","render": function ( data, type, row ) {
+                        if(row.Status == 1 || row.Status > 1){
+                            if(row.Status == 1){
+                                $(".myticket").show();
+                            }
+                            return "<input type='checkbox' class='expChk' name='TicketId["+row.TicketId+"]' TicketId="+row.TicketId+" />";
+                        }else{
+                            if(row.Status == 1){
+                                $(".myticket").hide();
+                            }
+                            return "";
+                        }
+                }},
+                {% for col,key in cols %}                                             
+                    { "data" : "{{pk}}" ,render: function ( data, type, row ) {
+                        return replacements("{{key}}",row.{{key}});
+                    }},
+                {% endfor %}                                        
+                { "data" : "{{pk}}" ,render: function ( data, type, row ) {                            
+                        $str = "";
+                        
+                        if(canEdit(row)) {
+                            if(row.Status == 1){
+                                $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{formAction}}"+row.{{pk}}+"'><i class='zmdi zmdi-edit'></i></a>";
+                            }
+                            $str += " <a class= 'singleView btn btn-default btn-xs' href='{{router.baseUrl('tickets/ticketSingle')}}/"+row.{{pk}}+"'><i class='fa fa-eye'></i></a>";
+                        }
+                        {% if singleFunc %}
+                            $str = $str + " <a class= 'singleView btn btn-default btn-xs' href='{{router.getPath(singleFunc,{id:""})}}"+row.{{pk}}+"'><i class='fa fa-eye'></i></a>";
+                        {% endif%}
+                        {% if rowButtons %}
+                            {% for path,icon in rowButtons %}
+                                {% if 'ajaxModal' in icon %}
+                                    $str = $str + " <a onclick='return loadModalURL(this)' 'title='Manage' class='btn btn-default btn-xs'  href='#' remote='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'><i class='{{icon}}'></i></a>";
+                                {% else %}
+                                    $str = $str + " <a href='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'title='Manage' class='btn btn-default btn-xs'><i class='{{icon}}'></i></a>";
+                                {% endif %}
+                            {% endfor %}
+                        {% endif%}
+                        return $str;
+                }}
+            ],
+            {% if colorRows %}
+            "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                {% for col,keys in colorRows %}                        
+                    if(aData.Status == {{col}}){
+                        $('td', nRow).css('background-color', {{keys|json_encode|raw}});
+                    }
+                {%endfor%}
+            },
+            {% endif %}
+            "fnDrawCallback": function(settings, json) {
+                    
+                    $("#{{form_name|lower}}_datagrid tr").click(function(){     
+                        clickrow(this);        
+                    });
+                     
+            },
+        dom: "lBfrtip",
+        buttons: [{
+            extend: "excel",
+            className: "btn-sm"
+        },{
+            extend: "print",
+            className: "btn-sm"
+        }],
+        responsive: !0,
+        
+        }); 
+        $(".bulkActions").click(function(){
+            showLoader();
+            $moveStatus = $(this).attr("moveStatus");
+            //var rows = $dtable.fnGetNodes();
+            $TicketId = [];
+            $('input[type="checkbox"]:checked').each(function(idx,obj){
+
+                $TicketId.push($(obj).attr('TicketId'));                    
+            });     
+            
+            if($TicketId.length > 0)
+            {
+                $moveUrl = "{{request.getPath()}}?action=move";
+                quickPost($moveUrl+"&"+$("#gridFilters").serialize(),{"TicketId" : $TicketId,"moveStatus":$moveStatus},function(res){                                                
+                    $status = $("#StatusList").val();
+                    $systemStatus = $("#systemStatus").val();
+                    
+                    showLoader();
+                    $DataTableUrl = "{{request.getPath()}}?action=list&status="+$status+"&systemStatus="+systemStatus+"&filter=";
+                    ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl + $filter ).load();
+                    hideLoader();
+                });
+            }else{
+                toastr["error"]("Please select atleast one expense.");
+                hideLoader();
+            }
+
+        });
+    });
+function getStatusBtn($status){
+    
+    if($status == "M"){
+        $(".myticket").show();
+        $(".teamticket").hide();
+    }else{
+        $(".teamticket").show();
+        $(".myticket").hide();
+    }
+}    
+function loadGrid()
+{
+    showLoader();
+    ${{form_name|lower}}_datagrid.ajax.reload();
+}
+
+function replacements($key,$val)
+{        
+    if($valKeys[$key] != undefined)
+    {    
+        return $valKeys[$key][$val];
+    }
+    else if($dateFields.indexOf($key) > -1) // is Datetime
+    {
+        return propelDate($val,0);
+        /*$d = new Date($val);
+        return $d.toLocaleString();
+        */
+    }
+    else {
+        return $val;
+    }
+}
+function checkToggle()
+        {
+          
+           $flag = $(".checkall").is(":checked");
+           $('.expChk').prop('checked',$flag);
+        }
+function canEdit($row){
+
+    {% if canEditIf %}
+            return findinString($row.{{canEditIf.col}},"{{canEditIf.val}}");
+    {% else%}
+            return true;
+    {% endif%}
+    
+}
+function clickrow(row)
+{
+    {% if singleFunc %}
+        $(row).find(".singleView")[0].click();
+    {% endif%}
+        return false;
+}
+</script>    
+
+
+{% if singleFunc %}
+
+    <style>
+        #{{form_name|lower}}_datagrid tr {cursor: pointer;}
+    </style>
+    
+{% endif%}
+
+{% endblock %}

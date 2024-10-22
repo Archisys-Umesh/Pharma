@@ -1,0 +1,100 @@
+{% extends "app.twig" %}
+{% block title %}
+	Brand Campaign Outlets
+{% endblock %}
+{% block page %}
+    <div class="row " id="expenseCardHolder">
+        <div class="col-md-12">
+            <div class="card-box table-responsive">
+                <table id="datagridd" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="datatableCheckbox" id="toggle-all"/></th>
+                            <th>Outlet Name</th>
+                            <th>Lagecy Code</th> 
+                            <th>P-Code</th>
+                            <th>Position Name</th>                        
+                            <th>Classification</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="">
+                    <a href="JavaScript:void(0)" class="btn btn-primary bulkActions" style="float: inline-end;">Submit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+	<script type="text/javascript">
+        $dataUrl = "{{request.getPath()}}?action=list";
+        $bulkUrl = "{{request.getPath()}}?action=bulk";
+        $(document).ready(function(){
+            var date = new Date();
+            var dateToday = moment(date).format('YYYY-MM-DD');
+            
+            var table = $('#datagridd').DataTable({
+                    "bPaginate": false,
+                    ajax: {
+                        url: $dataUrl,
+                        type: 'GET',
+                    },
+                    columns: [
+                        { "data": "DoctorVisitId","render": function ( data, type, row ) { 
+                            console.log(row.BrandCampiagn.Status);
+                            if(row.Selected == true){
+                                if(row.BrandCampiagn.Status == 'Started'){
+                                    return "<input type='checkbox' name='DoctorVisitId' value="+row.DoctorVisitId+" class='nodeCheckbox' checked disabled/>";
+                                }else{
+                                    return "<input type='checkbox' name='DoctorVisitId' value="+row.DoctorVisitId+" class='nodeCheckbox' checked/>";
+                                }
+                            }
+                            else{
+                                return "<input type='checkbox' name='DoctorVisitId' value="+row.DoctorVisitId+" class='nodeCheckbox'/>";
+                            }  
+                            }, 
+                        },
+                        {   "data": "Outlets.OutletName" },
+                        {   "data": "Outlets.OutletCode" },
+                        {   "data": "OutletOrgData.OutletOrgCode" },
+                        {   "data": "Positions.PositionName" },
+                        {   "data": "Classification.Classification" },
+                    ],
+                    select: true,
+                    "rowCallback": function( row, data, Positions ) {
+                        $(row).attr("DoctorVisitId",data.DoctorVisitId);
+                    },
+            });
+
+            $(".bulkActions").click(function(){
+
+                var DoctorVisitId = [];
+                $(':checkbox:checked').each(function(i){
+                    DoctorVisitId.push($(this).val()); 
+                });
+                
+                if(DoctorVisitId.length > 0)
+                {
+                    quickPost($bulkUrl,{"DoctorVisitId" : DoctorVisitId},function(res){
+                        if(res.status == 1){
+                            window.location.href = "{{router.getPath("brandCampiagn",{id:""})}}";
+                        }
+                        if(res.status == 0){
+                            toastr["error"]("Maximum limit for outlet classification reached!");
+                        }
+                    });
+                }else{
+                    toastr["error"]("Please select atleast one outlet.");
+                }
+            });
+            
+            $('#toggle-all').click(function() {
+                if ($(this).is(':checked')) {
+                    $('table input:checkbox').prop('checked', true);
+                } else {
+                    $('table input:checkbox').prop('checked', false);
+                }
+            });
+        });
+    </script>
+{% endblock %}

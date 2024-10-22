@@ -1,0 +1,23 @@
+{% extends "base.twig" %}
+{% block content %}
+
+    <!-- Begin page -->
+        <div id="wrapper">             
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">                            
+                        {% block page %}
+			{% endblock %}
+                    </div>
+                </div>    
+        </div>
+        <!-- END wrapper -->                
+      
+                
+        <div id="preloader"></div>
+        <script>
+            
+
+        </script>
+{% endblock %}
+

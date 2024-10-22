@@ -1,0 +1,35 @@
+<div class="col-lg-4">
+    <a href="{{router.getPath('hr_budgetReport',{id:0})}}">
+    <div class="card-box">
+        
+        <h4 class="header-title m-t-0 m-b-30">Category-Wise Expenses (Budget)</h4>
+
+        <canvas id="pie" height="275px"></canvas>
+        
+    </div>
+        </a>
+</div>
+
+<script>
+    
+    
+        var ctx = document.getElementById("pie").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: {{ budget.labels|json_encode|raw }},
+            datasets: [
+                {
+                    label: "Monthly Expense ",
+                    backgroundColor: {{ budget.color|json_encode|raw }},
+                    borderColor: "#fff",
+                    hoverBackgroundColor: {{ budget.color|json_encode|raw }},
+                    data: {{ budget.data|json_encode|raw }}
+                }
+            ]
+        }
+});
+
+        
+        </script>
+

@@ -1,0 +1,33 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+        
+    $(document).ready(function(){                    
+        $("#delete").removeClass("btn-xs");
+        checkScope();
+        $("#scope").change(function(){
+            checkScope();
+        });
+        
+    });
+    
+    function checkScope()
+    {
+        $scope = $("#scope").val();
+        if($scope == "1")
+        {               
+            $("#idkey").parents(".form-group").show();
+        }
+        else 
+        {            
+            $("#idkey").parents(".form-group").hide();
+        }
+    }
+
+
+</script>
+{% endblock %}        

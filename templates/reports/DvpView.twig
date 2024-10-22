@@ -1,0 +1,95 @@
+{% extends 'reports/partials/partials.twig' %}
+
+{% block content %}
+  <div class="row text-center">
+    <h3>{{ Title }}</h3>
+  </div>
+  <div class="col-md-12" style="margin-top:15px;overflow-x:auto;height:93%;">
+
+    <table>
+      <tr>
+        <th>OrgUnit</th>
+        <th>EmployeeCode</th>
+        <th>JoiningDate</th>
+        <th>AmPosition</th>
+        <th>RmPosition</th>
+        <th>ZmPosition</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>EmployeeName</th>
+        <th>DoctorName</th>
+        <th>DoctorCode</th>
+        <th>Town</th>
+        <th>Patch</th>
+        <th>Speciality</th>
+        <th>Tags</th>
+        <th>VisitFq</th>
+        <th>PrescriberClassification</th>
+        <th>TopBrand</th>
+        <th>VisitDr</th>
+        <th>AmVisitDr</th>
+        <th>RmVisitDr</th>
+        <th>ZmVisitDr</th>
+        <th>RcpaDone</th>
+        <th>RcpaLmOwn</th>
+        <th>RcpaLmComp</th>
+        <th>RcpaCmOwn</th>
+        <th>RcpaCmComp</th>
+        <th>SamplesSgpi</th>
+        <th>GiftsSgpi</th>
+        <th>PromoSgpi</th>
+        <th>ZmPositionCode</th>
+        <th>RmPositionCode</th>
+        <th>AmPositionCode</th> 
+        <th>EmployeePositionCode</th>
+        <th>EmployeePosition</th>
+        <th>EmployeeLevel</th>
+        <th>Month</th>
+        <th>MR Detailing</th>
+      </tr>
+      {% for data in result %}
+        <tr>
+          <td>{{ data['OrgUnit'] }}</td>
+          <td>{{ data['EmployeeCode'] }}</td>
+          <td>{{ data['JoiningDate'] }}</td>
+          <td>{{ data['AmPosition'] }}</td>
+          <td>{{ data['RmPosition'] }}</td>
+          <td>{{ data['ZmPosition'] }}</td>
+          <td>{{ data['Location'] }}</td>
+          <td>{{ data['Status'] }}</td>
+          <td>{{ data['EmployeeName'] }}</td>
+          <td>{{ data['DoctorName'] }}</td>
+          <td>{{ data['DoctorCode'] }}</td>
+          <td>{{ data['Town'] }}</td>
+          <td>{{ data['Patch'] }}</td>
+          <td>{{ data['Speciality'] }}</td>
+          <td>{{ data['Tags'] }}</td>
+          <td>{{ data['VisitFq'] }}</td>
+          <td>{{ data['PrescriberClassification'] }}</td>
+          <td>{{ data['TopBrand'] }}</td>
+          <td>{{ data['VisitDr'] }}</td>
+          <td>{{ data['AmVisitDr'] }}</td>
+          <td>{{ data['RmVisitDr'] }}</td>
+          <td>{{ data['ZmVisitDr'] }}</td>
+          <td>{{ data['RcpaDone'] }}</td>
+          <td>{{ data['RcpaLmOwn'] }}</td>
+          <td>{{ data['RcpaLmComp'] }}</td>
+          <td>{{ data['RcpaCmOwn'] }}</td>
+          <td>{{ data['RcpaCmComp'] }}</td>
+          <td>{{ data['SamplesSgpi'] }}</td>
+          <td>{{ data['GiftsSgpi'] }}</td>
+          <td>{{ data['PromoSgpi'] }}</td>
+          <td>{{ data['ZmPositionCode'] }}</td>
+          <td>{{ data['RmPositionCode'] }}</td>
+          <td>{{ data['AmPositionCode'] }}</td>
+          <td>{{ data['EmployeePositionCode'] }}</td>
+          <td>{{ data['EmployeePosition'] }}</td>
+          <td>{{ data['EmployeeLevel'] }}</td>
+          <td>{{ data['Month'] }}</td>
+          <td>{{ data['MrDetailing'] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+  </div>
+{% endblock %}

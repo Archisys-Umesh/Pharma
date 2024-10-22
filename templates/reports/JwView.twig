@@ -1,0 +1,47 @@
+{% extends "reports/partials/partials.twig" %}
+
+
+{% block content %}
+<div class="row text-center">
+    <h3>{{ Title }}</h3>
+</div>
+<div class="col-md-12" style="overflow-x:auto;height:93%;">
+    <table width="100%">
+        <tr>
+            <th>UserPositionCode</th>
+            <th>UserHqName</th>
+            <th>UserName</th>
+            <th>UserEmpCode</th>
+            <th>UserLevel</th>
+            <th>JwHqName</th>
+            <th>JwEmployeeName</th>
+            <th>JwEmpCode</th>
+            <th>JwPositionCode</th>
+            <th>JwEmpLevel</th>
+            <th>NoOfJwDaysWorked</th>
+            <th>NoOfCallsJw</th>
+            <th>CallAverage</th>
+            <th>MonthYear</th>
+        </tr>
+        {% for data in EmployeeData %}
+            <tr>
+                <td>{{ data['UserPositionCode'] }}</td>
+                <td>{{ data['UserHqName'] }}</td>
+                <td>{{ data['UserName'] }}</td>
+                <td>{{ data['UserEmpCode'] }}</td>
+                <td>{{ data['UserLevel'] }}</td>
+                <td>{{ data['JwHqName'] }}</td>
+                <td>{{ data['JwEmployeeName'] }}</td>
+                <td>{{ data['JwEmpCode'] }}</td>
+                <td>{{ data['JwPositionCode'] }}</td>
+                <td>{{ data['JwEmpLevel'] }}</td>
+                <td>{{ data['NoOfJwDaysWorked'] }}</td>
+                <td>{{ data['NoOfCallsJw'] }}</td>
+                <td>{{ data['CallAverage'] }}</td>
+                <td>{{ data['MonthYear'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+</div>
+{% endblock %}

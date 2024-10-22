@@ -1,0 +1,91 @@
+<?php
+
+use Aura\Cli\CliFactory;
+use Aura\Cli\Status;
+use Aura\Cli\Help;
+use Aura\Cli\Context\OptionFactory;
+use entities\RolePermsQuery;
+use entities\RolesQuery;
+
+require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../src/Config.php';
+
+
+$cli_factory = new CliFactory;
+
+$context = $cli_factory->newContext($GLOBALS);
+$stdio = $cli_factory->newStdio();
+
+$getopt = $context->getopt([]);
+
+$command  = $getopt->get(1);
+
+switch ($command) :
+    case "resetSystem" :         
+       
+        
+                break;  
+    case "importCategories" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importCategories($getopt->get(2));
+                break;
+    case "importProducts" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importProducts($getopt->get(2));
+                break;
+    case "importOutlets" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importOutlets($getopt->get(2));
+                break;
+    case "importBeats" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importBeats($getopt->get(2));
+                break;
+    case "importPB" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importPriceBook($getopt->get(2));
+                break;
+    case "outletBeatMapping" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->outletBeatMapping($getopt->get(2));
+                break;
+    case "distributormap" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->outletBeatDistributorMap($getopt->get(2));
+                break;
+    case "importEmployee" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->importEmployee($getopt->get(2));
+                break;
+    case "adhoc" :    
+                echo "Importing from : ".$getopt->get(2).PHP_EOL;
+                $obj = new Modules\System\Processes\MasterImports();
+                $obj->adhocImports($getopt->get(2));
+                break;
+                
+
+        break;
+    
+    default :
+        
+        echo PHP_EOL."\tARCHISYS :: BlackEagle V1.0 ".PHP_EOL;        
+        echo "\t------ COMMAND LIST (Pending) -------".PHP_EOL.PHP_EOL;                
+        
+        echo PHP_EOL;
+
+    break;
+    
+endswitch;
+
+// done!
+exit(Status::SUCCESS);
+

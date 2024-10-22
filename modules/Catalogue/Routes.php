@@ -1,0 +1,51 @@
+<?php declare(strict_types=1);
+
+return [
+
+    [['GET', 'POST'], '/catalogue/categories', ['Modules\Catalogue\Controllers\Masters', 'categories'], ['cat_categories', 'categories']],
+    [['GET', 'POST'], '/catalogue/products', ['Modules\Catalogue\Controllers\Masters', 'products'], ['cat_products', 'products']],
+    [['GET', 'POST'], '/catalogue/priceBooks', ['Modules\Catalogue\Controllers\Masters', 'priceBooks'], ['cat_priceBooks', 'pricebooks']],
+    [['GET', 'POST'], '/catalogue/priceBookLines/{id}', ['Modules\Catalogue\Controllers\Masters', 'priceBookLines'], ['cat_priceBookLines', 'hr']],
+    [['GET', 'POST'], '/catalogue/tags', ['Modules\Catalogue\Controllers\Masters', 'tags'], ['cat_tags', 'Tags']],
+    [['GET', 'POST'], '/catalogue/brands', ['Modules\Catalogue\Controllers\Masters', 'brandMaster'], ['brands', 'brands']],
+    [['GET', 'POST'], '/catalogue/brandCampiagn', ['Modules\Catalogue\Controllers\Masters', 'brandCampiagn'], ['brandCampiagn', 'brands']],
+    [['GET','POST'], '/catalogue/brandCampiagn/form/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampiagnForm'],['brandCampiagn_Form','brands']],
+    [['GET', 'POST'], '/catalogue/getOrgUnitDesignation', ['Modules\Catalogue\Controllers\Masters', 'getOrgUnitDesignation'], ['getOrgUnitDesignation', 'brands']],
+    [['GET', 'POST'], '/catalogue/getDesignationPosition', ['Modules\Catalogue\Controllers\Masters', 'getDesignationPosition'], ['getDesignationPosition', 'brands']],
+    [['GET', 'POST'], '/catalogue/getOrgUnitFocusBrand', ['Modules\Catalogue\Controllers\Masters', 'getOrgUnitFocusBrand'], ['getOrgUnitFocusBrand', 'brands']],
+    [['GET', 'POST'], '/catalogue/getOrgUnitSgpiBrand', ['Modules\Catalogue\Controllers\Masters', 'getOrgUnitSgpiBrand'], ['getOrgUnitSgpiBrand', 'brands']],
+    [['GET', 'POST'], '/catalogue/getClassification', ['Modules\Catalogue\Controllers\Masters', 'getClassification'], ['getClassification', 'brands']],
+    [['GET', 'POST'], '/catalogue/deleteClassification', ['Modules\Catalogue\Controllers\Masters', 'deleteClassification'], ['deleteClassification', 'brands']],
+
+    [['GET', 'POST'], '/catalogue/brandCampiagnEdit/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampiagnEdit'], ['brandCampiagnEdit', 'brands']],
+    [['GET', 'POST'], '/catalogue/brandCampiagnView/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampiagnView'], ['brandCampiagnView', 'brands']],
+    [['GET', 'POST'], '/catalogue/brandCampaignTerritories/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampaignTerritories'], ['brandCampaignTerritories', 'brands']],
+    [['GET', 'POST'], '/catalogue/brandCampaignPositionOutlet/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampaignPositionOutlet'], ['brandCampaignPositionOutlet', 'brands']],
+    [['GET', 'POST'], '/catalogue/brandCampiagnStatusChange/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCampiagnStatusChange'], ['brandCampiagnStatusChange', 'brands']],
+    [['GET', 'POST'], '/catalogue/getCampaignOutlets/{id}', ['Modules\Catalogue\Controllers\Masters', 'getCampaignOutlets'], ['getCampaignOutlets', 'brands']],
+
+    [['GET', 'POST'], '/catalogue/brandrcpa/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandRCPA'], ['brandrcpa', 'hr']],
+    [['GET', 'POST'], '/catalogue/brand_competition/{id}', ['Modules\Catalogue\Controllers\Masters', 'brandCompetition'], ['brand_competit', 'hr']],
+    [['GET', 'POST'], '/catalogue/visit_plan/{id}', ['Modules\Catalogue\Controllers\Masters', 'visitPlan'], ['visit_plan', 'hr']],
+    [['GET', 'POST'], '/catalogue/doctor_visit/{id}', ['Modules\Catalogue\Controllers\Masters', 'doctorVisit'], ['doctor_visit', 'hr']],
+    [['GET', 'POST'], '/catalogue/notification', ['Modules\Catalogue\Controllers\Masters', 'notificationConfiguration'], ['notification_configuration', 'hr']],
+
+    /*API Document Keys*/
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getCategories', ['Modules\Catalogue\Controllers\API', 'getCategories'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getUnits', ['Modules\Catalogue\Controllers\API', 'getUnits'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getProducts', ['Modules\Catalogue\Controllers\API', 'getProducts'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getBeatDump', ['Modules\Catalogue\Controllers\API', 'getBeatDump'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getBeatOutlets', ['Modules\Catalogue\Controllers\API', 'getBeatOutlets'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getOutletDump', ['Modules\Catalogue\Controllers\API', 'getOutletDump'], ['catalogue', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/brand_campiagn', ['Modules\Catalogue\Controllers\API', 'brandCampiagn'], ['brand_campiagn', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/campiagn_details', ['Modules\Catalogue\Controllers\API', 'campiagnDetails'], ['campiagn_details', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/doctor_details', ['Modules\Catalogue\Controllers\API', 'doctorDetails'], ['doctor_details', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/doctor_list', ['Modules\Catalogue\Controllers\API', 'doctorList'], ['doctor_list', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/add_doctor', ['Modules\Catalogue\Controllers\API', 'addDoctor'], ['add_doctor', 'any']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/doctor_campiagn', ['Modules\Catalogue\Controllers\API', 'doctorCampiagn'], ['doctor_campiagn', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/brand_campiagn_view', ['Modules\Catalogue\Controllers\API', 'brandCampaignView'], ['brand_campiagn', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/remove_doctor', ['Modules\Catalogue\Controllers\API', 'removeDoctor'], ['brand_campiagn', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/brand_campiagn_execution_report', ['Modules\Catalogue\Controllers\API', 'campaignExecutionReport'], ['brand_campiagn', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getCampaignStatus', ['Modules\Catalogue\Controllers\API', 'getCampaignStatus'], ['brand_campiagn', 'loggedin']],
+    [['GET', 'POST', 'PUT', 'DELETE'], '/api/getCampaignVisitByOutletId', ['Modules\Catalogue\Controllers\API', 'getCampaignVisitByOutletId'], ['brand_campiagn', 'loggedin']],
+];

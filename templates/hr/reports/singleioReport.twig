@@ -1,0 +1,93 @@
+{% extends "app.twig" %}
+{% block title %} Branch Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>From Date :</label>                            
+                                <input class="form-control input-sm datepicker readonly" name="fromdate" type="text" {% if fromdate is defined %} value="{{fromdate}}"{%endif%} required="required">
+                            </div>                        
+                            <div class="form-group col-md-2">
+                                <label>To Date :</label>                            
+                                <input class="form-control input-sm datepicker readonly" name="todate"  type="text" {% if todate is defined %} value="{{todate}}"{%endif%} required="required">
+                            </div>
+                             
+                            <div class="form-group col-md-2"  id="btnSearch">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="payoutReport" value="View" />                             
+                                <a href="{{request.getPath()}}" class="btn btn-info" />Reset</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" border="1">
+                        <thead>
+                            <tr>
+                                <th>Branch Name</th>
+                                <th>Requested</th>
+                                <th>Approved</th>
+                                <th>Audited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key,val in data %}
+                            <tr>
+                                <td>{{val.branchName}}</td>
+                                <td>{{val.Requested}}</td>
+                                <td>{{val.Apprroved}}</td>
+                                <td>{{val.Audited}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total</th>
+                                <th>{{Requestetotal}}</th>
+                                <th>{{Apprrovedtotal}}</th>
+                                <th>{{Auditedtotal}}</th>
+                            </tr>
+                        </tfoot>    
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print" > <i class="fa fa-print"></i>Print</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        
+        $dtable = "";
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+            $(".readonly").on('keydown paste', function(e){
+                e.preventDefault();
+            });
+            $dtable = $('#datagrid').DataTable({
+                dom: "Bfrtip",
+                buttons: [{
+                    extend: "excel",
+                    className: "btn-sm"
+                }]
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+    </script>
+{% endblock %} 

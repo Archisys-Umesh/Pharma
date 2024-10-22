@@ -1,0 +1,394 @@
+<!-- started by Ravi Thakkar
+file for trip report pdf view
+created by :- Ravi Thakkar
+date :- 22-10-2018 (dd-mm-yyyy) -->
+<html>
+<head>
+    <style>
+        
+        @page {
+            
+            margin-header: 9px; /* <any of the usual CSS values for margins> */
+            margin-footer: 40px; /* <any of the usual CSS values for margins> */
+            padding-top: 100px;
+            
+    }
+
+        
+        body {font-family: "Arial"; font-size: 10px; background:#ffffff; }
+        .section_one{
+            padding-top: 30px;
+        }
+        .border_bottom_class{
+            border-bottom: 3px solid black;
+            padding-top: 10px;
+        }
+        .sub_title{
+            width: 300px;
+            margin-left: 80px;
+        }
+        .main_title h2{
+            font-weight: 700;
+            color:#DD1C2B;
+        }
+        .field_name{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: black;
+        }
+        .note{
+            background-color: #FFFFFF;
+            color: #DD1C2B;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .heade_table_color{
+            background-color: #E3E3E3;
+        }
+        .section_two{
+            margin-top: 60px;
+        }
+        .section_three{
+            margin-top: 50px;
+        }
+        .section_four{
+            margin-top: 50px;
+        }
+        .pagination_test{
+            margin-top: -15px;
+            margin-right: 20px;
+        }
+        td {
+                max-width: 100px;
+            }
+        .row {
+            margin-top: 0;
+            width: 100%;
+        }
+        @media print {
+            th,td,tr {
+                border:1px solid #9A9A9A;
+                border-collapse:collapse;
+                height: 50px;
+            }
+            td {
+                max-width: 100px;
+            }
+
+            table {
+                border:1px solid #9A9A9A;
+                border-collapse:collapse;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+
+<htmlpageheader name="myheader" style="background:#ffffff;">
+    <div style="background:#ffffff; width: 100%; display: inline-blocak; color: #000000; border-top: 5px solid #E1E1E1; border-bottom: 10px solid #E1E1E1; line-height: 5px;">&nbsp;</div>
+    <div style="border-bottom: 2px solid #F2F2F2;width: 100%;" class="contentheader">
+        <div class="" style="width:47%; float:left; ">
+            <div>&nbsp; &nbsp;</div>
+        </div>
+        <div class="" style="width:33.33%; float:left; margin-top:-10px; margin-left:20px;">
+            <center>
+                {#<img src="{{arrow_logo}}" height="25px">#}
+            </center>
+        </div>
+        <div class="" style="width:20.33%; float:left;"></div>
+        <div style="font-family: Arial; display: inline-blcok; width: 100%; paddings:15px;">
+            
+            <div style="width:26%; float:left; margin-left:20px;margin-top:25px;">
+                <img src="{{company_logo}}" style="height:47px;width: 210px;">
+            </div>
+            <div style="width:40%; text-align:center ;float:left;">
+                <center>
+                    <div class="main_title" style="margin-left:55px;">
+                        <h2><b>TRIP EXPENDITURE</b></h2>
+                    </div>
+                    <div class="sub_title" style="margin-left:80px;"><b>Branch: Ahmedabad</b></div>
+                </center>
+            </div>
+            <div style="width:30%; float:left;margin-left: 0px">                
+                <div style="margin-left:65px;font-size:12px;">
+                    <center>
+                      
+                    </center>
+                </div>    
+            </div>
+        </div>
+        
+        <div class="border_bottom_class"></div>
+    </div>
+    
+
+</htmlpageheader>
+
+<htmlpagefooter name="myfooter">
+    <div class="contentFooter">
+        <div style="font-family: Arial; padding:15px; display: inline-blcok; width: 100%;">
+            <div style="width:80%; float:left; ">
+                <div class="note pull-left">
+                    THIS IS COMPUTER GENERATED REPORT, NEED NOT BE SIGNED BY ANY AUTHORIZED SIGNATORY
+		</div>
+            </div>
+            <div style="width:20%; float:right; text-align: right;">
+                <div class="note pagination_test">PAGE NO: {PAGENO}</div>
+
+            </div>
+        </div>
+    </div>
+</htmlpagefooter>
+
+<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
+
+
+<br>
+
+
+<div class="section_two">
+    <div class="row">
+
+        <div style="width:33%; float:left; margin-left:20px; font-size:10px;">
+
+                <div class="field_name">Employee (ID):{{tripUser.firstName}} {{tripUser.LastName}} ({{tripUser.employeeCode}})</div>                
+                <div class="field_name">Mobile:{{tripUser.phone}} </div>
+                <div class="field_name">Email:{{tripUser.Email}} </div>
+        </div>
+
+        <div style="width:33%; float:left; font-size:10px;">
+
+                <div class="field_name">Trip Number: {{trip.tripId}}</div>
+                <div class="field_name">Origin: {{trip.tripOriginName}}</div>
+                <div class="field_name">Destination: {{trip.tripDestinationName}}</div>
+                
+
+        </div>
+
+        <div style="width:33%; float:right; margin-left:670px; margin-top:-70px; font-size:10px;">
+                
+                          
+                <div class="field_name">Start Date & Time: {{trip.tripStartDate|date('d-m-Y  H:i:s')}}</div>
+                <div class="field_name">End Date & Time: {{trip.tripEndDate|date('d-m-Y  H:i:s')}}</div>
+                <div class="field_name">Total Expense (INR) : {{totalExp}}</div>      
+        </div>
+    </div>
+
+</div>
+<div>&nbsp;</div>
+<div class="section_three">
+    <table style="width:100%; border-color: black; margin-top: -60px;  margin-left:15px; margin-right:15px;" >
+        <thead class="heade_table_color" style="background-color: #E3E3E3; border:1px solid black;">
+            <tr style="text-align:center; background-color: #E3E3E3; border:1px solid black;">
+                <th>
+                    <center>
+                        Serial<br> No.
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        Expense Type
+                    </center>	
+                </th>
+                <th>
+                    <center>
+                        Voucher<br>No. 
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        Voucher<br> Date 
+                    </center>
+                </th>   
+                <th>
+                    <center>
+                        Description 
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        Requested <br>Amount
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        Approved <br>Amount
+                    </center>
+                </th>                          
+                <th>
+                    <center>
+                        Audited <br>Amount
+                    </center>
+                </th>      
+                <th>
+                    <center>
+                        Balance <br>Amount (INR)
+                    </center>
+                </th>
+            </tr>
+        </thead>
+        <tbody style="border: 1px solid black;" >
+             
+            {% set i = 1 %}
+            {% set amount = 0 %}
+             {% for exp in tripEexpense %}
+                <tr>
+                    <td>
+                        <center>
+                            {{ i }}
+                            {% set i = i + 1 %}
+                        </center>
+                    </td>
+                    <td>
+                        <center>
+                            {{ expCategory[exp.expMasterId] }}
+                        </center>
+                    </td>
+                    <td>
+                        <center>
+                            V{{ exp.expListId }}
+                        </center>
+                    </td>
+                    <td>
+                        <center>
+                            {{ exp.expDate|date('d-m-Y') }}
+                        </center>
+                    </td>                    
+                    <td style="width: 200px;padding: 0px 10px;">
+                        <center>
+                            {{ exp.expNote }}
+                        </center>
+                    </td>
+                    <td style="text-align:right;padding: 0px 10px;">
+                        <center>
+                            {{exp.expIlAmount}}
+                        </center>
+                    </td>
+                    <td>
+                        <center>
+                            {% if (exp.expenses.expenseStatus == 3 or exp.expenses.expenseStatus == 6) %}
+                                {{exp.expAprAmount}}
+                            {% else %}
+                                0.00
+                            {% endif %}                        
+                        </center>
+                    </td>                                        
+                    <td>
+                        <center>
+                            {% if (exp.expenses.expenseStatus == 6) %}
+                                {{exp.expFinalAmount}}  
+                            {% else %}
+                                0.00
+                            {% endif %}
+                        
+                        </center>
+                    </td>                                        
+                    <td style="text-align:right;padding: 0px 10px;">
+                        <center>
+                            {% if (exp.expenses.expenseStatus == 6) %}
+                                {% set amount = amount+exp.expFinalAmount %}
+                            {% endif %}
+                            
+                            {{amount|number_format(2, '.', ',') }}
+                        </center>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+        
+        
+        <br>        
+        <br>
+        <br>
+{% if (tripWorklog.count() > 0) %}        
+<div class="section_three">
+    <table style="width:100%; border-color: black; margin-top: -60px;  margin-left:15px; margin-right:15px;" >
+        <thead class="heade_table_color" style="background-color: #E3E3E3; border:1px solid black;">
+            <tr style="text-align:center; background-color: #E3E3E3; border:1px solid black;">
+                <th>
+                    <center>
+                        Date
+                    </center>
+                </th>                
+                <th>
+                    <center>
+                        Start Time
+                    </center>	
+                </th>
+                <th>
+                    <center>
+                        Minutes
+                    </center>	
+                </th>
+                <th>
+                    <center>
+                        WorkLog
+                    </center>	
+                </th>
+            </tr>
+        </thead>
+        <tbody style="border: 1px solid black;" >
+             
+            {% set i = 1 %}
+            {% set amount = 0 %}
+             {% for log in tripWorklog %}
+                <tr>
+                    <td>
+                        <center>
+                            {{ log.getExpenses().getExpenseDate()|date('d-m-Y')}}
+                        </center>
+                    </td>
+                   
+                     <td>
+                        <center>
+                            {% if (log.StartTime == '') %}
+                                -                            
+                            {% else %}
+                                {{ log.StartTime|date('h:i:s') }}
+                            {% endif %}
+                            
+                        </center>
+                    </td>
+                     <td>
+                        <center>                            
+                            {% if (log.Minutes == 0) %}
+                                -
+                            {% elseif(log.Minutes == -1) %}
+                                Full day
+                            {% else %}
+                                {{ log.Minutes }}
+                            {% endif %}
+                            
+                        </center>
+                    </td>
+                    <td>
+                        <center>
+                            {{ log.Description }}
+                        </center>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>    
+        {% endif %}                      
+<div class="clearfix"></div>
+
+
+
+<br>
+
+<div class="section_fifth" style="text-align: left; float:left; padding-left: 5px;">
+    {% for img in images %}
+    <div style="width:25%; margin-top: 1px; float: left;">
+        <!--style="-ms-transform: rotate(90deg);-webkit-transform: rotate(90deg);transform: rotate(90deg);"-->
+        <img height="98%" width="98%" src="{{img}}" >
+        
+        <br>
+    </div>
+    {% endfor %}
+</div>
+

@@ -1,0 +1,142 @@
+{% extends "app.twig" %}
+
+
+{% block title %} {{emp.FirstName}} {{emp.LastName}}, Route view for {{date|date('Y-m-d')}} {% endblock %}
+{% block page %}
+
+<div class="col-sm-12 mapContainer">
+
+    <div class="col-sm-9">
+        <div id="map"></div>
+    </div>
+
+    <div class="col-sm-3">
+
+        <div class="card-box table-responsive"> 
+            <h4>Location Points</h4>
+            </hr>
+            <ul class="list-group m-b-0 user-list" id="LogContainer">    
+             {% for pin in pins %}
+
+                <li class="list-group-item">
+                    <a href="#" class="user-list-item" style="cursor:default !important;">                    
+                        <div class="user-desc">
+                            <span class="name">{{pin.Type}}</span>
+                            <span class="desc">{{pin.Time|date('h:i a')}}</span>
+                            <span class="desc">{{pin.Caption}}</span>
+                        </div>
+                    </a>
+                </li>               
+
+            {% endfor %}
+                 
+        
+        </ul>
+            
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    
+    let map;
+
+    checkinLines = [];
+    outletLines = [];
+
+    function initAutocomplete() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: {{homeLocation[0]}}, lng: {{homeLocation[1]}} },
+            mapTypeId: "roadmap",
+            zoom: 15,
+        });
+
+        loadPins();
+    }
+
+    window.initAutocomplete = initAutocomplete;
+
+
+function addPinToMap($type,$lat,$lng,$time,$caption)
+{
+   $icon = "";
+   if($type == "PunchIn")
+   {
+    $icon = "{{router.baseUrl('images/mapmarkers/punchin.png')}}";
+   }
+   if($type == "PunchOut")
+   {
+    $icon = "{{router.baseUrl('images/mapmarkers/punchout.png')}}";
+   }
+   if($type == "CheckIn")
+   {
+        $icon = "{{router.baseUrl('images/mapmarkers/checkin.png')}}";
+        checkinLines.push({ lat: $lat, lng: $lng });
+   }
+   if($type == "Outlets")
+   {
+        $icon = "{{router.baseUrl('images/mapmarkers/store.png')}}";
+        outletLines.push({ lat: $lat, lng: $lng });
+        
+   }
+   marker =  new google.maps.Marker({
+                position: { lat: $lat, lng: $lng },
+                map: map,
+                draggable: false,
+                animation: google.maps.Animation.DROP,
+                title : $type+" : "+$time+" | "+$caption,
+                icon: $icon,
+            });
+
+    marker.addListener("click", (e) => {
+        
+        console.log(e);
+
+    });
+}
+
+function loadPins() {
+    {% for pin in pins %}
+    
+        addPinToMap("{{pin.Type}}",{{pin.Location[0]}},{{pin.Location[1]}},"{{pin.Time|date('h:i a')}}","{{pin.Caption}}");
+    {% endfor %}
+
+    const flightPath = new google.maps.Polyline({
+        path: checkinLines,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.75,
+        strokeWeight: 3,
+        });
+
+    flightPath.setMap(map);
+
+    const outletPath = new google.maps.Polyline({
+        path: outletLines,
+        geodesic: true,
+        strokeColor: "green",
+        strokeOpacity: 0.5,
+        strokeWeight: 5,
+        });
+
+    outletPath.setMap(map);
+
+}
+</script>
+
+<style>
+ .mapContainer {width:100%;min-height:850px; display: block;}
+  #map {
+    height: 100%;min-height: 840px;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "app.twig" %}
+{% block title %} Expense Reports {% endblock %}
+{% block page %}
+    <div class="row m-b-15">                
+        <div class="col-sm-12">
+            <div class="project-sort">
+                <div class="project-sort-item">
+                    <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                        <div class="form-group col-md-1">
+                            <label>Month :</label>                            
+                            <select class="form-control input-sm" name="month" id="monthSelect">
+                                {{monthList|raw}}                            
+                            </select>                            
+                        </div>                                                
+                        {#<div class="form-group col-md-1">
+                            <label>Currency :</label>                            
+                            <select class="form-control input-sm" name="currency" id="currency">
+                                {{currency|raw}}                            
+                            </select>                            
+                        </div>#}
+                        <div class="form-group col-md-1">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" name="status" id="status">
+                                {{statusddl|raw}}
+                            </select>                
+                        </div>
+                        <div class="form-group col-md-1">                            
+                            <input type="hidden" name="action" value="load"/><br/>
+                            <input type="submit" class="btn btn-info" id="searchBtn" name="expenseReport" value="View" />                             
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- end col-->
+    </div>
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+                        
+                <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>                                                
+                            <th>Employee</th>
+                            <th>Designation</th>                            
+                            {#<th>Unit</th>#}
+                            <th>Bank</th>                        
+                            <th>A/C</th>
+                            <th>Requested</th>
+                            {#<th>Add</th>                            
+                            <th>Tax</th>#}
+                            <th>Approved</th>                            
+                            <th>Final Payble</th> 
+                            
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        {% for d in data %}
+                        {%set audited = d.paybleAmount-d.expApproved%}
+                            <tr onclick="document.location.href='{{router.getPath("hr_claimReport",{id:""})}}?empid={{d.ID}}&month={{d.month}}&currency={{d.CurrencyId}}&status={{status}}&action=load'">                                        
+                                <td>{{d.Name}}</td>
+                                <td>{{d.Designation}} @ {{d.Branch}}</td>
+                                
+                                {#<td>{{d.Unit}}</td>#}
+                                <td>{{d.Bank}}</td>
+                                <td>{{d.AC}}</td>
+                                <td>{{d.expAmount}}</td>
+                                {#<td>{{d.Additional}}</td>                                
+                                <td>{{d.Tax}}</td>#}                                                                                                
+                                <td>{{ d.expApproved}}</td>                                
+                                <td><b>{{d.paybleAmount}} {{d.Currency}}</b></td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+        </div>
+    </div>
+        
+</div>
+<!-- end row -->
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>                
+        
+        $(document).ready(function(){            
+            
+            $("#datagrid").DataTable({
+                dom: "Bfrtip",
+                buttons: [{
+                    extend: "excel",
+                    className: "btn-sm"
+                    },{
+                    extend: "print",
+                    className: "btn-sm"
+                }],
+                responsive: false,
+                "scrollX": true
+            });                        
+                        
+            
+        });
+        
+    </script>
+    <style>
+        tbody tr {cursor: pointer;} 
+        tbody tr:hover
+        {
+            background-color: #fff9d1;
+        }
+    </style>
+{% endblock %}    
+{# empty Twig template #}

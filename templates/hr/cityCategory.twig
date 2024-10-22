@@ -1,0 +1,65 @@
+{% extends "app.twig" %}
+{% block title %} City Categories {% endblock %}
+{% block page %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+            <div class="">                
+                <a href="{{router.getPath('hr_cityCategoryForm',{id:0})}}" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add City</a>                                
+            </div>
+
+            <div class="btn-group m-b-30">
+            
+            </div>
+
+            <table id="datagrid" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                        
+                        <th>Name</th>
+                        <th>Category</th>                        
+                        <th>Grade</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                                
+            </table>
+        </div>
+    </div><!-- end col -->    
+        
+</div>    
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    
+    $cityCategory = "";
+    
+    $(document).ready(function(){                
+        
+       $cityCategory = $('#datagrid').DataTable({
+        "processing": true,
+        "serverSide": true,
+            ajax: "{{request.getPath()}}?action=list",                 
+            "columns": [                    
+                { "data" : "Cityname" },                                
+                { "data" : "Category" ,render: function ( data, type, row ) {                            
+                        if(data == "A"){
+                            return "A Class";
+                        }else if(data == "B"){
+                            return "B Class";
+                        }else{
+                            return "C Class";
+                        }
+                }},
+                { "data" : "GradeMaster.GradeName" },
+                { "data" : "Citycategoryid" ,render: function ( data, type, row ) {                            
+                        return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('hr_cityCategoryForm',{id:""})}}"+row.Citycategoryid+"'><i class='zmdi zmdi-edit'></i></a>";
+                }}
+            ]
+        }); 
+    });
+function loadGrid()
+{
+    $cityCategory.ajax.reload();
+}
+</script>    
+{% endblock %}

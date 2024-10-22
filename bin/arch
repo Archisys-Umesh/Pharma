@@ -1,0 +1,214 @@
+<?php
+
+
+use Aura\Cli\Help;
+use Dotenv\Dotenv;
+use Aura\Cli\Status;
+use Aura\Cli\CliFactory;
+use entities\RolesQuery;
+use entities\RolePermsQuery;
+use entities\WdbSyncLogQuery;
+use BI\manager\AttendanceManager;
+use Aura\Cli\Context\OptionFactory;
+use BI\manager\DailyCallsManager;
+use BI\manager\NotificationManager;
+use Propel\Runtime\ActiveQuery\Criteria;
+use Modules\OfflineSync\Controllers\OfflineSync;
+use Modules\OfflineSync\Processes\SyncRunner;
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+$dotenv = Dotenv::createImmutable(__DIR__."/..");
+$dotenv->safeLoad();
+
+
+require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../src/Config.php';
+
+
+date_default_timezone_set('Asia/Kolkata');
+
+$cli_factory = new CliFactory;
+
+$context = $cli_factory->newContext($GLOBALS);
+$stdio = $cli_factory->newStdio();
+
+$getopt = $context->getopt([]);
+
+$command  = $getopt->get(1);
+
+switch ($command) :
+    case "eod" :         
+        $serviceContainer = \Propel\Runtime\Propel::getServiceContainer();        
+        try{
+        
+            // Day Locking
+            _log("Day Locking");
+            $serviceContainer->getConnection()->exec("call do_day_locking(2)");
+            
+            // Genrate SGPI Accounts
+            _log("SGPI Gen");
+            $serviceContainer->getConnection()->exec("call genrate_sgpi_accounts()");
+
+            $serviceContainer->getConnection()->exec("refresh materialized view outlet_view");
+
+            $serviceContainer->getConnection()->exec("refresh materialized view outlet_mapping_view");
+
+            $serviceContainer->getConnection()->exec("refresh materialized view outlet_address_view");
+
+            $serviceContainer->getConnection()->exec("refresh materialized view outlet_sgpi_compliant_view");
+
+            $serviceContainer->getConnection()->exec("call do_resign_employees()");
+
+            //$serviceContainer->getConnection()->exec("refresh materialized view dar_view");
+
+            //$serviceContainer->getConnection()->exec("refresh materialized view rcpa_summary");
+
+            //$serviceContainer->getConnection()->exec("refresh materialized view sgpi_out_summary");
+
+            
+            $att = new AttendanceManager();
+            $att->notifyEmployeesLock();
+            _log("Notification of Lock sent !!" );
+
+
+        }
+        catch(Exception $e){
+            
+            echo $e->getMessage().PHP_EOL;
+        }
+
+        break;
+
+    case "ftpRunner":
+        $obj = new Modules\System\Processes\FTPRunner();
+        $obj->addWatcher();
+        break;
+
+    case "ftpLogRunner":
+        $obj = new Modules\System\Processes\FTPRunner();
+        $obj->addLogWatcher();
+        break;
+
+    case "ftpExportRunner":
+        $obj = new Modules\System\Processes\FTPExportRunner();
+        $obj->addWatcher();
+        break;
+
+    case "ftpExportLogRunner":
+        $obj = new Modules\System\Processes\FTPExportRunner();
+        $obj->addLogWatcher();
+        break;
+
+    case "syncRunner":
+        $obj = new SyncRunner();
+        $obj->runner();
+        break;
+    case "testNoti" :         
+        $mgr = new NotificationManager();
+        $mgr->sendNotificationToEmployee(223,"Hi from Moon","Yyo",[]);
+        break;
+    case "recoSGPI" : 
+        $dcrManager = new DailyCallsManager();
+        $dcrManager->recoProcess();
+        break;
+    case "generateExpense" : 
+        $expense = new \BI\manager\ExpenseManager();
+        $expense->autoExpenseGenerate();
+        break;
+    case "visitedTownCorrection" : 
+        $visitedTownCorrection = new \BI\manager\ExpenseManager();
+        //$visitedTownCorrection->visitedTownCorrection();
+        break;
+    case "dvpExportImport" : 
+        $dataInsert = new \Modules\System\Processes\ExportData(9);
+        //$dataInsert->dataExportInsert();
+        break;
+    case "OnBoardCustomers" : 
+        $onBoardCustomers = new \BI\manager\OnBoardManager();
+        $onBoardCustomers->createCustomerFromRequest();
+        break;
+    case "EscalationOnRequest" : 
+        $escalationOnRequest = new \BI\manager\ExpenseManager();
+        $escalationOnRequest->escalationOnRequest();
+        break;
+    case "AutoLeaveDeduction" : 
+        $autoLeaveCreate = new \BI\manager\LeaveManager();
+        $autoLeaveCreate->autoLeaveCreate();
+        break;
+    case "autoLeaveAllocation" : 
+        $autoLeaveCreate = new \BI\manager\LeaveManager();
+        $autoLeaveCreate->allocateLeavesToEmployee();
+        break;
+    case "sendAutoNotifications" : 
+            $autoLeaveCreate = new \BI\manager\NotificationManager();
+            $autoLeaveCreate->sendScheduledNotifications();
+            break;
+    case "beatCorrection" : 
+        $autoLeaveCreate = new \BI\manager\OnBoardManager();
+        $autoLeaveCreate->beatCorrection();
+    case "addOutletsForCampaign" : 
+        $campaign = new \BI\manager\BrandCampaignManager();
+        $campaign->addCampaignOutlets();
+        break;
+    case "processDataChangeRequests" : 
+        $autoLeaveCreate = new \BI\manager\DataChangeRequestManager();
+        $autoLeaveCreate->runner();
+        break;
+    case "moveFilesToS3" : 
+        $autoLeaveCreate = new \BI\manager\FileManager();
+        $autoLeaveCreate->checkForS3Files();
+        break;
+    case "lowLevelWorkerRunner" :
+        $workerManager = new \BI\manager\WorkerManager();
+        $workerManager->startWorkerRunner('low');
+        break;
+    case "mediumLevelWorkerRunner" :
+        $workerManager = new \BI\manager\WorkerManager();
+        $workerManager->startWorkerRunner('medium');
+        break;
+    case "highLevelWorkerRunner" :
+        $workerManager = new \BI\manager\WorkerManager();
+        $workerManager->startWorkerRunner('high');
+        break;
+    case "highLevelMultipleWorkerRunner" :
+        $workerManager = new \BI\manager\WorkerManager();
+        $workerManager->startWorkerRunner('highMultipleInstance');
+        break;
+    case "mediumLevelMultipleWorkerRunner" :
+        $workerManager = new \BI\manager\WorkerManager();
+        $workerManager->startWorkerRunner('mediumMultipleInstance');
+        break;
+    case "dataException" :
+        $workerManager = new \BI\manager\DataExceptionManager();
+        $workerManager->runner();
+        break;
+    case "cronCommand" :
+        $workerManager = new \BI\manager\CronCommandManager();
+        $workerManager->runner();
+        break;
+    case "resetCompanySetting" :
+        $workerManager = new \BI\manager\SettingManager();
+        $workerManager->resetCompanySettings(9);
+        break;
+    case "resetBuLevelSetting" :
+        $workerManager = new \BI\manager\SettingManager();
+        $workerManager->resetBuleavelSettings(9);
+        break;
+    default :
+        echo PHP_EOL."\tPLUS91LABS :::: TSFA V1.0 ".PHP_EOL;        
+        echo "\t------ DAILY JOBS -------".PHP_EOL.PHP_EOL;                
+        
+        echo PHP_EOL;
+
+    break;
+    
+endswitch;
+
+// done!
+exit(Status::SUCCESS);
+
+function _log($str)
+{
+    echo PHP_EOL."\t".$str.PHP_EOL;        
+}

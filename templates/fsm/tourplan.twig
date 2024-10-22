@@ -1,0 +1,58 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+    
+    $(document).ready(function(){ 
+
+       AgendaControlTypeChange();
+       
+       $("#AgendaControlType").change(function(){
+
+           AgendaControlTypeChange();           
+
+       });
+               
+    });
+    
+    function selectAgendacontroltype($data)
+    {
+        $('[name="AgendaId"]').html($data.subType);
+    }
+
+    function selectTerritory($data)
+    {
+        
+        $('[name="BeatId"]').html($data.Patch);
+        $('[name="Itownid"]').html($data.Town);
+
+        $('[name="BeatId"]').change();
+    }
+
+    function selectBeat($data)
+    {
+        $('[name="OutletOrgDataId"]').html($data.Customers);
+    }
+
+    function AgendaControlTypeChange()
+    {
+         $value = $("#AgendaControlType").val();
+            if($value == "FW" || $value == "JW")
+            {
+                $("#Town").closest(".form-group").hide();
+                $("#Patch").closest(".form-group").show();
+                $("#Customers").closest(".form-group").show();
+            }
+            if($value == "NCA")
+            {
+                $("#Town").closest(".form-group").show();
+                $("#Patch").closest(".form-group").hide();                
+                $("#Customers").closest(".form-group").hide();
+            }
+    }
+
+</script>
+{% endblock %}        

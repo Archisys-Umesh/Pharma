@@ -1,0 +1,71 @@
+{% extends "reports/partials/partials.twig" %}
+
+{% block content %}
+    <div class="row text-center">
+        <h3>{{ Title }}</h3>
+    </div>
+    <div class="col-md-12" style="margin-top:15px;overflow-x:auto;">
+
+        <table>
+            <tr>
+                <th>Division</th>
+                <th>EmployeeId</th>
+                <th>EmployeeName</th>
+                <th>Location</th>
+                <th>LocationCode</th>
+                <th>DrCode</th>
+                <th>DrName</th>
+                <th>DrSpecialty</th>
+                <th>Month</th>
+                <th>Drtags</th>
+                <th>Brand</th>
+                <th>SgpiTagged</th>
+                <th>BrandSgpiDistributed</th>
+                <th>MrCallDone</th>
+                <th>AmCallDone</th>
+                <th>RmCallDone</th>
+                <th>ZmCallDone</th>
+                <th>ZmPosition</th>
+                <th>RmPosition</th>
+                <th>AmPositioin</th>
+                <th>ZmPositionCode</th>
+                <th>RmPositionCode</th>
+                <th>AmPositionCode</th>
+                <th>EmployeePositionCode</th>
+                <th>EmployeePositionName</th>
+                <th>EmployeeLevel</th>
+            </tr>
+            {%for data in result %}
+                <tr>
+                    <td>{{ data['Division'] }}</td>
+                    <td>{{ data['EmployeeId'] }}</td>
+                    <td>{{ data['EmployeeName'] }}</td>
+                    <td>{{ data['EmployeePositionName'] }}</td>
+                    <td>{{ data['LocationCode'] }}</td>
+                    <td>{{ data['DrCode'] }}</td>
+                    <td>{{ data['DrName'] }}</td>
+                    <td>{{ data['DrSpecialty'] }}</td>
+                    <td>{{ data['Month'] }}</td>
+                    <td>{{ data['DrTags'] }}</td>
+                    <td>{{ data['Brand'] }}</td>
+                    <td>{{ data['SgpiTagged'] }}</td>
+                    <td>{{ data['BrandSgpiDistributed'] }}</td>
+                    <td>{{ data['MrCallDone'] }}</td>
+                    <td>{{ data['AmCallDone'] }}</td>
+                    <td>{{ data['RmCallDone'] }}</td>
+                    <td>{{ data['ZmCallDone'] }}</td>
+                    <td>{{ data['ZmPosition'] }}</td>
+                    <td>{{ data['RmPosition'] }}</td>
+                    <td>{{ data['AmPosition'] }}</td>
+                    <td>{{ data['ZmPositionCode'] }}</td>
+                    <td>{{ data['RmPositionCode'] }}</td>
+                    <td>{{ data['AmPositionCode'] }}</td>
+                    <td>{{ data['EmployeePositionCode'] }}</td>
+                    <td>{{ data['EmployeePositionName'] }}</td>
+                    <td>{{ data['EmployeeLevel'] }}</td>
+                </tr>
+            {%endfor%}
+        </table>
+        <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+    </div>
+{% endblock %}

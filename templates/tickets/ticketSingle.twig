@@ -1,0 +1,75 @@
+{% extends "app.twig" %}
+{% block title %} Ticket View {% endblock %}
+{% block page %}
+<div class="row">
+    <div class="col-sm-8">
+        <div class="bg-picture card-box">
+            <div class="profile-info-name">            
+                <div class="profile-info-detail">
+                    <h3>Ticket Details</h3>
+                    <p class="m-t-0 m-b-0">Name : {{ticket.Employee.FirstName}} {{ticket.Employee.LastName}}</p>
+                    <p class="m-t-0 m-b-0">Ticket Type : {{ticket.TicketType.Type}}</p>
+                    <p class="m-t-0 m-b-0">Ticket Area : {{ticket.TicketArea.AreaName}}</p>
+                    <p class="m-t-0 m-b-0">Short Description : {{ticket.ShortDescription}}</p>
+                    <p class="m-t-0 m-b-0">Description : {{ticket.Description}}</p>
+                    
+                    
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>        
+                
+        {#{{trip_actions|raw}}#}
+    </div>
+
+    <div class="col-sm-4">
+        <div class="card-box">            
+                <h3 class="p-b-10"><span class="label label-primary">Status :: Raised</span></h3>        
+                <ul class="list-group m-b-0 user-list">
+                                <li class="list-group-item">
+                        <a href="#" class="user-list-item" style="cursor:default !important;">
+                            <div class="avatar">
+                                <img src="http://195.168.0.26:8000/uploads/default-profile.png" alt="">                            
+                            </div>
+                            <div class="user-desc">
+                                <span class="name">Raised</span>
+                                <span class="desc">MANI RATNU [ BVC00658 ]</span>                                                        
+                                <span class="desc">08-08-2018 02:42 pm</span>
+                                <span class="name" title="Trip Request Created">Ticket Request Created</span>
+                            </div>
+                        </a>
+                    </li>
+                                <li class="list-group-item">
+                        <a href="#" class="user-list-item" style="cursor:default !important;">
+                            <div class="avatar">
+                                <img src="http://195.168.0.26:8000/uploads/default-profile.png" alt="">                            
+                            </div>
+                            <div class="user-desc">
+                                <span class="name">Raised</span>
+                                <span class="desc">DEEPAK MAKOL [ BVC00671 ]</span>                                                        
+                                <span class="desc">08-08-2018 02:42 pm</span>
+                                <span class="name" title="Pending Approval :: ">Pending Approval :: </span>
+                            </div>
+                        </a>
+                    </li>
+                                <li class="list-group-item">
+                        <a href="#" class="user-list-item" style="cursor:default !important;">
+                            <div class="avatar">
+                                <img src="http://195.168.0.26:8000/uploads/default-profile.png" alt="">                            
+                            </div>
+                            <div class="user-desc">
+                                <span class="name">Raised</span>
+                                <span class="desc">MANI RATNU [ BVC00658 ]</span>                                                        
+                                <span class="desc">08-08-2018 02:42 pm</span>
+                                <span class="name" title="Awating Approval :: ">Awating Approval :: </span>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,492 @@
+{% extends "app.twig" %}
+{% block title %}
+	Brand Campaign
+{% endblock %}
+{% block page %}
+<div class="">
+	<div class="row">
+		<div class="col-md-12">
+			<h4>
+				<label>
+					Add Campaign
+				</label>
+			</h4>
+		</div>
+	</div>
+	<form id="mainForm" action="{{request.getUri()}}" method="post" enctype="multipart/form-data">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card-box">
+					<h5>
+						<label>
+							Campaign Basic Details
+						</label>
+					</h5>
+					<div class="form-group">
+						<label for="campiagn_name">
+							Campaign Name*
+						</label>
+						<input class="form-control" type="text" name="campiagn_name" required='required'>
+					</div>
+					<div class="form-group">
+						<label for="campiagn_name">
+							Campaign Code*
+						</label>
+						<input class="form-control" type="text" name="campiagn_code" readonly id="campiagn_code" required='required'>
+					</div>
+					<div class="form-group">
+						<label for="campiagn_name">
+							Description*
+						</label>
+						<textarea class="form-control" type="text" name="description" rows="6" cols="50"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="campiagn_type">
+							Campaign Type*
+						</label>
+						<select class="form-control" id="campiagnType" name="campiagn_type">
+							{% for key,value in campiagntypes %}
+								<option value="{{key}}">{{value}}</option>
+							{%  endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="outlet_type">
+							Customer Type*
+						</label>
+						<select class="form-control" id="outletType" name="outlet_type">
+							{% for key,value in outletTypes %}
+								<option value="{{key}}">{{value}}</option>
+							{%  endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card-box">
+					<h5>
+						<label>
+							Campaign Dates
+						</label>
+					</h5>
+					<div class="form-group">
+						<label for="start_date">
+							Start Date*
+						</label>
+						<input class="form-control datepicker" id="StartDate" type="text" name="start_date" autocomplete='off' required='required' Placeholder="DD-MM-YYYY" readonly>
+					</div>
+					<div class="form-group">
+						<label for="end_date">
+							End Date*
+						</label>
+						<input class="form-control datepicker" id="EndDate" type="text" name="end_date" autocomplete='off' required='required' Placeholder="DD-MM-YYYY" readonly>
+					</div>
+					<div class="form-group">
+						<label for="locking_date">
+							Locking Date*
+						</label>
+						<input class="form-control datepicker" id="LockingDate" type="text" name="locking_date" autocomplete='off' required='required' Placeholder="DD-MM-YYYY" readonly>
+					</div>
+					{% if errorMsg != '' and errorMsg != null %}
+					<div style="border: 1px solid lightpink;padding: 5px;background-color: lightpink;color: red;border-radius: 5px;padding-top: 15px;padding-left: 10px;">
+						<p>{{errorMsg}}</p>
+					</div>
+					{% endif %}
+				</div>
+				<div class="card-box">
+					<h5>
+						<label>
+							Campaign Employees
+						</label>
+					</h5>
+					<div class="form-group">
+						<label for="org_unit">
+							Org Units*
+						</label>
+						<select class="form-control" id="orgUnits" name="org_unit" required='required'>
+							<option value="0">---Select OrgUnit---</option>
+							{% for key,value in orgUnits %}
+								<option value="{{key}}">{{value}}</option>
+							{%  endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="designation">
+							Designation*
+						</label>
+						<select class="form-control select2" id="Designation" name="designation[]" required='required' multiple>
+							<option value="0">---Select Designation---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="position">
+							Position*
+						</label>
+						<div class="row" style="margin-bottom: 10px;">
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<a href='#' class="btn btn-primary folat-left" id='select-all'>Select All</a>
+								</div>
+								<div class="col-md-6">
+									<a href='#' class="btn btn-danger folat-left" id='deselect-all'>Deselect All</a>
+								</div>
+							</div>
+						</div>
+						<select class="form-control multi-select" id="Position" name="position[]" multiple="multiple" required='required'>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card-box">
+					<h5>
+						<label>
+							Campaign Configuration
+						</label>
+					</h5>
+					<div class="form-group">
+						<label for="material_url">
+							Material Url
+						</label>
+						<input class="form-control" type="text" name="material_url">
+					</div>
+					<div class="form-group">
+						<label for="focus_brand">
+							Focus Brands
+						</label>
+						<select class="form-control" id="FocusBrand" name="focusbrand[]" multiple="multiple">
+							<option value="0"> No Focus Brand </option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="sgpi_brand">
+							SGPI Brands
+						</label>
+						<select class="form-control" id="SgpiBrand" name="sgpibrand[]" multiple="multiple">
+							<option value="0"> No Sgpi Brand </option>
+						</select>
+					</div>
+					<div class="row">
+						<div class="col-md-6 form-group">
+							<label for="is_suspended">
+								Is Suspended
+							</label>
+							<select class="form-control" id="IsSuspended" name="is_suspended">
+								<option value="No">No</option>
+								<option value="Yes">Yes</option>
+							</select>
+						</div>
+						{# <div class="col-md-6 form-group">
+							<label for="status">
+								Status
+							</label>
+							<select class="form-control" id="Status" name="status">
+								{% for key,value in statues %}
+									<option value="{{key}}">{{value}}</option>
+								{%  endfor %}
+							</select>
+						</div> #}
+						<div class="col-md-6 form-group">
+							<label for="material_url">
+								Media
+							</label>
+							<input class="form-control" type="file" name="file[]">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card-box">
+					<h5>
+						<label>
+							Campaign Classification (Speciality)
+						</label>
+					</h5>
+					<div class="row" id="ClassificationMinMax">
+						<div class="FormRow" id="FormRowId_1">
+							<div class="col-md-5 form-group">
+								<label for="classification">
+									Classification
+								</label>
+								<select class="form-control" id="Classification" name="classification[]">
+									<option value="0">--- Select Classification ---</option>
+								</select>
+							</div>
+							<div class="col-md-3 form-group">
+								<label for="minimum">
+									Minimum
+								</label>
+								<input class="form-control" type="number" name="minimum[]">
+							</div>
+							<div class="col-md-3 form-group">
+								<label for="maximum">
+									Maximum
+								</label>
+								<input class="form-control" type="number" name="maximum[]">
+							</div>
+							<div class="col-md-1 form-group">
+								<span id="AddRow" class="btn btn-primary m-t-20">+</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="card-box">
+				<input type="submit" class="btn btn-primary" id="btnSubmit" value="Submit"/>
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="{{router.baseUrl('plugins/multiselect/js/jquery.multi-select.js')}}"></script>
+<script type='text/javascript'>
+	$(document).ready(function () {
+		$('#orgUnits').change(function () {
+			var orgUnitId = $(this).val();
+			orgUnitChage(orgUnitId)
+			getFocusBrand(orgUnitId)
+			getSgpiBrand(orgUnitId)
+			getClassification(orgUnitId)
+		});
+		function orgUnitChage(orgUnitId) {
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath("getOrgUnitDesignation") }}",
+				data: {
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {
+					var select = $('#Designation');
+					select.empty();
+					select.append($('<option></option>').val(0).html('---Select Designation---'));
+					$.each(response, function (index, value) {
+						select.append($('<option></option>').val(index).html(value));
+					});
+				},
+				error: function () {
+					alert('Designation not found!');
+				}
+			});
+		}
+
+		{# $('#mySelect2').on('select2:select', function (e) {
+		var data = e.params.data;
+			console.log(data);
+		}); #}
+
+		$('#Designation').change(function () {
+			var designationId = $(this).val();
+			var orgUnitId = $('#orgUnits').val();
+			designationChage(designationId,orgUnitId)
+		});
+		function designationChage(designationId,orgUnitId) {
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath("getDesignationPosition") }}",
+				data: {
+					"designationId": designationId,
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {
+					var select = $('#Position');
+					select.empty();
+					$.each(response, function (index, value) {
+						select.append($('<option></option>').val(index).html(value));
+					});
+					  $('#Position').multiSelect('refresh');
+				},
+				error: function () {
+					alert('Position not found!');
+				}
+			});
+		}
+
+		function getFocusBrand(orgUnitId) {
+			$("#FocusBrand").select2("val", "");
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath("getOrgUnitFocusBrand") }}",
+				data: {
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {
+					var select = $('#FocusBrand');
+					select.empty();
+					select.append($('<option></option>').val(0).html('No Focus Brand'));
+					$.each(response, function (index, value) {
+						select.append($('<option></option>').val(index).html(value));
+					});
+				},
+				error: function () {
+					alert('Focus brand not found!');
+				}
+			});
+		}
+
+		function getSgpiBrand(orgUnitId) {
+			$("#SgpiBrand").select2("val", "");
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath("getOrgUnitSgpiBrand") }}",
+				data: {
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {
+					var select = $('#SgpiBrand');
+					select.empty();
+					select.append($('<option></option>').val(0).html('No Sgpi Brand'));
+					$.each(response, function (index, value) {
+						select.append($('<option></option>').val(index).html(value));
+					});
+				},
+				error: function () {
+					alert('Sgpi brand not found!');
+				}
+			});
+		}
+
+		function getClassification(orgUnitId) {
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath("getClassification") }}",
+				data: {
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {
+					var select = $('#Classification');
+					select.empty();
+					select.append($('<option></option>').val('all').html('All'));
+					$.each(response, function (index, value) {
+						select.append($('<option></option>').val(index).html(value));
+					});
+				},
+				error: function () {
+					alert('Classification not found!');
+				}
+			});
+		}
+
+
+		{# $("#AddRow").click(function () {
+			var total_element = $("#ClassificationMinMax").length;
+			var lastid = $(".FormRow:last").attr("id");
+			var split_id = lastid.split("_");
+			var nextindex = Number(split_id[1]) + 1;
+			var seloption = "";
+			var pnames = [];
+			
+			var orgUnitId = $('#orgUnits').val();
+
+			$.ajax({
+			type: "GET",
+			url: "{{ router.getPath("getClassification") }}",
+			data: {
+					"orgUnitId": orgUnitId
+				},
+			success: function (response) {
+				$.each(response, function (index, value) {
+					seloption += '<option value="' + index + '">' + value + '</option>';
+				});
+				$("#Classification_" + nextindex).append(seloption);
+			},
+			error: function () {
+				alert('Position not found!');
+			}
+			});
+			var max = 50;
+			var appendDiv = '<div class="FormRow" id="FormRowId_' + nextindex + '"><div class="col-md-5 form-group"><label for="classification">Classificaation</label><select class="form-control" id="Classification_' + nextindex + '" name="classification[]"><option value="0">--- Select Classification ---</option>' + seloption + '</select></div><div class="col-md-3 form-group"><label for="minimum">Minimum</label><input class="form-control" type="number" name="minimum[]"></div><div class="col-md-3 form-group"><label for="maximum">Maximum</label><input class="form-control" type="number" name="maximum[]"></div><div class="col-md-1 form-group"><span id="remove_' + nextindex + '" class="btn btn-danger remove m-t-20">-</span></div></div>';
+			if (total_element < max) {
+				$(".FormRow:last").after("<div class='FormRow' id='FormRowId_" + nextindex + "'></div>");
+				$("#FormRowId_" + nextindex).append(appendDiv);
+			}
+		}); #}
+
+		$("#AddRow").click(function () {
+			showLoader();
+			var total_element = $("#ClassificationMinMax").length;
+			var lastRow = $(".FormRow:last");
+			var lastid = lastRow.attr("id");
+			var split_id = lastid.split("_");
+			var nextindex = Number(split_id[1]) + 1;
+			var orgUnitId = $('#orgUnits').val();
+			var max = 50;
+
+				if (total_element >= max) {
+					return;
+				}
+
+			$.ajax({
+				type: "GET",
+				url: "{{ router.getPath('getClassification') }}",
+				data: {
+					"orgUnitId": orgUnitId
+				},
+				success: function (response) {					
+					hideLoader();
+					var seloption = '<option value="0">--- Select Classification ---</option>';
+					$.each(response, function (index, value) {
+						seloption += '<option value="' + index + '">' + value + '</option>';
+					});
+
+					var appendDiv = `
+						<div class="FormRow" id="FormRowId_${nextindex}">
+							<div class="col-md-5 form-group">
+								<label for="classification">Classification</label>
+								<select class="form-control" id="Classification_${nextindex}" name="classification[]">
+									${seloption}
+								</select>
+							</div>
+							<div class="col-md-3 form-group">
+								<label for="minimum">Minimum</label>
+								<input class="form-control" type="number" name="minimum[]" min="0">
+							</div>
+							<div class="col-md-3 form-group">
+								<label for="maximum">Maximum</label>
+								<input class="form-control" type="number" name="maximum[]" min="0">
+							</div>
+							<div class="col-md-1 form-group">
+								<span id="remove_${nextindex}" class="btn btn-danger remove m-t-20">-</span>
+							</div>
+						</div>`;
+
+					lastRow.after(appendDiv);
+				},
+				error: function () {					
+					 toastr["warning"]("Classification not found!");
+				     return false;
+				}
+			});
+        });
+
+
+		$('#ClassificationMinMax').on('click', '.remove', function () {
+			var id = $(this).attr('id');
+			var split_id = id.split("_");
+			var deleteindex = split_id[1];
+			$("#FormRowId_" + deleteindex).remove();
+		});
+
+		$('#select-all').click(function(){
+			$('#Position').multiSelect('select_all');
+			return false;
+		});
+		$('#deselect-all').click(function(){
+			$('#Position').multiSelect('deselect_all');
+			return false;
+		});
+
+		// Generate and set a unique 10-character alphanumeric code
+			(function() {
+				const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+				let code = Array.from({length: 10}, () => characters[Math.floor(Math.random() * characters.length)]).join('');
+				
+				document.getElementById('campiagn_code').value = code;
+			})();
+	});
+</script>
+{% endblock %}

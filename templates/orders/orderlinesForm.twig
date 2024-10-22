@@ -1,0 +1,69 @@
+{% extends "modalCommonForm.twig" %}
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type ='text/javascript'>
+           
+  $url = "{{router.getPath("order_getProducts",{pricebook_id:PriceBookId}) }}";
+  
+  $(document).ready(function(){
+      
+      $('#productName').autocomplete({ 
+            
+            source: $url,
+            minLength: 2,
+            search : function(){
+                $(this).attr("optSelected","false");
+            },
+            select: function( event, ui ) {        
+
+                $(this).val(ui.item.label);
+                
+                $("#ProductId").val(ui.item.id);
+                $("#Rate").val(ui.item.rate);
+                $("#Mrp").val(ui.item.mrp);
+                $("#PricebookLine").val(ui.item.pblid);
+                $("#UnitId").val(ui.item.unitid);
+                
+                $(this).attr("optSelected","true");
+                return false;
+                },
+            focus: function(event, ui) {
+                $(this).val(ui.item.label);
+                return false;
+            },        
+        });
+        
+    $('#Qty').change(function(data){
+        
+        $rate = $("#Rate").val()*1;
+        $qty = $("#Qty").val()*1;
+        
+        console.log($rate*$qty);
+        
+        $("#Total").val($rate*$qty);
+        
+    });
+      
+  });
+           $('#delete').click(function(event) {                   
+                    event.preventDefault();   
+                    Swal.fire({
+                        title: 'Delete confirmation',
+                        text: "Are you sure you want to delete this record? ",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes I am',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) { 
+                             $("#myForm").submit();
+                             Swal.fire('Deleted', 'Your item has been successfully deleted.', 'success');
+                        } else if (result.dismiss === Swal.DismissReason.cancel) { 
+                            Swal.fire('Cancelled', 'You aborted the operation.', 'error');
+                        }
+                    });
+                });          
+      
+    </script>
+{% endblock %}        

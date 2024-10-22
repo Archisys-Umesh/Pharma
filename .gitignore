@@ -1,0 +1,7 @@
+/vendor/
+/imports/
+/public/uploads/
+/nbproject/private/
+CompanyConfig.php
+/log
+.env

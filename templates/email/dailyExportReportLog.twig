@@ -1,0 +1,48 @@
+{% extends "email/emailBaseAlembic.twig" %}
+{% block content %}
+
+<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0; background-color:#ce9595;">
+    <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 28px; vertical-align: top; margin: 0; padding: 23px 0 20px; text-align: center;"
+        valign="top">{{ appName }} - Export Reports Log</td>
+</tr>
+<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+    <td class="content-block " style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
+
+        <p>Dear All, </p>
+
+        <p>Please check export status of the below files.</p>
+
+        <table style="border-collapse: collapse; ; width: 100%;">
+            <tr>
+                <td colspan="2" style="border: 1px solid #dddddd; padding: 8px; text-align: center; font-weight: bold;">Date : {{ reportDate }}</td>
+                <td style="border: 1px solid #dddddd; padding: 8px;">Status</td>
+                <td style="border: 1px solid #dddddd; padding: 8px;">No of records</td>
+            </tr>
+            {% for type,files in ftpFiles %}
+                {% set isNewType = true %}
+                {% for file in files %}
+                    {%if isNewType %}
+                        <tr {%if file.isSent == 'Pending' %} style="background-color: rgb(246, 76, 76);" {% endif %}>
+                            <td style="border: 1px solid #dddddd; padding: 8px;"><b>{{ file.name }}</b> <br> <span style="font-size: 12px">({{ file.executionTime }})</span></td>
+                            <td rowspan="{{ files|length }}" style="border: 1px solid #dddddd; padding: 8px;">{{ type }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ file.isSent }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ file.records }}</td>
+                        </tr>
+                    {% else %}
+                        <tr {%if file.isSent == 'Pending' %} style="background-color: rgb(246, 76, 76);" {% endif %}>
+                            <td style="border: 1px solid #dddddd; padding: 8px;"><b>{{ file.name }}</b> <br> <span style="font-size: 12px">({{ file.executionTime }})</span></td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ file.isSent }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ file.records }}</td>
+                        </tr>
+                    {% endif %}
+                    {% set isNewType = false %}
+                {% endfor %}
+            {% endfor %}
+            <tr></tr>
+        </table>
+        <p><br></p>
+        <p>Best Regards, <br>PNO Team</p>
+        <p><br></p>
+    </td>
+</tr>
+{% endblock %}

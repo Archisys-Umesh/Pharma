@@ -1,0 +1,339 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+    {% if Paymentsystem == 1 %}
+    <div class="row">
+        {#<div class="col-sm-2">            
+            <select class="form-control setActive" id="auditSystem">
+                <option value="1">Expense Based</option>
+                <option value="2">Trip Based</option>
+            </select>
+            <input type="hidden" id="hidesystem" name="hidesystem" >
+        </div>#}
+        <div class="col-sm-4">
+            <div class="table-responsive">  
+                <button type="button" class="btn waves-effect w-md waves-light setActive setActiveExpense" value="1">
+                    Monthly Based
+                </button>
+                <button type="button" class="btn waves-effect w-md waves-light setActive setActiveTrip" value="2">
+                    Trip Based
+                </button>
+            </div>
+        </div>
+        
+        
+    </div>
+    {% endif %}
+    <div class="row m-b-15">                
+        <div class="col-sm-12">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=list">
+                        <div class="form-group">
+                            <input type="hidden" name="month" id="month" value="{{setcurrntmonth}}" selectedMonth="{{setcurrntmonth}}">
+                            {#<label>Month :</label>                            
+                            <select class="form-control input-sm" name="month" id="month">
+                                {{monthList|raw}}                            
+                            </select>#}
+                        </div>
+                        <input type="hidden" name="expStatus" value="3"> <!-- Fix to Audit Flow-->
+                        {#
+                        <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" id="expStatus" name="expStatus">                                
+                                <option value="3" {% if stage == 3 %} selected="selected" {%endif%}>Received for Audit</option>
+                                <option value="6" {% if stage == 6 %} selected="selected" {%endif%}>Audited</option>
+                                <option value="8" {% if stage == 8 %} selected="selected" {%endif%}>Validated</option>
+                            </select>
+                        </div>
+                        #} 
+                        {% if tripCurrency %}    
+                        <div class="form-group">
+                            <label>Currency :</label>                            
+                            <select class="form-control input-sm" name="currency" id="currency">
+                                {{tripCurrency|raw}}                            
+                            </select>
+                        </div>
+                        {%endif%}
+                    </form>
+                    
+                </div>
+                            
+            </div>
+        </div><!-- end col-->
+    </div>
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+            
+            <table id="datagrid" class="table table-striped table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        {% if Paymentsystem == 0 %}
+                        <th><input type='checkbox' class='checkall' onclick="checkToggle()" /></th>
+                        {% endif %}
+                        <th>Sr No.</th>
+                        <th>Trip</th>
+                        <th>Designation</th>
+                        <th>Employee</th>                        
+                        <th>Requested</th>
+                        <th>Approved</th>   
+                        <th>Audited</th>   
+                        <th>Claims Entries</th>  
+                        <th>Action</th>
+                    </tr>
+                </thead>                                
+            </table>
+            {% if Paymentsystem == 0 %}
+            <div class="">
+                <a href='#' id="processPayment" class="btn btn-success m-b-5 auditBtn" id="auditBtn" matchStatus = "3" moveStatus="10"> Proceed for Payment</a>
+                <a href='#' id="holdResign" class="btn btn-danger m-b-5 auditBtn" id="auditBtn" matchStatus = "3" moveStatus="9"> Hold/Resign</a>              
+               
+           </div>
+            {% endif %}
+        </div>
+    </div>
+        
+</div>
+<!-- end row -->
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>
+        
+        $ExpenseUrl = "{{request.getPath()}}?action=list&";
+        $moveUrl = "{{request.getPath()}}?action=move";
+        $validateUrl = "{{request.getPath()}}?action=validate";
+        $dtable = "";
+        $(document).ready(function(){
+            $(".setActive").click(function(){
+               if($(this).val() == 1){
+                   window.location.href = "{{router.getPath("hr_moveToAudit",{id:""})}}";
+               }else{
+                   window.location.href = "{{router.getPath("hr_tripmoveToAudit",{id:""})}}";
+               }
+               
+               //$('#auditSystem option[value="'+$("#hidesystem").val($(this).val())+'"]').attr("selected", "selected");
+            });
+            $set = "{{request.getPath()}}";
+            $set = $set.split("/");
+            if($set[2] == "tripmoveToAudit"){
+                $('.setActiveTrip').addClass("btn-success");
+            }else{
+                $('.setActiveExpense').addClass("btn-success");
+            }
+            if (localStorage.getItem("monthbtn") != null) {
+                $curmonth = localStorage.getItem('monthbtn');
+                $("#month").val($curmonth);
+            }
+            $("#gridFilters select").change(function(){      
+               
+               getExpenses();
+                
+            });
+            
+           $(".auditBtn").hide();                 
+            
+            $dtable = $('#datagrid').DataTable({
+            "aoData": {"data":[]},  
+            //ajax: $ExpenseUrl+$("#gridFilters").serialize(),                             
+            "columns": [
+                {% if Paymentsystem == 0 %}
+                { "data": "ExpId","render": function ( data, type, row ) {
+                        return "<input type='checkbox' class='expChk' name='ExpId["+row.id+"]' ExpId="+row.id+" />";                    
+                }},
+                {% endif %}
+                
+                { "data" : "srno"},
+                { "data" : "trip"},
+                { "data" : "id" ,render: function ( data, type, row ) {                            
+                        
+                        return row.Designation.Designation;
+                }},
+                { "data" : "id" ,render: function ( data, type, row ) {                            
+
+                        return row.Emp.FirstName + " " + row.Emp.LastName + " | "+ row.Emp.EmployeeCode;
+                }},
+                { "data" : "TotalReq" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+                { "data" : "TotalApr" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+                { "data" : "TotalAud" ,render: function ( data, type, row ) {                            
+                        if($("#expStatus").val() == 3){
+                            return "Na";
+                        }else{
+                            return data;
+                        }
+                }},
+                { "data" : "Claims" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+               
+            
+                { "data" : "Claims" ,render: function ( data, type, row ) {                            
+                            return "<a href='{{router.getPath("hr_audit",{id:""})}}?month="+row.month+"&status=3&employee="+row.Emp.EmployeeId+"&cur="+row.cur+"&trip="+row.tripid+"&action=load'><i class='fa fa-eye'></i></a>" ;
+                }},
+                
+            
+            ],
+            dom: "Bfrtip",
+            buttons: [{
+                extend: "excel",
+                className: "btn-sm"
+            },{
+                extend: "print",
+                className: "btn-sm"
+            }],
+            responsive: !0,
+            
+            "rowCallback": function( row, data, dataIndex ) {
+                
+                    $(row).attr( 'emp', data.id);
+                
+            },
+            "fnDrawCallback": function(settings, json) {
+                    
+                    $("#datagrid tr").click(function(){
+     
+                        clickrow(this);
+        
+                    });
+                    hideLoader();
+            },
+           });
+           getExpenses();
+           
+           $(".checkread").click(function(){
+               alert("F");
+            });
+            $(".auditBtn").click(function(){
+                showLoader();
+                $moveStatus = $(this).attr("moveStatus");                
+                //var rows = $dtable.fnGetNodes();
+                var EmpId = [];
+                $('input[type="checkbox"]:checked').each(function(idx,obj){
+                                        
+                    EmpId.push($(obj).attr('ExpId'));                    
+                });                
+                if(EmpId.length > 0)
+                {
+                    quickPost($moveUrl+"&"+$("#gridFilters").serialize(),{"EmpId" : EmpId,"moveStatus":$moveStatus},function(res){                                                
+                        getExpenses();
+                        if($moveStatus == 9){
+                            toastr["info"]("Expense put on Hold");
+                        }else{
+                            toastr["info"]("Expense audited successfully and sended to finance team.");
+                        }
+                        hideLoader();
+                    });
+                }else{
+                    toastr["error"]("Please select atleast one expense.");
+                    hideLoader();
+                }
+                
+            });
+            $("#auditBtnold").click(function(){
+                
+                $emps = [];
+                $(".expChk:checked").each(function(){
+                    
+                    $emp = $(this).attr("emp");
+                    $emps.push($emp);
+                                        
+                });
+                
+                $data = $("#gridFilters").serializeArray();
+                $data.push({name:"emps",value: $emps.join(",") });
+                
+                quickPost($moveUrl,$data,function(data){
+                    getExpenses();
+                });
+       
+            });
+            
+            $curmonth = $("#month").val();
+            $( ".btnmonth" ).each(function( index ) {
+                $a = $(this).attr("btnmonth");
+                if (localStorage.getItem("monthbtn") != null) {
+                    $curmonth = localStorage.getItem('monthbtn');
+                }
+                if($curmonth == $a){
+                    $(this).addClass("btn-success");
+                    getExpenses();
+                }
+            }); 
+            
+            $(".btnmonth").click(function(){
+                $(".btnmonth").removeClass("btn-info");
+                
+                $(".btnmonth").removeClass("btn-success");
+                $(this).addClass("btn-success");
+                $month = $(this).attr("btnmonth");
+                localStorage.setItem('monthbtn', $month);
+                $("#month").val($month);
+                
+                getExpenses();
+                $btnval = $(this).attr("btnval");
+            });
+        });
+        function updateValidate($empid,$readflag,$status,$date){
+            if($readflag == 1){
+                $newreadflag = 0;
+            }else{
+                $newreadflag = 1;
+            }
+            alert($date); 
+            showLoader();
+            quickPost($validateUrl,{"empid":$empid,"readflag":$newreadflag,"status":$status,"date":$date},function(data){
+                console.log(data);
+                hideLoader();
+            });
+        }
+       function checkToggle()
+        {
+           $flag = $(".checkall").is(":checked");
+           $('.expChk').prop('checked',$flag);
+        }
+       
+       function clickrow()
+       {
+           
+       }
+       function getExpenses()
+       {   
+           showLoader();
+           
+           //$dtable.ajax.url( $ExpenseUrl+$("#gridFilters").serialize() ).load()   
+           quickPost($ExpenseUrl,$("#gridFilters").serialize(),function(res){
+                            
+                $.each(res.count,function(idx,val){                    
+                    $(".btn_"+idx).html("("+val+")");                    
+                    
+                });
+                
+                if(res.data.length > 0)
+                {
+                    $(".auditBtn").show();
+                }
+                else {
+                    $(".auditBtn").hide();
+                }
+                
+                $('#datagrid').dataTable().fnClearTable();
+                
+                
+                if(res.data.length > 0) {
+                    $('#datagrid').dataTable().fnAddData(res.data);
+                    hideLoader();
+                }
+            });
+       }
+      
+                
+    </script>
+{% endblock %}    {# empty Twig template #}

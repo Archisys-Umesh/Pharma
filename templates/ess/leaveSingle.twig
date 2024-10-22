@@ -1,0 +1,99 @@
+{% extends "app.twig" %}
+{% block title %} Leave View {% endblock %}
+{% block page %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="bg-picture card-box">
+                <div class="profile-info-name">            
+                    <div class="profile-info-detail">
+                        <h3 class="m-t-0 m-b-0">{{leaveType[leave.LeaveType] }}</h3>
+                        <h4 class="text-muted m-b-20">FromDate: <i>{{leave.LeaveFrom|date('d-m-Y')}}</i>&nbsp;&nbsp;&nbsp;  ToDate: <i>{{leave.LeaveTo|date('d-m-Y')}}</i></h4>
+                        <h3 class="m-t-0 m-b-0">Total Leave Days : {{difference }}</h3>
+                        <h4>Leave Reason</h4>
+                        <p>{{leave.LeaveReason}}</p>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            {{leave_actions|raw}}
+        </div>
+        <div class="col-sm-4">
+            <h5>{{leave_log |raw}}</h5>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        {#$cancelLeaveUrl = "{{request.getPath()}}?action=cancelLeave&leaveid=";
+        $approveLeave = "{{request.getPath()}}?action=approveLeave&leaveid=";
+
+        function cancelDoc($LeaveId) {
+            $.get($cancelLeaveUrl, {"LeaveId": $LeaveId}, function (data) {
+                if (data.status == 1) {
+                    toastr["error"]("Your Leave have been Cancelled");
+                    location.reload();
+                }
+            });
+        }#}
+        {#function cancelDoc($LeaveId) {
+            //$leavelist = "/ess/leaves/single";
+            $.get($cancelLeaveUrl + $LeaveId, {"LeaveId": $LeaveId}, function (data) {
+                if (data.status == 1) {
+                    toastr["success"]("Leave Approved!");
+                    window.location = $leavelist;
+                }else{
+                    toastr["error"]("There is a Leave that coincide with these dates");
+                }
+            });
+        }#}
+            {#function rejectLeave($LeaveId) {
+                quickPost($rejectLeaveUrl, {"LeaveId": $LeaveId}, function (data) {
+                    if (data.status == 1) {
+                        toastr["error"]("Your Trip have been Cancelled");
+                        location.reload();
+                    }
+                });
+            }
+            function approveLeave($LeaveId) {
+                $leavelist = "/ess/leaves";
+                $.get($approveLeave + $LeaveId, {"LeaveId": $LeaveId}, function (data) {
+                    if (data.status == 1) {
+                        toastr["success"]("Leave Approved!");
+                        window.location = $leavelist;
+                    } else {
+                        toastr["error"]("There is a Leave that coincide with these dates");
+                    }
+                });
+            }#}
+
+            $(document).ready(function () {
+                  {# var abc = url;     
+                    if(abc[1] == "single" && abc[2] == "leaves" && abc[3] == "ess"){              
+                        $("#backbtn").attr("onclick","");
+                        document.getElementById("backbtn").onclick = function() {
+                            //window.location.href='{{router.baseUrl("ess/leaves")}}';
+                            //window.history.back();                 
+                        }
+                      } 
+                    #}
+                        if (String.trim($(".addclassmonth").html()) == "")
+                        {
+                            $(".addclassmonth").hide();
+                        }                
+            });
+
+       
+    </script>
+
+    <style>
+
+        a#deleteTrip {
+            float: left;
+            margin-left: 10px;
+        }
+        a#cancelTrip {
+            float: left;
+            margin-left: 10px;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "app.twig" %}
+{% block title %} Date wise Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>Month :</label>                            
+                                <select class="form-control input-sm" name="month" id="monthSelect">
+                                    {{monthList|raw}}                            
+                                </select>                            
+                            </div>                        
+                            <div class="form-group col-md-3">
+                                <label>Currency :</label>                            
+                                <select class="form-control input-sm" name="currency" id="currency">
+                                    {{currency|raw}}                            
+                                </select>                            
+                            </div> 
+                            <div class="form-group col-md-2">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="expenseReport" value="View" />                             
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="7" style="text-align:center;" style="font-size: 20px;">Date wise Report | {{ reportname }}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Employee Name</th>
+                                <td colspan="5">{{Name}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Employee Code</th>
+                                <td colspan="5">{{empcode}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Designation</th>
+                                <td colspan="5">{{Designation}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">State</th>
+                                <td colspan="5">{{State}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Head Quarter/ Location</th>
+                                <td colspan="5">{{Location}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Currency</th>
+                              <td colspan="9">
+                                    {% if CurrList is iterable  %}
+                                    {% for curr in CurrList %}
+                                        {{curr}},
+                                    {% endfor %}
+                                {% endif %}
+                                    
+                                </td>
+                            </tr>
+                            {% if costnumber %}
+                            <tr>
+                                <th colspan="2">Cost Center</th>
+                                <td colspan="5">{{ costnumber }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                
+                                <th style="text-align:center;">DATE</th>
+                                <th style="text-align:center;">WORKING</th>
+                                <th style="text-align:center;">IO</th>
+                                <th style="text-align:center;">REQUESTED</th>
+                                <th style="text-align:center;">GST</th>
+                                <th style="text-align:center;">ADDITIONAL</th>
+                                <th style="text-align:center;">TOTAL</th>
+                            </tr>
+                            {% set auditdudtotal = 0 %}
+                            {% for r in heads %}
+                                
+                            <tr>
+                               
+                               <td style="text-align:center;">{{r.date}} </td>
+                               <td style="text-align:center;">{{r.working}} </td>
+                               <td style="text-align:center;">{{r.exphead}} </td>
+                               <td style="text-align:center;">{{r.basicAmount}}</td>
+                               <td style="text-align:center;">{{r.gstTotal}} </td>
+                               <td style="text-align:center;">{{r.addTotal}}</td>
+                               <td style="text-align:center;">{{r.netpayableamount}}</td>
+                            </tr>
+                            {%endfor%}
+                            <tr>
+                                <th colspan="3">Total</th>
+                                <th style="text-align:center;">{{totalBasic}}</th>
+                                <th style="text-align:center;">{{totaltTax}}</th>
+                                <th style="text-align:center;">{{totaltAdd}}</th>
+                                
+                                {#<th style="text-align:center;">{{totalAmount}}</th>
+                                <th style="text-align:center;">{{totalDidbyapp}}</th>#}
+                                <th style="text-align:center;">{{netpayableamount}}</th>
+                            </tr>
+                             {% for key,val in currSelected %} 
+                         <tr>
+                                <th colspan="6">Net Payable Amount 
+                                    <span class="netpayment">
+                                      
+                                        ({{key}})
+                                       
+                                    </span></th>
+                                <th colspan="8"  style="text-align: center;">
+                                               
+                                        {{val}}
+                                  
+                                </th>
+                            </tr>
+                              {% endfor%}
+                            <tr>
+                                <th colspan="4" style="text-align:right;">Signature</th>
+                                <th colspan="3" style="text-align:right;"></th>
+                            </tr>
+                        </thead>
+                        
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print"> <i class="fa fa-print"></i>Print</button>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" onclick="exportTableToExcel()"> <i class="fa fa-print"></i>Export</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+        function exportTableToExcel(filename = 'daily'){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById('datagrid');
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+            // Specify file name
+            filename = filename?filename+'.xls':'excel_data.xls';
+
+            // Create download link element
+            downloadLink = document.createElement("a");
+
+            document.body.appendChild(downloadLink);
+
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], {
+                    type: dataType
+                });
+                navigator.msSaveOrOpenBlob( blob, filename);
+            }else{
+                // Create a link to the file
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+                // Setting the file name
+                downloadLink.download = filename;
+
+                //triggering the function
+                downloadLink.click();
+            }
+        }
+    </script>
+{% endblock %} 

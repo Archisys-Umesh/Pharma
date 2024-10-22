@@ -1,0 +1,137 @@
+{% extends "app.twig" %}
+{% block title %} Users {% endblock %}
+{% block page %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+            <div class="">                
+                {% if auth.checkPerm("super_admin") %}
+                <a href="{{router.getPath('sys_userForm',{id:0})}}" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add User</a>
+                {% endif %}
+            </div>
+
+            <div class="btn-group m-b-30">
+            
+            </div>
+
+            <table id="datagrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                 
+                        {% if auth.checkPerm("super_admin") %}
+                        <th>Company</th>
+                        {% endif %}
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>                        
+                        <th>Linked to</th>
+                        <th>Last Login Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                                
+            </table>
+        </div>
+    </div><!-- end col -->
+    
+    
+        
+</div>
+<!-- end row -->
+    
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>
+        
+    $dtable = "";
+    $roledtable = "";
+    $(document).ready(function(){
+
+    $dtable = $('#datagrid').DataTable({
+            ajax: "{{request.getPath()}}?action=user",                 
+            "columns": [
+                {% if auth.checkPerm("super_admin") %}
+                    {"data" : "Company.CompanyName"},
+                {% endif %}
+                {"data" : "Name"},
+                { "data" : "Username" ,render: function ( data, type, row ) {                            
+
+                        return "<a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('sys_userForm',{id:""})}}"+row.UserId+"'>"+data+"</a>";
+                }},
+                { "data" : "RoleId" ,render: function ( data, type, row ) {                            
+                        if(row.Roles != undefined)
+                        {                                
+                            return row.Roles.RoleName;                                
+                        }                            
+
+                }},
+                { "data" : "UserId" ,render: function ( data, type, row ) {                            
+
+                        $links = "";
+                        if(row.EmployeeId > 0) {
+                            $links =  $links + "<a href='{{router.getPath('hr_profileForm',{id:""})}}"+row.EmployeeId+"'>Employee</a> ";
+                        }                        
+                        return $links;
+                }},
+                
+                { "data" : "LastLogin" ,render: function ( data, type, row ) {                            
+
+                        var myDate = new Date(1000*row.LastLogin)                      
+                        return myDate.toLocaleString();
+                }},
+                {#{"data" : "Status"},#}
+                { "data" : "Status" ,render: function ( data, type, row ) {                            
+                        console.log(data);
+                         if(data == 0){
+                             return "Inactive";
+                         }else{
+                             return "Active";
+                         }
+                }},
+                
+                { "data" : "UserId" ,render: function ( data, type, row ) {                            
+                        var str;
+                        str = "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('sys_userForm',{id:""})}}"+row.UserId+"'><i class='zmdi zmdi-edit'></i></a>&nbsp;";                        
+                        str += "<a onclick='loadModalURL(this)' title='Reset Password' class='btn btn-default btn-xs' href='#' remote='{{router.getPath('sys_userResetPwd',{id:""})}}"+row.UserId+"'><i class='zmdi zmdi-key'></i></a>&nbsp;";
+                        if(row.DeviceName){
+                            str += "<a onclick='loadModalURL(this)' title='View Map' class='btn btn-default btn-xs' href='#' remote='{{router.getPath('hr_employeeLastLoc',{id:""})}}"+row.UserId+"'><i class='zmdi zmdi-map'></i></a>";
+                        }
+                        if(row.SessionToken){
+                            str += "<a title='Login with user' class='btn btn-default btn-xs' href='{{router.getPath('authoriseWithToken',{id:""})}}"+row.SessionToken+"'><i class='fa fa-user-circle'></i></a>";
+                        }
+                        return str
+                }}
+            ],
+            dom: "lBfrtip",        
+            buttons: [{
+                extend: "excel",
+                className: "btn-sm"
+            }],
+        });
+        
+    $roledtable = $('#roleGrid').DataTable({
+            ajax: "{{request.getPath()}}?action=role",                 
+            "columns": [                    
+                { "data" : "RoleName" },                
+                { "data" : "RoleDesc" },
+                { "data" : "RoleId" ,render: function ( data, type, row ) {                            
+
+                        return "<a title='Edit' class='btn btn-danger btn-xs' href='{{router.getPath('sys_roleForm',{id:""})}}"+row.RoleId+"'><i class='zmdi zmdi-edit'></i></a>";
+                }}
+            ]
+        });
+
+    });
+      
+    function reloadGrid()
+    {
+        $dtable.ajax.reload();
+    }
+    function reloadGridRole()
+    {        
+        $roledtable.ajax.reload();
+        $dtable.ajax.reload();
+    }
+    </script>
+{% endblock %}

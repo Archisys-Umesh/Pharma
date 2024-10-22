@@ -1,0 +1,174 @@
+<div class="form-group avatar-group mb-3">    
+    <label class="control-label col-sm-3" for="fm-input-4">{{Caption}}</label>
+    <div class="col-sm-9">
+        <div id="{{inputName}}_selectedMediaHolder">
+        
+        </div>
+        <a class="avatar-group-item addMedia mediaManagerBtn" id="{{inputName}}addMedia" href="{{router.getPath('media_manager')}}?inputFunction={{inputName}}callback">
+            <i class="fa fa-plus"></i>
+        </a>
+         <input type="hidden" name="{{inputName}}" id = "{{inputName}}_holder" value="{{MediaId|join(',')}}"/>
+    </div>
+</div>
+
+<script type="text/x-tmpl" id="{{inputName}}_selectedMediaTmpl">    
+{% verbatim %}
+    <div>
+        {% if(o.MediaId != null) { %}
+            {% if(o.MediaId > 0) { %}
+            <a href="{%=$mediaUrl%}?id={%= o.MediaId %}" class="avatar-group-item" target="_blank">
+                <img src="{%=$mediaUrl%}?id={%= o.MediaId %}&h=80&w=80" class="rounded-circle avatar-sm"  data-bs-container="#tooltips-container" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="bottom" 
+                title="" 
+                data-bs-original-title="Mat Helme" 
+                aria-label="Mat Helme">
+            </a> 
+            <button type="button" class="close mediaDelete" mediaId = "{%= o.MediaId %}" onclick="{%=$inputName%}remove({%= o.MediaId %})" >×</button>
+            {% } else { %}
+                <a href="{%= o.MediaId %}" class="avatar-group-item" target="_blank">
+                <img src="../../images/pdf.png" class="rounded-circle avatar-sm"  data-bs-container="#tooltips-container" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="bottom" 
+                title="" 
+                data-bs-original-title="Mat Helme" 
+                aria-label="Mat Helme">
+            </a> 
+            <button type="button" class="close mediaDelete" mediaId = "{%= o.MediaId %}" onclick="{%=$inputName%}remove({%= o.MediaId %})" >×</button>
+            {% } %}
+        {% } else { %}
+            <a href="javascript: void(0);" class="avatar-group-item">
+                <img src="{%=$mediaUrl%}?id={%= o.MediaId %}&h=80&w=80" class="rounded-circle avatar-sm"  data-bs-container="#tooltips-container" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="bottom" 
+                title="" 
+                data-bs-original-title="Mat Helme" 
+                aria-label="Mat Helme">
+            </a> 
+            <button type="button" class="close mediaDelete" mediaId = "{%= o.MediaId %}" onclick="{%=$inputName%}remove({%= o.MediaId %})" >×</button>
+        {% } %}
+    </div>
+{% endverbatim %}    
+</script>
+
+<script>
+
+$mediaUrl = "{{router.getPath('media')}}";               
+$limit = {{Limit}};
+$inputName = "{{inputName}}";
+function {{inputName}}LoadMediaImages()
+{
+    $("#{{inputName}}_selectedMediaHolder").html("");
+    $length = 0;
+    if($("#{{inputName}}_holder").val() != "")
+    {
+        $length = $("#{{inputName}}_holder").val().split(",").length;
+    }
+    
+    if($length > 0)
+    {
+        $val = $("#{{inputName}}_holder").val().split(',');
+        
+        for($i = 0; $i < $val.length;$i++)
+        {
+            $("#{{inputName}}_selectedMediaHolder").append(tmpl("{{inputName}}_selectedMediaTmpl",{MediaId : $val[$i]}));
+        }
+    }
+    
+    if($length >= $limit)
+    {
+        $("#{{inputName}}addMedia").hide();
+    }
+    else 
+    {
+        $("#{{inputName}}addMedia").show();
+    }
+}
+
+function {{inputName}}callback($selection)
+{    
+    
+    if($selection > 0) {
+        
+        $val = [];
+        if($("#{{inputName}}_holder").val().length > 0)
+        {
+            $val = $("#{{inputName}}_holder").val().split(',');
+        }
+        
+        
+        if($val.indexOf($selection+"") == -1) {
+            $val.push($selection);           
+        }
+        
+        $("#{{inputName}}_holder").val($val.join(","));
+    }
+    
+    {{inputName}}LoadMediaImages();
+    
+}
+
+function {{inputName}}remove($selection)
+{
+
+    if($selection > 0) {
+        
+        $val = [];
+        if($("#{{inputName}}_holder").val().split(',').length > 0)
+        {
+            $val = $("#{{inputName}}_holder").val().split(',');
+        }
+        
+        index = $val.indexOf($selection+"");
+        if(index >= 0) {
+            $val.splice(index, 1);
+        }
+                
+        $("#{{inputName}}_holder").val($val.join(","));
+    }
+    
+    {{inputName}}LoadMediaImages();
+    
+}
+
+{{inputName}}LoadMediaImages();
+
+</script>
+            
+<style>
+
+.avatar-sm {
+    height: 8rem;
+    width: 8rem;
+}
+.rounded-circle {
+    border-radius: 10%!important;
+}    
+.addMedia
+{
+    background-color: #efe9e9;
+    height: 8rem;
+    width: 8rem;
+    border-radius: 10%!important;
+    padding-top: 31px;
+    padding-left: 33px;
+    
+}
+.avatar-group-item
+{
+    display: block;
+    float: left;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    
+}
+.mediaDelete
+{
+    position: fixed;
+    margin-left: -10px;
+    color: red;
+    opacity: 1;
+    margin-top: -7px;
+}
+
+</style>

@@ -1,0 +1,72 @@
+<div class="col-lg-4">
+    <a href="{{router.getPath('ess_expenses')}}">
+        <div class="card-box">
+            <h4 class="header-title m-t-0 m-b-25">Expense status for current month</h4>
+            <div id="ExpenseChart" style="height: 250px;"></div>
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li>
+                        <h5 style="color: #5b69bc;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #35b8e0;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #ff8acc;"></h5>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </a>
+</div><!-- end col-->
+
+<div class="col-lg-4">
+    <a href="{{router.getPath('ess_trips')}}">
+        <div class="card-box">
+            <h4 class="header-title m-t-0 m-b-25">Trip status for current month</h4>
+            <div id="TripChart" style="height: 250px;"></div>
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li>
+                        <h5 style="color: #5b69bc;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #35b8e0;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #ff8acc;"></h5>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </a>
+</div><!-- end col-->
+
+<script type ='text/javascript'>
+            
+      
+      
+        setTimeout(function(){
+        
+        var $donutData = [
+                {% for key,val in exp.data %}
+                    {label: "{{key}}", value: {{val}},url: "{{router.getPath('ess_expenses')}}{{exp.url}}{{val}}"},
+                {%endfor%}
+                
+            ];
+            
+        createDonutChart('ExpenseChart', $donutData, {{ exp.color|json_encode|raw }});
+        
+        var $donutData2 = [
+                {% for key,val in trip.data %}
+                    {label: "{{key}}", value: {{val}},url: "{{router.getPath('ess_expenses')}}{{exp.url}}{{val}}"},
+                {%endfor%}
+                
+            ];
+            
+        createDonutChart('TripChart', $donutData2, {{ exp.color|json_encode|raw }});
+            
+        },1000);
+                            
+
+</script>

@@ -1,0 +1,44 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+        
+    $(document).ready(function(){                    
+        toggleTpState();
+        $("#TpState").on("change",function(){
+            toggleTpState();
+        });
+        
+    });
+    
+    function toggleTpState()
+    {
+        if($("#TpState").val() == "FieldWork")
+        {
+            $("#BeatId").parents(".form-group").show();
+            $("#OutletIds").parents(".form-group").hide();
+            $("#OutletIds").val("");
+        }
+        else if($("#TpState").val() == "RosterPlan")
+        {
+               $("#BeatId").parents(".form-group").hide();
+               $("#TpRemark").parents(".form-group").hide();            
+               $("#BeatId").val("0");
+               
+               $("#OutletIds").parents(".form-group").show();
+               
+        }
+        else 
+        {
+            $("#BeatId").parents(".form-group").hide();
+            $("#BeatId").val("0");
+            
+            $("#OutletIds").parents(".form-group").hide();
+            $("#OutletIds").val("");
+        }
+    }
+</script>
+{% endblock %}        

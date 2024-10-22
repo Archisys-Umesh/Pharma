@@ -1,0 +1,40 @@
+
+<div class="col-lg-4">
+    <div class="card-box">
+        <h4 class="header-title m-t-0">Expenses Approval Overview</h4>
+        <div class="text-center">
+            <ul class="list-inline chart-detail-list">
+                <li>
+                    <h5 style="color: #ff8acc;"><i class="fa fa-circle m-r-5"></i>Pending for Approval</h5>
+                </li>
+                <li>
+                    <h5 style="color: #5b69bc;"><i class="fa fa-circle m-r-5"></i>Approved</h5>
+                </li>
+            </ul>
+        </div>
+        <div id="approvelChart" style="height: 215px;"></div>
+        
+    </div>
+</div><!-- end col-->
+
+<script type ='text/javascript'>
+            
+        
+        setTimeout(function(){
+            var $data  = [            
+            {% for day,val in expensescount %}
+                 
+                 { y: '{{val.day}}', a: {{val.submitted}}, b: {{val.approved}} },
+                         
+            {%endfor%}
+            
+            ];  
+                  
+        createLineChart('approvelChart', $data, 'y', ['a', 'b'], ['Pending for Approval', 'Approved'],['0.1'],['#ffffff'],['#999999'], ['#ff8acc', '#5b69bc']);  
+                        
+            
+        },1000);
+                            
+
+</script>
+

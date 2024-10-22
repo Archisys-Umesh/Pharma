@@ -1,0 +1,139 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+
+{% block page %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+                <div class="col-sm-2 pull-left form-group">
+                    <h3>Filters : </h3>
+                </div>
+                <div class="col-sm-2 pull-right form-group">
+                    <select class="form-control input-sm filterSelect filter-organogram" id="filter_status" name="status">
+                        <option value="">---Select Status---</option>
+                        <option value="pending">Pending</option>
+                        <option value="success">Success</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 pull-right form-group">
+                    <select class="form-control input-sm filterSelect filter-organogram" id="filter_transaction_type" name="status">
+                        <option value="">---Select Action Type---</option>
+                        <option value="employee_confirmed">employee_confirmed</option>
+                        <option value="update_employee_details">update_employee_details</option>
+                        <option value="new_position_with_employee">new_position_with_employee</option>
+                        <option value="employee_position_change">employee_position_change</option>
+                        <option value="employee_resigned">employee_resigned</option>
+                        <option value="employee_code_change">employee_code_change</option>
+                        <option value="position_code_change">position_code_change</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 pull-right form-group">
+                     <input type="text" id="filter_file_path" placeholder="Enter File name..." class="form-control filter-organogram">
+                 </div>
+                <div class="col-sm-2 pull-right form-group">
+                    <input type="text" id="filter_requested_data" placeholder="Search into data..." class="form-control filter-organogram">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+                <table id="dataChangeRequest_datatable" class="table table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                    <caption>Organogram Log</caption>
+                    <thead>
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 10%;">File Path</th>
+                        <th style="width: 30%;">Data</th>
+                        <th style="width: 10%;">Action Type</th>
+                        <th style="width: 5%;">Date</th>
+                        <th style="width: 5%;">Status</th>
+                        <th style="width: 5%;">Error?</th>
+                        <th style="width: 20%;">Error Message</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(function() {
+            $DataTableUrl = "{{request.getPath()}}?action=list";
+
+            $('#dataChangeRequest_datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: false,
+                lengthMenu: [
+                    [10, 20, 50,100],
+                    [10, 20, 50,100]
+                ],
+                pageLength: 10,
+                ajax: {
+                    url : $DataTableUrl,
+                    data : {
+                        status: function() {
+                            return $('#filter_status').val();
+                        },
+                        transaction_type: function() {
+                            return $('#filter_transaction_type').val();
+                        },
+                        file_path: function() {
+                            return $('#filter_file_path').val();
+                        },
+                        requested_data: function() {
+                            return $('#filter_requested_data').val();
+                        }
+                    }
+                },
+                order: [[ 0, "desc" ]],
+                columns: [
+                    {data: "DataChangeRequestId", width: '5%'},
+                    {data: "ImportFilePath", width: '10%'},
+                    {data: "RequestedData", width: '30%'},
+                    {data: "ActionType", width: '10%'},
+                    {data: "ScheduleDate", width: '5%'},
+                    {data: "Status", width: '5%'},
+                    {data: "HasError", width: '5%'},
+                    {data: "ErrorMessage", width: '20%'},
+                    {data: "Action"},
+                ],
+                fnDrawCallback: function(settings, json) {
+                    $('#dataChangeRequest_datatable tr td').css('word-break', 'break-all');
+                },
+                dom: "lBfrtip",
+                buttons: [{
+                    extend: "copy",
+                    className: "btn-sm"
+                }, {
+                    extend: "csv",
+                    className: "btn-sm"
+                }, {
+                    extend: "excel",
+                    className: "btn-sm"
+                }, {
+                    extend: "pdf",
+                    className: "btn-sm"
+                }, {
+                    extend: "print",
+                    className: "btn-sm"
+                }],
+                responsive: !0,
+                autoWidth: false,
+            });
+
+            $(document).on('change', '.filter-organogram', function() {
+                $('#dataChangeRequest_datatable').DataTable().draw();
+            });
+        });
+    </script>
+{% endblock %}

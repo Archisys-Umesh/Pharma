@@ -1,0 +1,76 @@
+{% extends "reports/partials/partials.twig" %}
+
+
+{% block content %}
+<div class="row text-center">
+    <h3>{{ Title }}</h3>
+</div>
+<div class="col-md-12" style="overflow-x:auto;height:93%;">
+{# <button id="masBtnExport" class="btn btn-success" style="padding: 5px;width: 5%;margin-bottom: 10px;">Export</button> #}
+    <table width="100%">
+        <tr>
+            <th>Bu</th>
+            <th>Level 3</th>
+            <th>Level 2</th>
+            <th>Level 1</th>
+            <th>PositionId</th>
+            <th>Location</th>
+            <th>Repname</th>
+            <th>EmployeeCode</th>
+            <th>Designation</th>
+            <th>Date</th>
+            <th>PlannedActivity</th>
+            <th>ActualActivity</th>
+            <th>Planned Patch</th>
+            <th>Covered Patch</th>
+            <th>Patch Deviation</th>
+            <th>Planned town</th>
+            <th>Covered town</th>
+            <th>Town Deviation </th>
+            <th>Total calls Made</th>
+            <th>Doctor Planned</th>
+            <th>Doctor Covered</th>
+            <th>Doctor Deviation</th>
+            <th>Pharmacy Planned</th>
+            <th>Pharmacy Covered</th>
+            <th>Pharmacy Deviation</th>
+            <th>Stokiest Planned</th>
+            <th>Stokiest Covered</th>
+            <th>Stockist Deviation</th>
+        </tr>
+        {% for data in MTPData %}
+            <tr>
+                <td>{{ data["Bu"]}}</td>
+                <td>{{ data["Level3"]}}</td>
+                <td>{{ data['Level2']}}</td>
+                <td>{{ data["Level1"]}}</td>
+                <td>{{ data['PositionId']}}</td>
+                <td>{{ data['Location']}}</td>
+                <td>{{ data["Repname"] }}</td>
+                <td>{{ data['EmployeeCode'] }}</td>
+                <td>{{ data['Designation'] }}</td>
+                <td>{{ data["Date"] }}</td>
+                <td>{{ data['PlannedActivity'] }}</td>
+                <td>{{ data['ActualActivity'] }}</td>
+                <td>{{ data["PlannedPatch"] }}</td>
+                <td>{{ data['CoveredPatch'] }}</td>
+                <td>{{ data['PatchDeviation'] }}</td>
+                <td>{{ data['Plannedtown'] }}</td>
+                <td>{{ data['Coveredtown'] }}</td>
+                <td>{{ data['TownDeviation'] }}</td>
+                <td>{{ data['TotalcallsMade'] }}</td>
+                <td>{{ data['DoctorPlanned'] }}</td>
+                <td>{{ data['DoctorCovered'] }}</td>
+                <td>{{ data['DoctorDeviation'] }}</td>
+                <td>{{ data['RetailerPlanned'] }}</td>
+                <td>{{ data['RetailerCovered'] }}</td>
+                <td>{{ data['RetailerDeviation'] }}</td>
+                <td>{{ data['StokiestPlanned'] }}</td>
+                <td>{{ data['StokiestCovered'] }}</td>
+                <td>{{ data['StockistDeviation'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+</div>
+{% endblock %}

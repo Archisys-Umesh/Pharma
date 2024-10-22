@@ -1,0 +1,35 @@
+<div class="col-md-3" id="Exp_{{exp.PrimaryKey}}">
+    <div class="card-box project-box">
+        <a href="{{router.getPath("ess_expenseSingle",{id:exp.PrimaryKey})}}" class="text-inverse">
+        <div class="label label-default">{{status}}</div>                                                
+        <h4 class="m-t-0 m-b-5"> {{exp.getExpenseDate().format("Y-m-d")}} : #V00{{exp.PrimaryKey}}<!-- <i class="fa  fa-paperclip"></i> --> </h4>             
+        <div class="m-b-20">            
+                {% if emp.ProfilePicture == "" %}
+                <img class="img-responsive img-circle pull-left m-r-10" alt="72x72" src="../../images/users/avatar-2.jpg" style="width: 32px; height: 32px;"> 
+                {% else %}
+                <img class="img-responsive img-circle pull-left m-r-10" alt="72x72" src="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{emp.ProfilePicture}}" style="width: 32px; height: 32px;"> 
+                {% endif %}
+                <div class="title">{{emp.FirstName}} {{emp.LastName}} [ {{emp.getEmployeeCode()}} ]</div>                
+        </div>
+                
+        <p class="text-muted font-13">Note : {{exp.ExpenseNote}}</p> 
+        
+        <div class="row">
+            <div class="text-center col-md-6">
+                <h2 class="text-warning" data-plugin="counterup">{{exp.ExpenseReqAmt}}</h2>
+                <h5>Requested</h5>
+            </div>
+            <div class="text-center col-md-6">
+                <h2 class="text-warning" data-plugin="counterup">{{exp.ExpenseApprovedAmt}}</h2>
+                <h5>Approved</h5>
+            </div>
+        </div>
+        
+        </a> 
+        
+        <div>
+            {{ exp_actions |raw }}
+        </div>
+         
+    </div>
+</div><!-- end col-->

@@ -1,0 +1,76 @@
+{% extends "app.twig" %}
+{% block title %} Add Expenses {% endblock %}
+{% block page %}
+    
+    <div class="row">
+        <div class="col-sm-8">                        
+            <div class="card-box form-horizontal">
+                <div class="m-b-20 widget-user">                
+                
+                {% if emp.ProfilePicture == "" %}
+                <img class="img-responsive img-circle" alt="72x72" src="../../images/users/avatar-2.jpg" style="width: 72px; height: 72px;"> 
+                {% else %}
+                <img class="img-responsive img-circle" alt="72x72" src="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{emp.ProfilePicture}}" style="width: 72px; height: 72px;"> 
+                {% endif %}
+                
+                <div class="wid-u-info">
+                    <h4 class="m-t-0 m-b-5">{{emp.FirstName}} {{emp.LastName}} [ {{emp.getEmployeeCode()}} ]</h4>
+                    <p class="text-muted m-b-5 font-13">{{emp.getDesignations().getDesignation()}}</p>
+                    <small class="text-warning"><b>{{emp.Email}}</b></small>
+                </div>
+                </div>                
+                <form id="mainForm" action="{{request.getUri()}}" method="post">
+                    {{form | raw}}
+                    <input type="submit" class="btn btn-primary pull-right" id="btnSubmit" value="Next"/>
+                    <div class="clearfix"></div>
+                </form>
+                {% set error = session.getFlash('error') %}
+                    {% if error != "" %}
+                    <div class="form-group text-center m-t-30">
+                        <div class="col-xs-12">
+                            <div class="alert alert-danger" role="alert">
+                                {{error}}
+                            </div>
+
+                        </div>
+                    </div>
+                {% endif %}
+                
+            </div>
+        </div>
+        
+        <div class="col-sm-4">
+            <div class="card-box">            
+                <h3 class="p-b-10"><span class="label label-primary">Status :: New</span></h3>        
+                
+            </div>
+        </div><!-- end col-->
+    </div>
+                            
+{% endblock %}    
+{% block script %}
+<script type ='text/javascript'>
+
+    $(document).ready(function(){
+        uiManager("");
+        $("#mainForm").on("submit",function(){
+            $(this).hide("slow");
+        });
+        $("#ExpenseTrip").on("change",function(){
+            if($(this).val() > 0){
+                $("#ExpensePlacewrk").val("");
+            }else{
+                $("#ExpensePlacewrk").val($("#ExpensePlacewrk").attr("ExpensePlacewrk"));
+            }
+        });
+    });
+    function updateTrip($data)
+    {
+       
+        $('[name="ExpenseTrip"]').html($data.trips);
+        $('[name="BudgetId"]').html($data.budget);
+        
+    }
+
+</script>
+{% endblock %}        

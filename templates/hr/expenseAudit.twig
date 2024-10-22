@@ -1,0 +1,200 @@
+{% extends "app.twig" %}
+{% block title %} Expense Audit {% endblock %}
+{% block page %}
+    <div class="row m-b-15">                
+        <div class="col-sm-12">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" id="StatusList">                                
+                                <option value="3">Approved</option>                                                                
+                                <option value="5">In Audit</option>
+                                <option value="6">Processed</option>
+                                <option value="7">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Range :</label>                            
+                            <input class="form-control input-daterange-datepicker" id="dateSelector" type="text" name="daterange" value="{{start}} - {{end}}"/>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- end col-->
+    </div>
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">            
+            
+            <div class="btn-group m-b-30">
+            
+            </div>
+
+            <table id="datagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th><input type='checkbox' class='checkall' onclick="checkToggle()" /></th>                        
+                        <th>Date</th>
+                        <th>Employee</th>
+                        <th>IO</th>
+                        <th>Requested</th>
+                        <th>Approved</th>
+                        <th>OnTrip</th>
+                        <th>Note</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>                                
+            </table>
+            <div class="btn-group">
+                <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath("hr_moveClaims",{f:1})}}' class="btn btn-default" id="auditBtn" style="display:none">Move to Audit</a>
+                <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath("hr_moveClaims",{f:2})}}' class="btn btn-success" id="procBtn" style="display:none">Process</a>
+                <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath("hr_moveClaims",{f:3})}}' class="btn btn-danger" id="cancelBtn" style="display:none">Cancel</a>
+            </div>
+        </div>
+    </div>
+        
+</div>
+<!-- end row -->
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>
+        
+        $ExpenseUrl = "{{request.getPath()}}?action=list&status="+$("#StatusList").val()+"&dr="+$("#dateSelector").val();        
+        $dtable = "";
+        $(document).ready(function(){
+            
+            manageBtn();
+            
+            $('.input-daterange-datepicker').daterangepicker({
+                buttonClasses: ['btn', 'btn-sm'],
+                applyClass: 'btn-default',
+                cancelClass: 'btn-primary'
+            });
+            
+            $("#StatusList").on("change",function(){
+                getExpenses();
+            });
+            $("#dateSelector").on("change",function(){
+                getExpenses();
+            });
+            
+            $dtable = $('#datagrid').DataTable({
+            ajax: $ExpenseUrl,                 
+            "columns": [
+                { "data" : "ExpId" ,render: function ( data, type, row ) {                            
+
+                        return "<input type='checkbox' name='chk"+row.ExpId+"' class='checkbox expChk' ExpId='"+row.ExpId+"'/>";
+                }},
+                { "data" : "ExpenseDate" ,render: function ( data, type, row ) {                            
+
+                        return propelDate(data,1);
+                }},
+                { "data" : "Employee" ,render: function ( data, type, row ) {                            
+
+                        return row.Employee.FirstName + " " + row.Employee.LastName + " ["+row.Employee.EmployeeCode+"]";
+                }},
+                { "data" : "BudgetGroup" ,render: function ( data, type, row ) {                            
+
+                        return row.BudgetGroup.GroupName + " ["+row.BudgetGroup.Groupcode+"]";
+                }},
+                { "data" : "ExpenseReqAmt" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+                { "data" : "ExpenseApprovedAmt" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+                { "data" : "ExpenseTrip" ,render: function ( data, type, row ) {                            
+
+                        if(row.ExpenseTrip > 0)
+                        {
+                            return "On Trip";
+                        }
+                        else {
+                            return "HQ-Working";
+                        }
+                }},
+                { "data" : "ExpenseNote" ,render: function ( data, type, row ) {                            
+
+                        return data;
+                }},
+                { "data" : "ExpId" ,render: function ( data, type, row ) {                            
+
+                        $str = " <a class= 'singleView' href='{{router.getPath("ess_expenseSingle",{id:""})}}"+row.ExpId+"'><i class='fa fa-eye'></i></a>";                                                
+                        return $str;
+                }},
+            
+            ],
+            dom: "Bfrtip",
+            buttons: [{
+                extend: "excel",
+                className: "btn-sm"
+            }, {
+                extend: "print",
+                className: "btn-sm"
+            }],
+            responsive: !0,
+            
+            "rowCallback": function( row, data, dataIndex ) {
+                
+                    $(row).attr( 'expid', data.ExpId);
+                
+            },
+            "fnDrawCallback": function(settings, json) {
+                    
+                    $("#datagrid tr").click(function(){
+     
+                        clickrow(this);
+        
+                    });
+                     
+            },
+           });
+            
+        });
+       function manageBtn()
+       {
+            $status = $("#StatusList").val();
+            if($status == 3) {
+                $("#auditBtn").show();
+                $("#procBtn").hide();
+                $("#cancelBtn").hide();
+            }
+            else if($status == 5) {
+                $("#auditBtn").hide();
+                $("#procBtn").show();
+                $("#cancelBtn").show();
+            }            
+            else 
+            {
+                $("#auditBtn").hide();
+                $("#procBtn").hide();
+                $("#cancelBtn").hide();
+            }
+       }
+       function clickrow()
+       {
+           
+       }
+       function getExpenses()
+       {
+           manageBtn();
+           $status = $("#StatusList").val();
+           $dateSelector = $("#dateSelector").val();
+           $ExpenseUrl = "{{request.getPath()}}?action=list&status="+$status+"&dr="+$dateSelector;           
+           $dtable.ajax.url( $ExpenseUrl ).load()
+   
+       }
+       
+       function checkToggle()
+       {
+           $flag = $(".checkall").is(":checked");
+           $('.expChk').prop('checked',$flag);
+       }
+        
+    </script>
+{% endblock %}    

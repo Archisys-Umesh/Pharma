@@ -1,0 +1,227 @@
+{% extends "app.twig" %}
+{% block title %} Shipping Order View {% endblock %}
+{% block page %}
+    
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="col-sm-10">
+                <h3>Shipping ID : {{so.SoNumber }} >> <a href="{{router.getPath("order",{id:order.OrderId}) }}"> {{order.OrderNumber }} </a> </h3>
+            </div>
+            <div class="col-sm-2">
+            <div class="dropdown pull-right">
+                <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                    <h3 class="mb-3">{{so.SoStatus }} <i class="zmdi zmdi-triangle-down"></i></h3>
+                </a>
+                <ul class="dropdown-menu" role="menu">                                                                                
+                    {% if (so.SoStatus == 'Created') %}                         
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="{{router.getPath("changeShippingStatus",{soid:so.Soid}) }}?action=allocate"><i class="zmdi zmdi-label"></i> Confirm Allocation </a></li>                    
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="/hr/employeeForm/15"><span style="color:red"><i class="zmdi zmdi-delete"></i> Delete Order</a> </span></li>
+                    {% endif %}
+                    {% if (so.SoStatus == 'Allocated') %} 
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="{{router.getPath("changeShippingStatus",{soid:so.Soid}) }}?action=intransit"><i class="zmdi zmdi-label"></i> Mark In-Transit </a></li>                    
+                    {% endif %}
+                    {% if (so.SoStatus == 'InTransit') %} 
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="{{router.getPath("changeShippingStatus",{soid:so.Soid}) }}?action=delivered"><i class="zmdi zmdi-label"></i> Mark Delivered </a></li>                    
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="{{router.getPath("order_changeStatus",{order_id:order.OrderId}) }}"><i class="zmdi zmdi-print"></i> Print Labels</a></li>                    
+                    {% endif %}
+                    {% if (so.SoStatus == 'Shipped') %} 
+                        <li><a onclick="return loadModalURL(this)" href="#" remote="{{router.getPath("changeShippingStatus",{soid:so.Soid}) }}?action=delivered"><i class="zmdi zmdi-label"></i> Mark Delivered </a></li>                    
+                    {% endif %}                    
+                    <hr/>                    
+                </ul>
+                 
+            </div>
+            </div>
+            <br/><br/>
+        </div>        
+    </div>
+    <div class="col-sm-8">
+        <div class="card-box">
+            <div class="col-sm-2">
+                <h4 class="mb-3">Ship To:</h4>
+                <div> <i>{{outletFrom.getOutletType.getOutlettypeName()}}</i> </div>                
+                <div> <strong>{{outletFrom.OutletName }}</strong> </div>
+                <div>{{outletFrom.OutletContactName }} - {{outletFrom.OutletCode }}</div>                
+                <div>{{outletFrom.OutletAddress }}</div>
+                <div>{{outletFrom.OutletStreetName }} {{outletFrom.OutletState }} {{outletFrom.OutletCountry }} {{outletFrom.OutletPincode }}</div>
+                <div>Phone: {{outletFrom.OutletContactNo }}</div>
+            </div>            
+            <div class="col-sm-2">
+                <h4 class="mb-3">Ship By:</h4>
+                <div> <i>{{outletTo.getOutletType.getOutlettypeName()}}</i> </div>                
+                <div> <strong>{{outletTo.OutletName }}</strong> </div>
+                <div>{{outletTo.OutletContactName }} - {{outletTo.OutletCode }}</div>                
+                <div>{{outletTo.OutletAddress }}</div>
+                <div>{{outletTo.OutletStreetName }} {{outletTo.OutletState }} {{outletTo.OutletCountry }} {{outletTo.OutletPincode }}</div>
+                <div>Phone: {{outletTo.OutletContactNo }}</div>
+            </div>
+            <div class="col-sm-3">
+                <h5>Date : {{order.OrderDate|date("d/m/Y") }} </h5>                
+                <h5>Remark : {{order.OrderRemark }} </h5>
+                <h5>StockVoucher : {{so.SvId }} </h5>                                
+            </div>                
+            <div class="col-sm-3">                                
+                
+                {% if (so.ShippingMode != "") %} <h5>ShippingMode : {{so.ShippingMode }} </h5> {% endif %}
+                {% if (so.ShippingPartner != "") %} <h5>Partner : {{so.ShippingPartner }} </h5> {% endif %}
+                {% if (so.TrackingNumber != "") %} <h5>Tracking : {{so.TrackingNumber }} </h5> {% endif %}
+            </div>
+            <div class="col-sm-2">                                
+                {% if (so.InvoiceNumber != "") %} <h5>Inv-No : {{so.InvoiceNumber }} </h5> {% endif %}
+                {% if (so.InvoiceAmount != "") %} <h5>Amount : {{so.InvoiceAmount }} </h5> {% endif %}
+                {% if (so.InvoiceFile != "") %} <h5><a href="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{so.InvoiceFile }}" download>
+                            Download : <i class="zmdi zmdi-money"></i></a> </h5> {% endif %}
+            </div>
+            
+            <div class="clearfix"></div> 
+        </div>   
+        
+        <div class="card-box">            
+            <div class="table-responsive-sm">                                
+            <br/>
+            <table class="table table-striped">
+            
+            
+            <thead>
+            <tr>
+            <th class="center">#</th>
+            <th>Item</th>
+            <th class="right">Order Qty</th>
+            <th class="right">Allocated Qty</th>           
+            <th class="center">Pending</th>            
+            </tr>
+            </thead>
+            
+            <tbody id="orderLinesBody">
+                       
+            </tbody>
+            </table>
+            </div>
+        </div>                 
+<script type="text/x-tmpl" id="orderLineTmpl">    
+{% verbatim %}    
+        <tr class="clickable-row" onclick="return refreshAllocation({%=o.oli.ProductId%})">                 
+            <td class="center">{%=o.id+1%}</td>
+            <td class="left strong">
+                <strong>{%=o.oli.Products.ProductName%} </strong> <br/>
+                <small>{%=o.oli.Products.PackingDesc%} </small>
+            </td>            
+            <td class="right">{%=o.oli.Qty%} <br/> <small>Rate {%=o.oli.Rate%}</td>
+            <td class="right">
+                <a onclick='return loadModalURL(this)' href="#" remote="{%= $oliForm + o.oli.Solid%}" 
+                       data-toggle="ajaxModal"> {%=o.oli.AllocatedQty%}  <br/> 
+                <small>Available Stock : {%=o.stock%} </small> </a>
+            </td>            
+            <td class="right">
+                <strong>{%= (o.oli.Qty - o.oli.AllocatedQty) %} </strong>  <br/>                
+            </td>            
+        </tr>
+        
+{% endverbatim %}
+</script>                
+    
+    </div>
+    
+    <div class="col-sm-4">
+                    
+        
+        <div class="card-box">
+            <h3 class="mb-3" id="allocationTitle">Allocation</h3>
+            <ul class="list-group m-b-0 user-list" id="AllocationContainer">
+                                      
+            </ul>
+            <button onclick="return refreshAllocation(0);" id="loadAllAlloc" name="buttonValue" type="button" class="btn btn-primary">Load All [x]</button>
+        </div>
+        
+        <script type="text/x-tmpl" id="allocLogTmpl">    
+        {% verbatim %}    
+                 <li class="list-group-item">
+                    <a href="#" class="user-list-item"  style="cursor:default !important;">                    
+                    <div class="avatar">
+                        <img src="{%=$mediaUrl + o.alloc.Products.ProductImages%}" alt="">                            
+                    </div>
+                        <div class="user-desc">
+                            <span class="name">{%=o.alloc.Products.ProductName%}</span>
+                            <span class="name">{%=o.alloc.Products.PackingDesc%}</span>
+                            <span class="name">B/Sn : {%=o.alloc.BatchNo%} / {%=o.alloc.SerialNo%} </span>
+                            <span class="name">Qty : {%=o.alloc.Qty%}</span>                            
+                            
+                        </div>
+                    </a>
+                </li>               
+        {% endverbatim %}
+        </script>
+    </div>
+    
+    
+    
+</div>
+    
+{% endblock %}
+
+{% block script %}        
+    <script type="text/javascript">
+        $oliForm = "{{router.getPath("AllocateView",{soid:so.Soid}) }}?outletid={{ order.OutletTo }}&solid=";
+        $mediaUrl = "{{router.getPath("media") }}?w=30&h=30&id=";
+        
+        $(document).ready(function(){
+            
+            loadOrderLines();
+            refreshAllocation(0);
+            
+        });
+        
+        
+        function loadOrderLines()
+        {
+            $.getJSON("?action=lines",function(data){
+                
+            $("#orderLinesBody").html("");  
+            
+            oli = data.oli;               
+            stock = data.stock;
+            for($i = 0 ; $i < oli.length ; $i++)
+                {
+                   $stock = 0;
+                   if(stock[oli[$i].ProductId] != undefined)
+                   {
+                       $stock = stock[oli[$i].ProductId];
+                   }
+                   $("#orderLinesBody").append(tmpl("orderLineTmpl",{"oli":oli[$i],"id":$i,"stock":$stock}));                                       
+                }                                                                                                                                 
+            });
+        }
+        
+        function refreshAllocation($productId)
+        {
+            $.getJSON("?action=allocations&productid="+$productId,function(data){                
+            
+                $("#AllocationContainer").html("");
+            
+                allocations = data.allocations;
+                if($productId > 0)
+                {
+                    if(allocations.length > 0) {
+                        $("#allocationTitle").html("Allocation : "+allocations[0].Products.ProductName);
+                    }
+                    
+                    $("#loadAllAlloc").show();
+                    
+                }
+                else 
+                {
+                    $("#allocationTitle").html("All Allocation");
+                    $("#loadAllAlloc").hide();
+                }
+                for($i = 0 ; $i < allocations.length ; $i++)
+                    {
+                       $("#AllocationContainer").append(tmpl("allocLogTmpl",{"alloc":allocations[$i],"id":$i}));                                       
+                    }                                                                     
+            
+            
+            });
+        }
+
+    </script>
+{% endblock %}

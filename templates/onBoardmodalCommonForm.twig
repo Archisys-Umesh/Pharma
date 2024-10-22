@@ -1,0 +1,31 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+    <script>
+   
+    $(document).ready(function(){
+        $( "#OnBoardOrgUnit" ).on( "change", function() {
+            var orgunits = $(this).val();
+            
+            $.ajax({
+                type:"GET",
+                url : "{{ router.getPath('fsm_getOrgTerritories') }}",
+                data : { orgIds : orgunits },
+                async: false,
+                success : function(response) {
+                    $.each(response, function (i, item) {
+                        $('#OnBoardTerritories').append("<option value='"+ item.TerritoryId +"'>" + item.TerritoryName + "</option>");
+                    });
+                    //$('#OnBoardTerritories').multiselect();
+                },
+                error: function() {
+                    alert('Error occured');
+                }
+            });
+        });
+    });
+    
+</script>
+{% endblock %}
+

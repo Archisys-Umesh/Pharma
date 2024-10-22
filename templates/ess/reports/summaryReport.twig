@@ -1,0 +1,240 @@
+{% extends "app.twig" %}
+{% block title %} Expense  Monthly Summary Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>Month :</label>                            
+                                <select class="form-control input-sm" name="month" id="monthSelect">
+                                    {{monthList|raw}}                            
+                                </select>                            
+                            </div> 
+{#                            {% if currency is defined %}
+                            <div class="form-group col-md-3">                                
+                                <label>Currency :</label>                            
+                                <select class="form-control input-sm" name="currency" id="currency">
+                                    {{currency|raw}}                            
+                                </select>                                                            
+                            </div>
+                            {% endif %}#}
+
+                            <div class="form-group col-md-2">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <!--<input type="submit" class="btn btn-info" id="searchBtn" name="expenseReport" value="View" />  -->
+                            </div>
+                        </form><button class="btn btn-warning waves-effect waves-light m-b-5 pull-right" id="print" onclick="printData()"> <i class="fa fa-print"></i>Print</button>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+<div id="printData">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="10" style="text-align:center;" style="font-size: 20px;">Expense  Monthly Summary Report | {{ reportname }}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Employee Name</th>
+                                <td colspan="8">{{Name}} [{{empcode}}]</td>
+                            </tr>
+                            
+                            <tr>
+                                <th colspan="2">Designation</th>
+                                <td colspan="8">{{Designation}} @ {{Location}}</td>
+                            </tr>
+                                                        
+                            <tr>
+                                <th colspan="2">Working Status</th>
+                                <td colspan="8">{% if status == 9  %}<span class="label label-danger">No</span>{% else %}<span class="label label-success">Yes</span>{% endif %}</td>
+                            </tr>
+                            {#<tr>
+                                <th colspan="2">Currency</th>
+                                <td colspan="9">{{currSelected}}</td>
+                            </tr>#}
+                            
+                            <tr>
+                                <th style="text-align:center;">Particulars</th>                                
+                                
+                                <th style="text-align:center;">Requests</th>
+                                <th style="text-align:center;">Deduction by Approver</th>
+                                <th style="text-align:center;">Net Payable Amount</th>
+                                {#<th style="text-align:center;">Auditor's Deducted Amount</th>
+                                <th style="text-align:center;">Add Amount</th>#}
+                                <th>Audit Changes</th>
+                                <th style="text-align:center;">Final Payable Amount</th>
+                                
+                            </tr>
+                            {% set paybletotal = 0 %}
+                            {% for r in heads %}
+                                {% set audit = r.finalAmount - r.didbyapprover %}
+                            <tr>
+                               <td style="text-align:center;">{{r.particulars}}</td>
+                               
+                               
+                               <td style="text-align:center;">{{r.claimedAmount}}</td>
+                               <td style="text-align:center;">{{r.claimedAmount - r.didbyapprover}}</td>
+                               <td style="text-align:center;">{{r.didbyapprover}}</td>
+                               {#<td style="text-align:center;">{%if(audit) < 0 %} {{audit|abs}} {%else%} {{"0"}} {%endif%}</td>
+                               <td style="text-align:center;">{%if(audit) > 0 %} {{audit|abs}} {%else%} {{"0"}} {%endif%}</td>#}
+                               <td>{{audit}}</td>
+                               <td style="text-align:center;">{{r.finalAmount}} </td>
+                               
+                            </tr>
+                            {%endfor%}
+                            <tr>
+                                <th style="text-align:center;">Total</th>
+                                
+                                <th style="text-align:center;">{{claimedAmount}}</th>
+                                <th style="text-align:center;">{{claimedAmount - didbyapprover}}</th>
+                                <th style="text-align:center;">{{didbyapprover}}</th>
+                                {% set finalaudit = finalAmount - didbyapprover %}
+                                {#<th style="text-align:center;">{{dedAuditorAmount|abs}}</th>
+                                <th style="text-align:center;">{{addAuditorAmount|abs}}</th>#}
+                                <th>{{finalaudit}}</th>
+                                <th style="text-align:center;">{{finalAmount}}</th>
+                                
+                            </tr>
+                            <tr>
+                                <th colspan="2">Final Payable Amount <span class="netpayment">({{currSelected}})</span></th>
+                                <th colspan="9">{{finalAmount}}</th>
+                            </tr>
+                        </thead>
+                    </table>                    
+                </div>
+            </div>      
+        </div>
+          {% if (tripWorklog.count() > 0) %}
+                                        
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="10" style="text-align:center;" style="font-size: 20px;">Worklog | {{ reportname }}</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center;">Date</th>                                
+                                <th style="text-align:center;">Start Time</th>
+                                <th style="text-align:center;">Minutes</th>
+                                <th style="text-align:center;">WorkLog</th>
+                            </tr>
+                            {% for log in tripWorklog %}
+                            <tr>
+                               <td style="text-align:center;">                                    
+                                   {{ log.getExpenses().getExpenseDate()|date('d-m-Y')}}                                    
+                                </td>
+                                 <td style="text-align:center;">  
+                                        {% if (log.StartTime == '') %}
+                                            -                            
+                                        {% else %}
+                                            {{ log.StartTime|date('h:i:s') }}
+                                        {% endif %}
+
+                                </td>
+                                 <td style="text-align:center;">                          
+                                        {% if (log.Minutes == 0) %}
+                                            -
+                                        {% elseif(log.Minutes == -1) %}
+                                            Full day
+                                        {% else %}
+                                            {{ log.Minutes }}
+                                        {% endif %}
+                                </td>
+                                <td style="text-align:center;">  
+                                        {{ log.Description }}
+                                </td>
+                            </tr>
+                            {%endfor%}
+                            
+                        </thead>
+                    </table>                    
+                </div>
+            </div>   
+        </div>
+        <div class="row col-md-12">
+        {% for expDetails in expenseDetails %}
+            {% for expDetails1 in expDetails %}
+            <div class="col-md-4">
+                <div class="card-box">
+                    <div class="widget-chart text-center" id='mainImg'>
+                        <p class="avatar">
+                            <img src="{{router.baseUrl}}/{{expDetails1.Image}}" id="myImgPopup" name="popImg" style="width: 30%;"> 
+                        </p>
+                        <p>
+                            <span>
+                                <h4>{{expDetails1.Description}}</h4>
+                                <h4>{{expDetails1.Amount}}</h4>
+                                <h4>{{expDetails1.ExpId}}</h4>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% endfor %}
+    </div>                  
+    {% endif %}             
+    
+</div>
+
+    
+            
+                
+    
+                                 
+        
+       
+
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+         $("#monthSelect").change(function(){           
+            /*Image Popup*/                
+                $(function() {
+                    $('.pop').on('click', function() {
+                            $('.imagepreview').attr('src', $(this).find('img').attr('src'));
+                            $('#imagemodal').modal('show');   
+                    });		
+                });
+            showLoader();
+            $("#gridFilters").submit();
+            //$month = $('#monthSelect').val();
+            //alert($month);
+                        
+            /*
+            setTimeout(function(){                 
+                getTriplist($DataTableUrl,$filter,$filterdate);
+            }, 1500);
+            */
+       });
+       
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData();
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("printData");
+           newWin= window.open("_blank");
+           newWin.document.write(divToPrint.outerHTML);
+           window.document.popImg.print();
+           newWin.close();
+           window.print();
+           return false;
+           
+        }
+        {#function printImg() {
+        pwin = window.open(document.getElementById("myImgPopup").src,"_blank");
+        pwin.onload = function () {window.print();}
+      }#}
+    </script>
+{% endblock %} 

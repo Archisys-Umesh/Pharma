@@ -1,0 +1,685 @@
+{% extends "app.twig" %}
+{% block title %} {{exp.ExpenseDate|date('d-m-Y')}} : #V00{{exp.PrimaryKey}} {% endblock %}
+{% block page %}
+
+<div class="row">
+    <span class="monthvalue hide">{{monthlySubmissions}}</span>
+    <div class="col-sm-8">
+        <div class="card-box widget-user">
+            <div class="m-b-20">                
+                {% if emp.ProfilePicture == "" %}
+                    <img class="img-responsive img-circle" alt="72x72" src="{{router.baseUrl('')}}images/users/avatar-2.jpg" style="width: 72px; height: 72px;"> 
+                {% else %}
+                    <img class="img-responsive img-circle" alt="72x72" src="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{emp.ProfilePicture}}" style="width: 72px; height: 72px;"> 
+                {% endif %}
+
+                <div class="wid-u-info">
+                    <h4 class="m-t-0 m-b-5">{{emp.FirstName}} {{emp.LastName}} [ {{emp.getEmployeeCode()}} ]</h4>
+                    <p class="text-muted m-b-5 font-13">{{emp.getDesignations().getDesignation()}}</p>
+                    <small class="text-warning"><b>{{emp.Email}}</b></small>
+                </div>
+            </div>
+                
+            <div class="profile-info-name">            
+                <div class="profile-info-detail">
+                    <h3 class="m-t-0 m-b-10"> Working : 
+                    {{exp.TripType}}
+                        {# {% if exp.ExpenseTrip == 0 %}
+                            HQ  Working
+                        {% endif%}
+                        {% if exp.ExpenseTrip > 0 %}
+                            {{ trip_type[trip.TripType] }}
+                        {% endif%} #}
+                        <br/> Budget : {{exp.getBudgetGroup().GroupName}} - {{exp.getBudgetGroup().Groupcode}}
+                    </h3>
+                    <p>Place of Work : {{exp.ExpensePlacewrk}}</p>
+                    <p>Currency : {{Currency}}</p>
+                    {% if trip %}
+                        <p class="text-muted m-b-0"><i>{{trip.TripOriginName}} to {{trip.TripDestinationName}}</i></p>
+                        <p class="text-muted m-b-0"><i>{{trip.TripStartDate|date('d-m-Y h:m a')}} -- {{trip.TripEndDate|date('d-m-Y h:m a')}}</i></p>
+                        <p class="text-muted m-b-20"><i>{{trip.TripReason}} </i></p>
+                    {% endif%}
+                    <table class="table table-bordered m-0">
+                        <thead>
+                            <tr>
+                                <th>Total Requested</th>
+                                <th>Final</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{exp.ExpenseReqAmt}}</td>
+                                <td>{% if level != 0 and exp.ExpenseStatus >= 2%}
+                                    {{exp.ExpenseFinalAmt}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="clearfix"></div>
+            </div>              
+        </div>    
+                                
+        <div class="card-box" style="overflow-x: auto !important;">
+            <form action="{{request.getUri()}}" method="post">
+            <table class="table m-b-20 table-hover dt-responsive" id="multipleExpense">
+                <thead>
+                    <tr>{% set ccTrue = 1 %}
+                        <th class="ccchk">Cmp Card</th>                    
+                        <th>Title</th>
+                        <th>Request</th>                    
+                            {% if level != 0 %}                        
+                            <th>Approved</th>
+                            {% endif%}
+                        <th>Final</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                {% for r in rows %}                    
+                    <tr class="ExpDetails" expId ="{{r.getExpenseMaster().ExpenseId}}" ILQty="{{r.ExpMasterId}}|{{r.ExpListId}}" explistid = "{{r.ExpListId}}">                        
+                        <td class="ccchk">
+                            {% if r.getExpenseMaster().Nonreimbursable == 1%}
+                                {% set ccTrue = 0 %}
+                                {% if level == 0 %}                                
+                                    <input type="checkbox" name="CmpCard[{{r.ExpMasterId}}]" expId ="{{r.getExpenseMaster().ExpenseId}}" class="CmpCard CmpCard_{{r.ExpMasterId}} checkbox" {%if r.CmpCard == 1%} checked="checked" {% endif %} value="{{r.CmpCard}}" id="CmpCard"/>                                
+                                {% else %}
+                                    <input type="checkbox" name="CmpCard[{{r.ExpMasterId}}]" expId ="{{r.getExpenseMaster().ExpenseId}}" class="CmpCard checkbox CmpCard_{{r.ExpMasterId}}" readonly disabled {%if r.CmpCard == 1%} checked="checked" {% endif %} value="{{r.CmpCard}}" id="CmpCard"/>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="ExpTitleOnclick">                            
+                            <b>{{r.getExpenseMaster().ExpenseName}}
+                                {% if r.getExpenseListDetailss()|length > 0 %}
+                                    {% set ExpCountShow = 'ExpCountShow' %}
+                                {% else %}
+                                    {% set ExpCountShow = 'ExpCountHide' %}
+                                {% endif %}    
+                                    
+                                <span class="ExpCount {{ExpCountShow}}">{{r.getExpenseListDetailss()|length}}</span>
+                               
+                               
+                            </b>
+                            <br/>
+                            <small class="text-danger Policyerror" expId ="{{r.getExpenseMaster().ExpenseId}}"></small>                                                                                    
+                            <small class="text-danger">{{r.ExpNote}}</small>
+                        </td>
+                        {% if level == 0 %}
+                            <td width="180px"> 
+                                {%if r.getExpenseMaster().Israteapplied == 1%}
+                                    <input type="tel" maxlength="10" id="txtexpenses" onblur="if(!this.value > 0){this.value='0.0'}" min="0" onfocus="if (this.value*1 == 0) {this.value=''}" value="{{r.ExpRateQty | default(0)}}" rate ="{{r.getExpenseMaster().Rate}}" 
+                                       name="ExpRateQty[{{r.ExpMasterId}}]" class="numberOnly form-control multiplyer" style="width:40%;display: inline"/>
+                                {% endif %}
+                                <input type="tel" maxlength="10" id="txtexpenses" onblur="if(!this.value > 0){this.value='0.00'}" min="0" onfocus="if (this.value*1 == 0) {this.value=''}"  value="{{r.ExpIlAmount | default(0)}}" expId ="{{r.ExpMasterId}}" 
+                                       name="ILQty[{{r.ExpMasterId}}|{{r.ExpListId}}]" ILQty="{{r.ExpMasterId}}|{{r.ExpListId}}" class="numberOnly form-control policyChecker ILQty ILQty_{{r.ExpMasterId}}" {%if r.getExpenseMaster().Israteapplied == 1%}
+                                       style="width:40%;display: inline" readonly>
+                                       {% endif %}     
+                                       
+                            </td>
+                        {% else %}
+                            <td>
+                                {{r.ExpIlAmount}} 
+                                {%if r.getExpenseMaster().Israteapplied == 1%}
+                                    @ {{r.ExpRateQty}} 
+                                {% endif %}
+                            </td>                        
+                        {% endif %}
+                        {% if role == 'NSM' and r.IsReadonly == false%}
+                            <td>
+                                <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('ess_changeReq',{id:r.ExpListId})}}?action=auth'>
+                                    {{r.ExpAprAmount}}&nbsp;<i class="fa fa-pencil" style="color:#337ab7"></i>
+                                </a>
+                            </td> 
+                        {% else %}
+                            {% if level == 1 and r.IsReadonly == false %}
+                                <td>
+                                    <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('ess_changeReq',{id:r.ExpListId})}}?action=auth'>
+                                        {{r.ExpAprAmount}}&nbsp;<i class="fa fa-pencil" style="color:#337ab7"></i>
+                                    </a>
+                                </td>                        
+                            {% elseif level != 0 %}
+                                <td>{{r.ExpAprAmount}}</td>                        
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% if audit %}
+                            <td>
+                            <a onclick='loadModalURL(this)' href='#' remote='{{router.getPath('ess_changeReq',{id:r.ExpListId})}}?action=audit'>
+                                {{r.ExpAuditAmount}}                                                                
+                            </a>
+                            </td>
+                        {% else %}
+                            <td><span class="finalamt" id="finalAmt">{{r.ExpFinalAmount}}</span>
+                            </td>
+                        {% endif %}
+                        {#<td>
+                            {%if r.getExpenseMaster().IsMandatory != 1 and level == 0 %}
+                            <a href="#" onclick="deleteExpenseList({{r.ExpListId}})" value = "Refresh">
+                            <i class="fa fa-remove"></i></a>
+                            {% endif%}
+                        </td>#}
+                        </tr>
+                    {%if r.getExpenseMaster().Isdaily == 1 or r.getExpenseMaster().AdditionalText == 1%}     
+                    <tr class="">                                     
+                        <td colspan="6" style="border:0px">                            
+                            <div class="metaInfo">
+                                {%if r.getExpenseMaster().Isdaily == 1 %}
+                                    <div class="col-md-4">
+                                    {% if level == 0 %}
+                                        {% set mode = r.getExpenseMaster().Mode|split(',') %}                                                               
+                                        <select name="ExpRateMode[{{r.ExpMasterId}}]" class="form-control">
+                                        {% for m in mode %}
+                                            <option value="{{ m }}"{% if r.getExpRateMode() == m %} selected{% endif %}>{{ m }}</option>
+                                        {% endfor %}
+                                        </select>
+                                    {% else %}                            
+                                        {{r.getExpRateMode()}}
+                                    {% endif %}    
+                                    </div>
+                                {% endif %}
+                                <small class="text-danger">{{r.ExpAuditRemark}}</small>
+                                 {%if r.getExpenseMaster().AdditionalText == 1 and level == 0 %}
+                                    <span class="show_add_text_{{r.ExpMasterId}}">
+                                        <span style="width: 9%;display: inline; padding-left: 16%">Additional: </span>
+                                        <input class="numberOnly" type="tel" maxlength="10" id="txtexpenses" onblur="if(this.value == '') { this.value='0.00'}" min="0" onfocus="if (this.value == '0.00') {this.value=''}" value="{{r.ExpReqAmount | default(0)}}" expId ="{{r.ExpMasterId}}" 
+                                           name="ExpQty[{{r.ExpMasterId}}]" onkeyup="calculateFinal({{r.ExpMasterId}})" class="form-control" style="width: 24%;display: inline">&nbsp;
+                                        <span style="width: 9%;display: inline">GST: </span>
+                                        <input class="numberOnly" type="tel" maxlength="10" id="txtexpenses" onblur="if(this.value == '') { this.value='0.00'}" min="0" onfocus="if (this.value == '0.00') {this.value=''}" value="{{r.ExpTaxAmount | default(0)}}" expId ="{{r.ExpMasterId}}" 
+                                           name="TaxQty[{{r.ExpMasterId}}]" onkeyup="calculateFinal({{r.ExpMasterId}})" class="form-control" style="width: 24%;display: inline">
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </td>                        
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                 </tbody>
+            </table>
+                 
+                 <div class="form-group">
+                    <label class="col-md-2 control-label">Remarks</label>
+                    <div class="col-md-10">
+                        {% if level == 0 %}
+                        <textarea class="form-control" name="remarks" rows="5">{{exp.ExpenseNote}}</textarea>
+                        {% else %}
+                            {{exp.ExpenseNote}}
+                        {% endif %}
+                    </div>
+                </div>
+
+                
+                {% if level == 0 %}
+                    <div class="col-md-12 p-20">                        
+                        <button id="saveuser" name="buttonValue" value="save" type="submit" class="btn btn-primary">Save</button>           
+                        <div class="pull-right">                                                                                    
+                            <a href="{{formAction}}?action=addMoreExp" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add More Expenses </a>                                
+                            <a href="{{router.getPath('ess_expenseForm',{id:0})}}?date={{exp.ExpenseDate|date('d/m/Y')}}" class="btn btn-purple w-md waves-effect waves-light"><i class="zmdi zmdi-plus"></i> New Claim Sheet</a>                                 
+                        </div>
+                    </div>
+                {% endif %}
+                {% set info = session.getFlash('info') %}
+                    {% if info != "" %}
+                    <div class="form-group text-center m-t-30" id="expenseInfo">
+                        <div class="col-xs-12">
+                            <div class="alert alert-info" role="alert">
+                                {{info}}
+                            </div>
+
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="clearfix"></div>
+            </form>
+        </div>
+                
+        <div class="card-box" id="attachmentCard">
+            <div class="card-box task-detail">     
+                <h4 class="header-title m-t-0 m-b-30"><i class="zmdi zmdi-attachment m-r-5"></i> Attachments</h4>
+                <div class="attached-files m-t-10">                                    
+                <script type="text/x-tmpl" id="empDocListTpl">    
+                {% verbatim %}
+                    <div class="file-box">
+                        <span class="removeExp" onclick="removeExp({%=o.ExpId%},{%=o.ExpFileId%})" ExpId="{%=o.ExpId%}" ExpFileId="{%=o.ExpFileId%}" id="ExpFileId_{%=o.ExpFileId%}"><i class="dripicons-cross btn-danger"></i></span>                        
+                        <a href="{%= $download + o.ExpFullName%}" download>
+                            {% if(o.ExpMime == 'image/jpeg' || o.ExpMime == 'image/png') { %}
+                            <img src="{%= $download + o.ExpFullName%}" class="img-responsive img-thumbnail" alt="attached-img" >
+                            {% } else { %}
+                            <i class="fa fa-file"></i>
+                            {% } %}
+                        </a>
+                    </div>
+                {% endverbatim %}
+                </script> 
+            
+                <div class="files-list">
+                    <div id="empDocList">
+                        
+                    </div>
+                    {% if level == 0 %}
+                    <div class="file-box m-l-15" id="uploadFiles">
+                        <div class="fileupload add-new-plus">                            
+                            <span><i class="zmdi-plus zmdi"></i></span>
+                            <input type="file" name="empDoc" id="documentLoader" accept="image/*" class="upload">                            
+                        </div>
+                        
+                    </div>
+                    {% endif %}
+                </div>
+                
+            </div>
+                
+            </div>
+        </div>
+                
+           {% if (tripWorklog.count() > 0) %}
+                                        
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="10" style="text-align:center;" style="font-size: 20px;">Worklog</th>
+                            </tr>
+                            
+                            <tr>
+                                <th style="text-align:center;">Date</th>                                
+                                
+                                <th style="text-align:center;">Start Time</th>
+                                <th style="text-align:center;">Minutes</th>
+                                <th style="text-align:center;">WorkLog</th>
+                                
+                            </tr>
+                            
+                            {% for log in tripWorklog %}
+                               
+                            <tr>
+                               
+                               <td style="text-align:center;">                                    
+                                   {{ log.getExpenses().getExpenseDate()|date('d-m-Y')}}                                    
+                                </td>
+
+                                 <td style="text-align:center;">  
+                                        {% if (log.StartTime == '') %}
+                                            -                            
+                                        {% else %}
+                                            {{ log.StartTime|date('h:i:s') }}
+                                        {% endif %}
+
+                                </td>
+                                 <td style="text-align:center;">                          
+                                        {% if (log.Minutes == 0) %}
+                                            -
+                                        {% elseif(log.Minutes == -1) %}
+                                            Full day
+                                        {% else %}
+                                            {{ log.Minutes }}
+                                        {% endif %}
+
+                                </td>
+                                <td style="text-align:center;">  
+                                        {{ log.Description }}
+                                </td>
+                               
+                            </tr>
+                            {%endfor%}
+                            
+                        </thead>
+                    </table>                    
+                </div>
+            </div>   
+        </div>
+    {% endif %}         
+                
+        <div class="clearfix"></div>
+        
+        
+        
+        {% if exp.ExpenseReqAmt > 0 %}                
+            {{exp_actions|raw}}
+            
+            
+        {% endif %}
+        {%if exp.ExpenseStatus == '1'%}
+        <div class="card-box addclassmonth"> 
+        <a onclick="deleteExpense({{exp.ExpId}});" href='#' id="cancelExpense" class="showcancelbtn btn btn-danger btn-trans waves-effect w-md m-b-5 show">Delete</a>      
+        </div> 
+        {% endif %}
+    </div>
+   
+    <div class="col-md-4" id="expenseQuickView" style="display:none">
+            
+
+    </div>
+   
+    <div class="col-sm-4" id="statusHide">
+        {{exp_log|raw}}
+    </div>
+</div>
+        
+    <script type="text/javascript">
+        $hideCC = {{ccTrue}};
+    </script>
+
+
+{% endblock %}
+{% block script %}
+  
+<script type="text/javascript">
+    $deleteUrl = "{{request.getPath()}}?action=delFile&expid=";
+    $cancelExpenseUrl = "{{request.getPath()}}?action=cancelExpenseUrl";
+    $url = "{{request.getPath()}}?action=validateExp";
+    $deleteExpenseListUrl = "{{request.getPath()}}?action=delExp&explistid=";
+    $download = "{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/";
+    $quickUrl = "{{router.getPath('ess_expenseMultiple')}}";
+    $deleteExpense = "{{request.getPath()}}?action=deleteExpense&expid=";
+    
+    $(document).ready(function(){
+        $level = "{{level}}";
+        loadDoc();
+        hideCC();
+        
+        $('.ExpDetails').on('click', function () {
+            var explistid = $(this).attr("explistid");
+            $('#multipleExpense tr').removeClass("selected");
+            $(this).addClass("selected");                
+            quickExpView(explistid);
+        });
+        
+        $ExpenseStatus = {{exp.ExpenseStatus}};
+        if($ExpenseStatus == 1){
+            $("#cancelExpense").show();
+        }else{
+            $("#cancelExpense").hide();
+        }
+        if($level > "0"){ 
+            setTimeout(function() {
+                $(".removeExp").hide();
+            },1000);
+        }
+        
+        $(".policyChecker").change(function(){
+            $expid = $(this).attr("expId");
+            $ILQty = $(this).attr("ILQty");
+            data = {action:"validateExp","expId":$expid,val:$(this).val()};
+            me = this;
+            $.ajax({
+                url: $url,
+                data: data,
+                success: function(res){                
+                    if(!res.Validated)
+                    {
+                        $(me).val(res.Limit1);
+                        $('.Policyerror[expId="'+$expid+'"]').html(res.Message);                        
+                        calculateFinal($ILQty);
+                    }
+                    else 
+                    {
+                        $('.Policyerror[expId="'+$expid+'"]').html('');
+                        calculateFinal($ILQty);
+                    }
+                },
+                dataType: "json"
+              });
+            
+    });
+        $(".ILQty").keyup(function(){
+            
+            $d = $(this).val()*1;
+            var expid = $(this).attr("expid");
+            if($d > 0){                
+                $("#remark_"+expid).attr("required","required");                
+            }
+            else {                
+                $("#remark_"+expid).removeAttr("required");                
+            }
+            
+        });
+        $(".CmpCard").change(function(){
+            $expid = $(this).attr("expId");
+            
+            $abc = $(".CmpCard_"+$expid).val();
+            if($abc == 0){
+                $(".CmpCard_"+$expid).val(1);
+           }else{
+                $(".CmpCard_"+$expid).val(0);
+           }
+        });
+           
+        
+        $(".add_text").click(function(){
+          
+          $expid = $(this).attr("expid");
+          $tr = $("tr[expid='"+$expid+"']");
+          
+          if($(this).hasClass("fa-minus-circle"))
+          {
+              $(this).addClass("fa-plus-circle");
+              $(this).removeClass("fa-minus-circle");
+          }
+          else 
+          {
+            $(this).addClass("fa-minus-circle");
+            $(this).removeClass("fa-plus-circle");
+          }
+          
+          $(".show_add_text_"+$expid).toggle(500);
+            
+        });
+        {#setTimeout(function() {
+            $(".removeExp").click(function(){
+                if (confirm('Are you sure you want to delete this?')) {
+                    
+                    $ExpId = $(this).attr("ExpId");
+                    $ExpFileId = $(this).attr("ExpFileId");
+                    //showLoader();
+                    
+
+
+                    $.ajax({
+                        url: $deleteUrl+$ExpId,
+                        data: {ExpFileId:$ExpFileId},
+                        dataType: "json",
+                        success: function(res){
+                        
+                        },
+                            
+                    });
+                    
+                    $("#ExpFileId_"+$ExpFileId).remove();
+                    
+                }
+            });
+        },1000);#}
+        $('#documentLoader').simpleUpload({
+            url: "{{request.getPath()}}?action=addFiles",            
+            
+            success: function(data){
+                loadDoc();
+            }
+        });
+        
+          
+        
+            $('#txtexpenses').change(function() {
+              $('.finalAmt').val($('#txtexpenses').val());
+            });
+        
+       setTimeout(function() {
+            $(".attDelete").click(function(){
+                if (confirm('Are you sure you want to delete this?')) {
+                    $ExpId = $(this).attr("ExpId");
+                    $ExpFileId = $(this).attr("ExpFileId");
+                    showLoader();
+                    quickPost($deleteUrl,{"ExpId":$ExpId,ExpFileId:$ExpFileId},function(data){
+                        hideLoader();
+                    });
+                }
+            });
+        },1000);
+        setTimeout(function() {
+            $("#expenseInfo").hide();
+            
+        }, 7000);
+    });
+
+function quickExpView($expid)
+        { 
+            if($expid > 0 ) 
+            {       
+                $("#expenseQuickView").html("Loading...");
+                $.get($quickUrl+"?explistid="+$expid+"&action=list",function(data){ 
+                        $("#expenseQuickView").html(data);
+                        $("#expenseQuickView").show();        
+                        //hideLoader();
+                });
+                
+            }
+        }
+        
+function removeExp($ExpId,$ExpFileId){
+    if (confirm('Are you sure you want to delete this?')) {
+        $.ajax({
+            url: $deleteUrl+$ExpId,
+            data: {ExpFileId:$ExpFileId},
+            dataType: "json",
+            success: function(res){
+                loadDoc();
+            },
+        });
+    }
+}
+
+{#function cancelExpense($expId){
+    if (confirm('Are you sure you want to cancel this expense?')) {
+        quickPost($cancelExpenseUrl,{"ExpId":$expId},function(data){
+            if(data.status == 1){
+                toastr["error"]("Your Expenses have been Cancelled");
+                location.reload();
+            }
+        });
+    }
+}#}
+
+function deleteExpense($expId){
+    $expenseslist ="/ess/expenses";
+    if (confirm('Are you sure you want to delete this?')) {        
+        $.get($deleteExpense+$expId,function(data){
+            if(data.status == 1){
+                toastr["error"]("Expense have been delete");
+                window.location = $expenseslist;
+            }
+        });
+    }
+}
+function deleteExpenseList($expId){
+    
+    if (confirm('Are you sure you want to delete this?')) {        
+        $.get($deleteExpenseListUrl+$expId,function(data){
+                toastr["error"]("Expense list have been delete");
+                reloadExpenseSingle();
+        });
+    }
+    
+}
+function calculateFinal(expId)
+{   
+    $tr = $("tr[ILQty='"+expId+"']");
+    $TaxQty = $("input[name='TaxQty["+expId+"]']").val();
+    $ExpQty = $("input[name='ExpQty["+expId+"]']").val();
+    $ILQty = $("input[name='ILQty["+expId+"]']").val();
+    if($TaxQty == "" || $TaxQty == undefined){$TaxQty = 0;}
+    if($ExpQty == "" || $ExpQty == undefined){$ExpQty = 0;}
+    if($ILQty == "" || $ILQty == undefined){$ILQty = 0;}
+    $final = ($TaxQty*1) + ($ExpQty*1) + ($ILQty*1);
+    $(".finalamt",$tr).html($final);
+}
+   
+function loadDoc()
+    {
+        $.getJSON("{{request.getPath()}}?action=getFiles",function(data){
+            $("#empDocList").html("");
+            $maxAttachments = {{maxAttachments}};
+            if(data.length == 0 && $level > 0)
+            {
+                $("#attachmentCard").hide();
+            }
+            if(data.length > $maxAttachments)
+            {
+                $("#uploadFiles").hide();
+            }
+            for($i = 0 ; $i < data.length ; $i++){                                
+               $("#empDocList").append(tmpl("empDocListTpl",data[$i]));                                       
+            }                                                                  
+
+        });
+    }    
+function hideCC()
+{
+    if($hideCC == 1) {
+        $(".ccchk").remove();
+    }
+}
+
+jQuery( document ).ready(function($) {
+         var $value = $('.monthvalue').html();
+         if($value == '1'){
+             $('.hidemonth').hide();
+           
+         }
+});
+
+function closeQuickView()
+    {
+        $("#multipleExpHide").hide();  
+    }
+
+function reloadExpenseSingle()
+{
+    window.location.reload();
+}
+
+ $(".numberOnly").keydown(function (e) {
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) || 
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+            return;
+        }
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+});
+
+    
+</script>
+
+<style>
+    .ExpCountHide{display: none;}
+    .metaInfo {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 40px;
+    }
+    .fa fa-remove{
+        margin-right: 10px!important;
+    }
+    
+    #multipleExpense tbody tr 
+    {
+        cursor: pointer;
+    }
+    #multipleExpense tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #multipleExpense tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+    span.ExpCount {background: #bc0c1c;padding: 2px 7px;border-radius: 50%;color: #fff;}
+    
+</style>
+
+{% endblock %}
+

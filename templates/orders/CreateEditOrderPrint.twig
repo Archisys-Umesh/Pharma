@@ -1,0 +1,173 @@
+{% extends "app_nosidebar.twig" %}
+{% block title %} Order View {% endblock %}
+{% block page %}
+    
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="col-sm-10">
+            <h3>Order ID : {{order.OrderNumber }}</h3>
+            </div>
+            <div class="col-sm-2">
+            <a  href="javascript:print();" class="btn btn-sm btn-primary" id="printButton"><i class="zmdi zmdi-print"></i> Print Order</a>
+           
+            </div>
+            <br/><br/>
+        </div>        
+    </div>
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="col-sm-2">
+                <h4 class="mb-3">Billed To:</h4>
+                <div> <i>{{outletFrom.getOutletType.getOutlettypeName()}}</i> </div>                
+                <div> <strong>{{outletFrom.OutletName }}</strong> </div>
+                <div>{{outletFrom.OutletContactName }} - {{outletFrom.OutletCode }}</div>                
+                <div>{{outletFrom.OutletAddress }}</div>
+                <div>{{outletFrom.OutletStreetName }} {{outletFrom.OutletState }} {{outletFrom.OutletCountry }} {{outletFrom.OutletPincode }}</div>
+                <div>Phone: {{outletFrom.OutletContactNo }}</div>
+            </div>            
+            <div class="col-sm-2">
+                <h4 class="mb-3">Billed By:</h4>
+                <div> <i>{{outletTo.getOutletType.getOutlettypeName()}}</i> </div>                
+                <div> <strong>{{outletTo.OutletName }}</strong> </div>
+                <div>{{outletTo.OutletContactName }} - {{outletTo.OutletCode }}</div>                
+                <div>{{outletTo.OutletAddress }}</div>
+                <div>{{outletTo.OutletStreetName }} {{outletTo.OutletState }} {{outletTo.OutletCountry }} {{outletTo.OutletPincode }}</div>
+                <div>Phone: {{outletTo.OutletContactNo }}</div>
+            </div>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-2">
+                
+                <h4>Date : {{order.OrderDate|date("d/m/Y") }} </h4>                
+                <h4>Remark : {{order.OrderRemark }} </h4>
+                
+            </div>
+            
+            <div class="clearfix"></div> 
+        </div>   
+        
+        <div class="card-box">
+           
+            <div class="table-responsive-sm">                                
+            <br/>
+            <table class="table table-striped">
+            
+            
+            <thead>
+            <tr>
+            <th class="center">#</th>
+            <th>Item</th>
+            <th class="right">MRP</th>
+            <th class="right">Rate</th>
+            <th class="right">Qty</th>
+            <th class="right">ShipedQty</th>
+            <th class="center">SubTotal</th>            
+            </tr>
+            </thead>
+            
+            <tbody id="orderLinesBody">
+                       
+            </tbody>
+            </table>
+            </div>
+        </div>                 
+<script type="text/x-tmpl" id="orderLineTmpl">    
+{% verbatim %}    
+        <tr>                 
+            <td class="center">{%=o.id+1%}</td>
+            <td>
+                <strong>{%=o.oli.Products.ProductName%} </strong> <br/>
+                <small>{%=o.oli.Products.PackingDesc%} </small>
+            </td>            
+            <td class="right"><del>{%=o.oli.Mrp%}</del> </td>
+            <td class="right">{%=o.oli.Rate%} </td>
+            <td class="center">{%=o.oli.Qty%} </td>
+            <td class="center">{%=o.oli.ShipQty%} </td>
+            <td class="right">
+                <strong>{%=o.oli.TotalAmt%} </strong>  <br/>
+                <small>Margin:{%= (o.oli.Mrp - o.oli.Rate)*o.oli.Qty %} </small>
+            </td>            
+        </tr>
+        
+{% endverbatim %}
+</script>                
+    <div class="card-box">
+        <div class="row">
+            <div class="col-lg-8 col-sm-7">
+            </div>
+            <div class="col-lg-4 col-sm-5 ml-auto">
+                <br/>
+                <table class="table table-clear">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Subtotal</strong>
+                            </td>
+                            <td class="right" id="subtotal_l" ></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Discount</strong>
+                            </td>
+                            <td class="right" id="discount_l"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>Total</strong>
+                            </td>
+                            <td class="right">
+                                <strong id="total_l"></strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>   
+  
+</div>
+    
+{% endblock %}
+
+{% block script %}
+    
+    <script type="text/javascript">
+        $oliForm = "{{router.getPath("order_addOli",{id:order.OrderId}) }}?oli=";
+        $(document).ready(function(){
+            
+            loadOrderLines();
+            
+        });
+        
+        function loadOrderLines()
+        {
+            $.getJSON("?action=lines",function(data){
+                
+            $("#orderLinesBody").html("");  
+            $("#LogContainer").html("");
+            oli = data.oli;   
+            log = data.log;
+            for($i = 0 ; $i < oli.length ; $i++)
+                {
+                   $("#orderLinesBody").append(tmpl("orderLineTmpl",{"oli":oli[$i],"id":$i}));                                       
+                }                                                                     
+            for($i = 0 ; $i < log.length ; $i++)
+                {
+                   $("#LogContainer").append(tmpl("orderLogTmpl",{"log":log[$i],"id":$i}));                                       
+                }                                                                     
+            ord = data.ord;
+            
+            $("#subtotal_l").html(ord.OrderSubtotal);
+            $("#discount_l").html(ord.OrderDiscount);
+            $("#total_l").html(ord.OrderTotal);
+            
+            });
+        }
+    document.getElementById('printButton').addEventListener('click', function() {   
+    document.getElementById('printButton').style.display = 'none';
+    window.print();
+});  
+    </script>
+{% endblock %}

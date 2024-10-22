@@ -1,0 +1,98 @@
+{% extends "app.twig" %}
+{% block title %} Expenses {% endblock %}
+{% block page %}
+    
+    <div class="row">
+        <div class="col-sm-4">            
+            <a href="{{router.getPath('ess_expenseForm',{id:0})}}" data-toggle="ajaxModal" class="btn btn-purple btn-rounded w-md waves-effect waves-light m-b-20"><i class="zmdi zmdi-plus"></i> Add </a>                                
+            
+        </div>
+        
+        <div class="col-sm-8">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>Status :</label>
+                            
+                            <select class="form-control input-sm" id="StatusList">
+                                <option value="1">Created</option>
+                                <option value="2">Submited</option>
+                                <option value="3">Approved</option>
+                                <option value="4">Rejected</option>                                
+                                <option value="P">To Approve</option>
+                                <option value="5">In Audit</option>
+                                <option value="6">Processed</option>
+                                <option value="7">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Range :</label>                            
+                            <input class="form-control input-daterange-datepicker" id="dateSelector" type="text" name="daterange" value="{{start}} - {{end}}"/>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- end col-->
+    </div>
+    <!-- end row -->
+    
+    <div class="row" id="expenseCardHolder">
+        
+    </div>
+    <!-- end row -->
+{% endblock %}
+{% block script %}
+    <script>
+        
+        $ExpenseUrl = "{{request.getPath()}}?action=list&status=";
+        $cardUrl = "{{request.getPath()}}?action=v&pk=";
+        
+        $(document).ready(function(){
+            
+            $('.input-daterange-datepicker').daterangepicker({
+                buttonClasses: ['btn', 'btn-sm'],
+                applyClass: 'btn-default',
+                cancelClass: 'btn-primary'
+            });
+
+            
+            getExpenses();
+            $("#StatusList").on("change",function(){
+                getExpenses();
+            });
+            $("#dateSelector").on("change",function(){
+                getExpenses();
+            });
+            
+        });
+       
+       function getExpenses()
+       {
+           $status = $("#StatusList").val();
+           $dateSelector = $("#dateSelector").val();
+           $("#expenseCardHolder").html("");
+           $.getJSON($ExpenseUrl + $status + "&dr=" + $dateSelector,function(data){
+                               
+                for($i in data)
+                {
+                    placeCard($i);
+                }
+            
+            });
+       }
+       
+       function placeCard($id)
+       {
+           $.get($cardUrl + $id,function(data){
+                            
+                $("#Exp_"+$id).remove();
+                $("#expenseCardHolder").append(data);
+            
+            });
+       }
+        
+    </script>
+
+{% endblock %}

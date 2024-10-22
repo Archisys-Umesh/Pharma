@@ -1,0 +1,847 @@
+{% extends "app.twig" %}
+{% block title %} Employees {% endblock %}
+{% block page %}
+
+    {% if emp.IsLocked %}
+        <div class="col-xs-12">
+            <div class="alert alert-danger" role="alert">
+
+                <a href="{{ router.getPath('hr_unlockEmp') }}?emp={{ emp.EmployeeId }}" data-toggle="ajaxModal"
+                   class="btn btn-danger pull-right mtp-lock"><i class="zmdi zmdi-lock"></i> UnLock</a>
+
+                {{ emp.Lockedreason }} : {{ emp.Lockeddate |date('Y-m-d') }}
+
+            </div>
+        </div>
+    {% endif %}
+
+    {% if stp %}
+        {% if stp.StpStatus=="approved" %}
+            <div class="col-xs-12">
+                <div class="alert alert-danger" role="alert">
+
+                    <a onclick='loadData(this)' href="#" remote="{{ router.getPath('unlockSTP') }}?stp_id={{ stp.StpId }}&status=draft"
+                       class="btn btn-danger pull-right mtp-lock"><i class="zmdi zmdi-lock"></i> Unlock</a>
+                    Unlock STP
+{#                    {{ emp.Lockedreason }} : {{ emp.Lockeddate |date('Y-m-d') }}#}
+
+                </div>
+            </div>
+            {% else %}
+                <div class="col-xs-12">
+                    <div class="alert alert-success" role="alert">
+
+                        <a onclick='loadData(this)' href="#" remote="{{ router.getPath('unlockSTP') }}?stp_id={{ stp.StpId }}&status=approved"
+                           class="btn btn-success pull-right mtp-lock"><i class="zmdi zmdi-lock"></i> Approve</a>
+                        Approve STP
+                        {#                    {{ emp.Lockedreason }} : {{ emp.Lockeddate |date('Y-m-d') }}#}
+
+                    </div>
+                </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-box task-detail">
+                {% if not isUserManager %}
+                    <div class="dropdown pull-right">
+                        <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                            <i class="zmdi zmdi-edit"></i>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a onclick='return loadModalURL(this)' href='#'
+                                   remote="{{ router.getPath('hr_empForm',{id:emp.EmployeeId}) }}">Edit</a></li>
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="media m-b-20">
+                    <div class="media-left">
+                        <a href="#" id='profilePic'>
+                            {% if emp.EmployeeMedia == "" %}
+                                <img class="media-object img-circle" alt="64x64" src="../../images/users/avatar-2.jpg"
+                                     style="width: 48px; height: 48px;">
+                            {% else %}
+                                <img class="media-object img-circle" alt="64x64"
+                                     src="{{ router.getPath('media') }}?id={{ emp.EmployeeMedia }}"
+                                     style="width: 48px; height: 48px;">
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading m-b-0">{{ emp.FirstName }} {{ emp.LastName }}
+                            [ {{ emp.getEmployeeCode() }} ]</h4>
+                        {% if not isUserManager %}
+                            <input type="checkbox" id="empStausCheck" {% if emp.Status == 1 %}checked{% endif %}
+                                   data-plugin="switchery" data-color="#00b19d" data-size="small"/>
+                        {% endif %}
+                        <p class="text-muted m-b-5 font-13">{{ emp.getDesignations().getDesignation() }}</p>
+                        <p class="text-muted m-b-5 font-13">{{ emp.Email }}</p>
+                        {% if emp.BaseMtarget > 0 %}
+                            <p class="m-b-5 font-15">Base Sales Target : {{ emp.BaseMtarget }}</p>
+                        {% endif %}
+                        {% if emp.getPositionId > 0 %}
+                            <span class="label label-danger">Position: {{ emp.getPositionsRelatedByPositionId().getPositionName() }}</span>
+                        {% endif %}
+                        <span class="label label-success">Reports To: {{ emp.getPositionsRelatedByReportingTo().getPositionName() }}</span>
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <ul class="list-inline task-dates m-b-0 m-t-20">
+                    <li>
+                        <h5 class="font-600 m-b-5">Remarks</h5>
+                        <p>{{ emp.Remark }}</p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5">Date of Birth</h5>
+                        <p>
+                            <a href="#" id="BirthDate" data-type="combodate"
+                               data-value="{{ empDates.getBirthDate() ? empDates.getBirthDate() |date('Y-m-d') }}"
+                               data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY"
+                               data-template="D / MMM / YYYY" data-pk="{{ emp.getPrimaryKey() }}"
+                               data-title="Select Birth Date" class="editable editable-click" data-original-title=""
+                               title=""></a>
+                        </p>
+                    </li>
+                    <li>
+                        <h5 class="font-600 m-b-5">Join Date</h5>
+                        <p>
+                            <a href="#" id="JoinDate" data-type="combodate"
+                               data-value="{{ empDates.getJoinDate() ? empDates.getJoinDate() |date('Y-m-d') }}"
+                               data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY"
+                               data-template="D / MMM / YYYY" data-pk="{{ emp.getPrimaryKey() }}"
+                               data-title="Select Join Date" class="editable editable-click" data-original-title=""
+                               title=""></a>
+                        </p>
+                    </li>
+                </ul>
+                <div class="clearfix p-20"></div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Last Login</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if user != "" %}
+                        <tr>
+                            <td>
+                                <a href="{{ router.baseUrl('hr/userSession') }}/{{ user.getUserId() }}">{{ user.getUsername() }}
+                            </td>
+                            <td> {% if user.LastLogin > 0 %}
+                                    {{ user.getLastLogin()| date('d-m-Y H:i a') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ user.getRoles().RoleName }}</td>
+                            <td>
+                                {% if not isUserManager %}
+                                    <a onclick="return loadModalURL(this)" href='#' class='btn btn-danger btn-xs'
+                                       remote='{{ router.getPath('sys_userForm',{id:user.getPrimaryKey()}) }}'><i
+                                                class='zmdi zmdi-edit'></i></a>
+                                {% endif %}
+                                <a onclick="return loadModalURL(this)" title='Reset Password'
+                                   class='btn btn-default btn-xs' href='#'
+                                   remote='{{ router.getPath('sys_userResetPwd',{id:user.getPrimaryKey()}) }}'><i
+                                            class='zmdi zmdi-key'></i></a>
+
+                                <a title='user session'
+                                   class='btn btn-default btn-xs'
+                                   href='{{ router.getPath('hr_userSession',{id:user.getPrimaryKey()}) }}'><i
+                                            class='zmdi zmdi-file-text'></i></a>
+                                {# <a title='Debit Sgpi' class='btn btn-default btn-xs'  href='{{ router.getPath('sgpi_history',{id:""}) }}" + row.SgpiId + "'><i class='zmdi zmdi-car'></i></a> #}
+
+                                {% if user.DeviceName != "" %}
+                                    <a onclick="return loadModalURL(this)" title='View Map'
+                                       class='btn btn-default btn-xs' href='#'
+                                       remote='{{ router.getPath('hr_employeeLastLoc',{id:user.getPrimaryKey()}) }}'><i
+                                                class='zmdi zmdi-map'></i></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><a onclick="return loadModalURL(this)" href='#'
+                                   remote='{{ router.getPath('sys_userForm',{id:0}) }}?emp={{ emp.getPrimaryKey() }}&name='><i
+                                            class='zmdi zmdi-plus'></i></a></td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+
+
+                <div class="clearfix"></div>
+            </div>
+
+
+        </div>
+        <div class="col-md-6">
+            <div class="card-box" widgitize="{{ router.getPath('hr_userHrAccount',{id:emp.getPrimaryKey()}) }}"
+                 data-toggle="dataWidgets">
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <h4 class="header-title col-md-6 m-t-0 m-b-30">Attendance</h4>
+            </div>
+
+
+            <div class="btn-group m-b-30 pull-right">
+
+                <select class="form-control input-sm" name="month" id="AttendanceMonth">
+                    {{ monthList|raw }}
+                </select>
+
+            </div>
+
+            <table id="employeeAttendance" class="table table-bordered nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>Actual Puch In Date</th>
+                    <th>Start Town</th>
+                    <th>End Time</th>
+                    <th>Actual Punch Out Date</th>
+                    <th>End Town</th>
+                    <th>Visited Town</th>
+                    <th>Total Calls</th>
+                    <!--<th>Duration (Hrs)</th>-->
+                    <th>Remark</th>
+                    <th>Status</th>
+                    <th>Expense Remark</th>
+                    {% if editpermis == true %}
+                        <th>Action</th>
+                    {% endif %}
+
+                </tr>
+                </thead>
+
+            </table>
+            <a href="{{ router.getPath('hr_attendance_form',{id:0}) }}?emp={{ emp.getPrimaryKey() }}"
+               data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Attendance</a>
+            <a href="{{ router.getPath('hr_releaseDayLock') }}?emp={{ emp.getPrimaryKey() }}" data-toggle="ajaxModal"
+               class="btn btn-danger"><i class="zmdi zmdi-lock"></i> Release All DayLock</a>
+
+            <a onclick="regenerateExpense({{ emp.getPrimaryKey() }})" href='#' id="regenerateExpense"
+               class="btn btn-danger">
+                <i class="zmdi zmdi-refresh-sync"></i> Generate Monthly Expense Again
+            </a>
+
+        </div>
+
+
+    </div>
+
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <b>Leaves</b>
+                <div class="pull-right">
+                </div>
+            </div>
+
+            <div class="btn-group m-b-30">
+
+            </div>
+            <table id="employeeLeaves" class="table table-bordered nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                    <th>Requested on</th>
+                    <th>Updated on</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ widgetmgr.render("\\Modules\\HR\\Widgets\\monthlyExpense",{getEmployeeId:getEmployeeId}) | raw }}
+        </div>
+        <div class="col-md-6">
+            {{ widgetmgr.render("\\Modules\\HR\\Widgets\\categoyExpense",{getEmployeeId:getEmployeeId}) | raw }}
+        </div>
+    </div>
+
+    {# Advance #}
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <a href="{{ router.getPath('hr_profileForm',{id:emp.EmployeeId}) }}?action=advanceForm"
+                   data-toggle="ajaxModal" class="btn btn-success" id="btnAddPrimary"><i class="zmdi zmdi-plus"></i>
+                    Balance</a>
+                <div class="pull-right">
+                    <b>Account Balance : <span id="accountBalance">{{ advanceBalance }}<span></b>
+                </div>
+            </div>
+
+            <div class="btn-group m-b-30">
+
+            </div>
+
+            <table id="employeeAdvance" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+
+                </tr>
+                </thead>
+
+            </table>
+        </div>
+
+
+    </div>
+
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <b>SGPI Balance</b>
+                <div class="pull-right">
+                    {#                    <b>Account Balance</b> #}
+                </div>
+            </div>
+
+            <div class="btn-group m-b-30">
+
+            </div>
+
+            <table id="sgpiBalance" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+
+                    <th>Sr.No</th>
+                    <th>Sgpi Name</th>
+                    <th>Sgpi Code</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Balance</th>
+                    <th>Action</th>
+
+                    {# <th>Date</th>
+                    <th>Amount</th>
+                    <th>Description</th> #}
+
+                </tr>
+                </thead>
+
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+    <!-- X-editable css -->
+
+    <link type="text/css"
+          href="{{ router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css') }}"
+          rel="stylesheet">
+    <script src="{{ router.baseUrl('plugins/moment/moment.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js') }}"></script>
+
+
+    <script type="text/javascript">
+
+        $profileurl = "{{ request.getPath() }}";
+        $expEdit = "{{ router.getPath('hr_employeeExp',{id:""}) }}";
+        $eduEdit = "{{ router.getPath('hr_employeeEdu',{id:""}) }}";
+        $refEdit = "{{ router.getPath('hr_employeeRef',{id:""}) }}";
+        $download = "{{ router.baseUrl('uploads/') }}{{ auth.getUser().getCompanyId() }}/";
+
+        $docEdit = "{{ router.getPath('hr_employeeDoc',{id:""}) }}";
+        $empId = {{ emp.getPrimaryKey() }};
+
+        $(document).ready(function () {
+
+            //loadExp();
+            //loadEdu();
+            //loadRef();
+            //loadDoc();
+
+
+            $maxYear = (new Date()).getFullYear() + 1;
+
+            $('.editable').editable({
+                combodate: {maxYear: $maxYear},
+                url: '{{ request.getPath() }}?action=hrDates',
+                placement: function (context, source) {
+                    var popupWidth = 336;
+                    if (($(window).scrollLeft() + popupWidth) > $(source).offset().left) {
+                        return "right";
+                    } else {
+                        return "left";
+                    }
+                },
+                pk: {{ emp.getPrimaryKey() }}
+            });
+
+
+            $('#documentLoader').simpleUpload({
+                url: "{{ router.getPath('hr_postNewEmpDoc',{id:emp.getPrimaryKey()}) }}",
+                fields: {
+                    empId: $empId,
+                },
+                success: function (data) {
+                    loadDoc();
+                }
+            });
+
+            $('#profilePicInput').simpleUpload({
+                url: $profileurl + "?action=updatePic",
+                types: ['jpg', 'png'],
+                fields: {
+                    empId: $empId,
+                },
+                success: function (data) {
+
+                    reloadGrid();
+                }
+            });
+
+
+            $("#empStausCheck").change(function () {
+                $status = 0;
+                if ($("#empStausCheck").is(':checked')) {
+                    $status = 1;
+                }
+                quickPost('{{ request.getPath() }}?action=empRec', {
+                    "name": "Status",
+                    "value": $status
+                }, function (data) {
+
+                    toastr["success"]("Status Updated", "");
+
+                });
+
+            });
+            $employeeAdvance = $('#employeeAdvance').DataTable({
+                ajax: "{{ request.getPath() }}?action=employeeAdvance",
+                "columns": [
+                    {
+                        "data": "Date", render: function (data, type, row) {
+                            if (row.Date == null) {
+                                return '-';
+                            }
+                            var data = row.Date.split("+");
+
+                            var data1 = data[0].split("T");
+                            return data1[0];
+                        }
+                    },
+                    {"data": "Balance"},
+                    {"data": "Description"},
+
+
+                ],
+                drawCallback: function () {
+                    balance = 0;
+                    var api = this.api();
+                    balance = api.column(1).data().reduce(function (a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0);
+
+                    $("#accountBalance").text(balance);
+                }
+            });
+
+            $sgpiBalance = $('#sgpiBalance').DataTable({
+                ajax: "{{ request.getPath() }}?action=transactions",
+                "columns": [
+                    {"data": "Uniquecode"},
+                    {"data": "SgpiName"},
+
+                    {"data": "SgpiCode"},
+                    {"data": "UseStartDate"},
+                    {"data": "UseEndDate"},
+                    {"data": "Balance"},
+                    {
+                        "data": "AttendanceId", render: function (data, type, row) {
+
+                            {# $str = "<a title='Debit Sgpi' class='btn btn-default btn-xs'  href='{{ router.getPath('sgpi_history',{id:""}) }}" + row.SgpiId + "'><i class='zmdi zmdi-car'></i></a>"; #}
+                            $str = "<a title='Credit Sgpi' class='btn btn-default btn-xs'  href='{{ router.baseUrl('hr/credit_sgpi_history/') }}" + row.SgpiId + '/' + row.EmployeeId + "'><i class='zmdi zmdi-download'></i></a>";
+                            return $str;
+                        }
+                    },
+
+
+                ],
+                /*drawCallback: function () {
+                    balance = 0;
+                    var api = this.api();
+                    balance = api.column(1).data().reduce( function (a, b) {
+                        return parseFloat(a) + parseFloat(b);
+                    }, 0 );
+
+                    $("#accountBalance").text(balance);
+                }*/
+            });
+
+        });
+
+        function reloadAttendance() {
+            $employeeAttendance.ajax.url("{{ router.getPath('hr_attendance') }}?action=list&id=" + $empId + "&month=" + $("#AttendanceMonth").val()).load();
+        }
+
+        function regenerateExpense($empId) {
+            var month = $("#AttendanceMonth").val();
+            $.ajax({
+                url: "{{ router.getPath('hr_regenerateExpense') }}",
+                type: "POST",
+                data: {empId: $empId, month: month},
+                cache: false,
+                success: function () {
+                    document.location.reload();
+                }
+            });
+        }
+
+        $("#AttendanceMonth").change(function () {
+
+            reloadAttendance();
+
+        });
+
+        $mapLink = "{{ router.getPath('hr_employeePunchLoc') }}";
+        $employeeAttendance = $('#employeeAttendance').DataTable({
+            scrollX: true,
+            ajax: "{{ router.getPath('hr_attendance') }}?action=list&id=" + $empId + "&month=" + $("#AttendanceMonth").val(),
+            "columns": [
+                {
+                    "data": "Date", render: function (data, type, row) {
+                        return row.Date;
+                    }
+                },
+                {
+                    "data": "StartTime", render: function (data, type, row) {
+                        if (row.StartTime == null) {
+                            return '-';
+                        }
+                        $time = row.StartTime.split(":");
+                        return $time[0] + ":" + $time[1];
+                    }
+                },
+                {
+                    "data": "punchindate", render: function (data, type, row) {
+                        if (row.punchindate == null) {
+                            return ' ';
+                        } else {
+                            return row.punchindate;
+                        }
+                    }
+                },
+                {
+                    "data": "StartTownName", render: function (data, type, row) {
+                        if (row.StartTownName == null) {
+                            return ' ';
+                        } else {
+                            return row.StartTownName;
+                        }
+                    }
+                },
+                {
+                    "data": "EndTime", render: function (data, type, row) {
+                        if (row.EndTime == null) {
+                            return '-';
+                        }
+                        $time = row.EndTime.split(":");
+                        return $time[0] + ":" + $time[1];
+                    }
+                },
+                {
+                    "data": "punchoutdate", render: function (data, type, row) {
+                        if (row.punchoutdate == null) {
+                            return ' ';
+                        } else {
+                            return row.punchoutdate;
+                        }
+                    }
+                },
+                {
+                    "data": "EndTownName", render: function (data, type, row) {
+                        if (row.EndTownName == null) {
+                            return ' ';
+                        } else {
+                            return row.EndTownName;
+                        }
+                    }
+                },
+                {
+                    "data": "VisitedTownName", render: function (data, type, row) {
+                        if (row.VisitedTownName == null) {
+                            return ' ';
+                        } else {
+                            return row.VisitedTownName;
+                        }
+                    }
+                },
+                {
+                    "data": "TotalCalls", render: function (data, type, row) {
+                        if (row.TotalCalls == null) {
+                            return ' ';
+                        } else {
+                            return row.TotalCalls;
+                        }
+                    }
+                },
+                {
+                    "data": "Remark", render: function (data, type, row) {
+                        if (row.Remark != null) {
+                            return row.Remark;
+                        } else {
+                            return ' ';
+                        }
+                    }
+                },
+                {
+                    "data": "Status", render: function (data, type, row) {
+                        if (row.Status == 0) {
+                            return 'Punch-in';
+                        } else if (row.Status == 1) {
+                            return 'Punch-out';
+                        } else if (row.Status == -1) {
+                            return 'Day Locked';
+                        } else if (row.Status == 4) {
+                            return 'Emergency-Leave';
+                        } else {
+                            return row.Type;
+                        }
+                    }
+                },
+                {
+                    "data": "ExpenseRemark", render: function (data, type, row) {
+                        if (row.ExpenseRemark == null) {
+                            return ' ';
+                        } else {
+                            return row.ExpenseRemark;
+                        }
+                    }
+                },
+                {% if editpermis == true %}
+                {
+                    "data": "AttendanceId", render: function (data, type, row) {
+                        if(row.AttendanceId == null || row.AttendanceId == ''){
+                            return '';
+                        }else if(row.ExpenseStatus >= 3){
+                            $str = "<a title='DayActivity' class='btn btn-default btn-xs'  href='{{ router.getPath('hr_dailyCallsbyattendance',{id:""}) }}" + row.AttendanceId + "'><i class='zmdi zmdi-car'></i></a>";
+                            return $str;
+                        }else{
+                            $str = "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{ router.getPath('hr_attendance_form',{id:""}) }}" + row.AttendanceId + "?emp=" + $empId + "'><i class='zmdi zmdi-edit'></i></a>";
+                            $str = $str + "<a title='DayActivity' class='btn btn-default btn-xs'  href='{{ router.getPath('hr_dailyCallsbyattendance',{id:""}) }}" + row.AttendanceId + "'><i class='zmdi zmdi-car'></i></a>";
+                            return $str;
+                        }
+                    }
+                },
+                {% endif %}
+            ],
+            createdRow: function (row, data, index) {
+
+                if (data.Status == -1) {
+                    $(row).addClass('danger');
+                }
+                if (data.Status == 0) {
+                    $(row).addClass('warning');
+                }
+            }
+        });
+
+
+        function reloadEvents() {
+            $employeeEvents.ajax.url("{{ router.getPath('hr_event_list') }}?action=list&id=" + $empId + "&month=" + $("#EventMonth").val()).load();
+        }
+
+        $("#EventMonth").change(function () {
+            reloadEvents();
+        });
+
+        $employeeEvents = $('#employeeEvents').DataTable({
+
+            ajax: "{{ router.getPath('hr_event_list') }}?action=list&id=" + $empId + "&month=" + $("#EventMonth").val(),
+            "columns": [
+                {"data": "EventDate"},
+                {
+                    "data": "EventTypeId", render: function (data, type, row) {
+                        return row.EventTypes.EventTypeName;
+                    }
+                },
+                {"data": "EventRemark"},
+                {
+                    "data": "EventStatus", render: function (data, type, row) {
+                        if (data == 0) {
+                            return "Pending";
+                        }
+                        if (data == 1) {
+                            return "Approved";
+                        }
+                        if (data == 2) {
+                            return "Rejected";
+                        }
+                    }
+                },
+                {
+                    "data": "EventId", render: function (data, type, row) {
+
+                        return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{ router.getPath('hr_event',{id:""}) }}" + row.EventId + "?emp=" + $empId + "'><i class='zmdi zmdi-edit'></i></a>";
+                    }
+                },
+
+
+            ],
+        });
+
+        function reloadGrid() {
+            document.location.reload();
+        }
+
+        function reloadAdvanceGrid() {
+            $employeeAdvance.ajax.reload();
+            $sgpiBalance.ajax.reload();
+        }
+
+
+        function reloadTargetMapping() {
+            $empTargetMapping.ajax.reload();
+        }
+
+        $empTargetMapping = $('#empTargetMapping').DataTable({
+
+            ajax: "{{ router.getPath('hr_traget',{id:emp.getPrimaryKey()}) }}?action=list",
+            "columns": [
+                {
+                    "data": "Targets", render: function (data, type, row) {
+                        return data.TargetName;
+                    }
+                },
+                {
+                    "data": "Targets", render: function (data, type, row) {
+                        return data.TargetType;
+                    }
+                },
+                {
+                    "data": "Targets", render: function (data, type, row) {
+                        return data.TargetValue;
+                    }
+                },
+                {
+                    "data": "Id", render: function (data, type, row) {
+                        return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{ router.getPath('hr_traget',{id:emp.getPrimaryKey()}) }}?action=form&targetid=" + row.Id + "'><i class='zmdi zmdi-edit'></i></a>";
+                    }
+                }
+            ]
+        });
+        $employeeLeaves = $('#employeeLeaves').DataTable({
+            ajax: "{{ request.getPath() }}?action=leaves",
+            "columns": [
+                {"data": "LeaveType"},
+                {
+                    "data": "LeaveFrom", render: function (data, type, row) {
+                        return data;
+                    }
+                },
+                {
+                    "data": "LeaveTo", render: function (data, type, row) {
+                        return data;
+                    }
+                },
+                {
+                    "data": "LeaveStatus", render: function (data, type, row) {
+                        if (data == 0) {
+                            return "Submitted";
+                        }
+                        if (data == 1) {
+                            return "Raised";
+                        }
+                        if (data == 2) {
+                            return "Approved";
+                        }
+                        if (data == 3) {
+                            return "Rejected";
+                        }
+                        if (data == 4) {
+                            return "Cancelled";
+                        }
+                    }
+                },
+                {"data": "LeaveReason"},
+                {
+                    "data": "CreatedAt", render: function (data, type, row) {
+                        return moment(data).format('YYYY-MM-DD HH:mm');
+                    }
+                },
+                {
+                    "data": "UpdatedAt", render: function (data, type, row) {
+                        if (data == null) {
+                            return "-";
+                        } else {
+                            return moment(data).format('YYYY-MM-DD HH:mm');
+                        }
+                    }
+                },
+
+            ],
+            /*drawCallback: function () {
+                balance = 0;
+                var api = this.api();
+                balance = api.column(1).data().reduce( function (a, b) {
+                    return parseFloat(a) + parseFloat(b);
+                }, 0 );
+
+                $("#accountBalance").text(balance);
+            }*/
+        });
+
+
+    </script>
+    <script>
+        function loadData(obj)
+        {
+            showLoader();
+            $("#ajaxModal").remove();
+            $(".modal-backdrop").remove();
+
+            var $this=$(obj);
+            $remote=$this.data('remote')||$this.attr('remote');
+            $modal=$('<div  class="modal" tabindex="-1" role="dialog" id="ajaxModal"><div class="modal-body"></div></div>');
+            $('body').append($modal);
+            $modal.modal({backdrop: 'static'});
+            $modal.load($remote,function(result){
+                modal_form_submit_handler();
+                hideLoader();
+                window.location.reload();
+            });
+            return false;
+        }
+    </script>
+
+
+{% endblock %}

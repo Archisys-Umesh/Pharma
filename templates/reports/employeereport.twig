@@ -1,0 +1,77 @@
+{% extends "app.twig" %}
+{% block title %}
+	Employee  Report
+{% endblock %}
+{% block page %}
+
+
+	<div class="row">
+		<div class="col-sm-12">
+			<form
+				action="?action=load" method="POST">
+				{# <input type = "submit" value="Load"> #}
+				<button class="btn btn-primary waves-effect waves-light m-b-5" name="load">Load</button>
+			</form>
+			<div class="card-box table-responsive">
+				<table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size:10px !important;">
+					<thead>
+						<tr>
+							<th style="width:72px;">Sr.</th>
+							<th style="text-align:center;">Employeename</th>
+							<th style="text-align:center;">StartTime</th>
+							<th style="text-align:center;">EndTime</th>
+							<th style="text-align:center;">OutletCount</th>
+							<th style="text-align:center;">AttendanceDate</th>
+							<th style="text-align:center;">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						{%  for e in employeeList %}
+
+							<tr>
+								<td>{{e.AttendanceId}}</td>
+								<td>{{e.FirstName}}{{e.LastName}}</td>
+								<td>{{e.StartTime}}</td>
+								<td>{{e.EndTime}}</td>
+								<td>{{e.OutletCount}}</td>
+								<td>{{e.AttendanceDate}}</td>
+								<td>{{e.Status}}</td>
+							</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+
+				<button class="btn btn-warning waves-effect waves-light m-b-5" id="print">
+					<i class="fa fa-print"></i>Print</button>
+			</div>
+		</div>
+
+		{# {% endif %} #}
+
+	{% endblock %}
+
+	{% block script %}
+		 <script type ='text/javascript'>                
+		        $moveUrl = "{{request.getPath()}}?action=load";
+		        $dtable = "";
+		        $(document).ready(function(){            
+		            $("#print").on('click', function() {
+		                printData()
+		            });
+		          
+		            $dtable = $('#datagrid').DataTable({
+		                
+		            });
+		        });
+		        function printData()
+		        {
+		           var divToPrint=document.getElementById("datagrid");
+		           newWin= window.open("");
+		           newWin.document.write(divToPrint.outerHTML);
+		           newWin.print();
+		           newWin.close();
+		        }
+		    </script>
+	{% endblock %}

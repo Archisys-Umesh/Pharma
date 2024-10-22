@@ -1,0 +1,180 @@
+{% extends "app.twig" %}
+{% block title %} Summary Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>Status :</label><br/>                            
+                                <select class="form-control input-sm" name="status" id="statusSelect">
+                                    <option value="1" {%if(status == 1) %} selected="selected" {% endif%}>Created</option>
+                                    <option value="2" {%if(status == 2) %} selected="selected" {% endif%}>Submited</option>
+                                    <option value="3" {%if(status == 3) %} selected="selected" {% endif%}>Approved</option>
+                                    <option value="4" {%if(status == 4) %} selected="selected" {% endif%}>Rejected</option>                                
+                                    <option value="10" {%if(status == 10) %} selected="selected" {% endif%}>Processed</option>
+                                </select>                            
+                            </div>                        
+                            <div class="form-group col-md-2">
+                                <label>Month :</label><br/>                            
+                                <select class="form-control input-sm" name="month" id="monthSelect">
+                                    {{monthList|raw}}                            
+                                </select>                            
+                            </div>                        
+                            <div class="form-group col-md-3" id="empdropdown" {%if(empcount == 0)%}style="display: none" {%endif%}>
+                                <label>Employee :</label><br/>                            
+                                <select class="form-control input-sm" name="empSelect" id="empSelect">
+                                    {{empList|raw}}      
+                                </select>                            
+                            </div>                        
+                            {#  <div class="form-group col-md-2">
+                                <label>Currency :</label><br/>                            
+                                <select class="form-control input-sm" name="currency" id="currency">
+                                    {{currency|raw}}                            
+                                </select>                            
+                            </div> #}
+                            <div class="form-group col-md-1"  id="btnSearch" {%if(empcount == 0)%} style="display: none;" {%endif%}>                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="expenseReport" value="View" />                             
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                        <thead>
+                            <tr>
+                                <th colspan="11" style="text-align:center;" style="font-size: 20px;">Summary Report | {{ reportname }}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Employee Name</th>
+                                <td colspan="9">{{Name}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Employee Code</th>
+                                <td colspan="9">{{empcode}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Designation</th>
+                                <td colspan="9">{{Designation}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">State</th>
+                                <td colspan="9">{{State}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Head Quarter/ Location</th>
+                                <td colspan="9">{{Location}}</td>
+                            </tr>
+                               <tr>
+                                <th colspan="2">Currency</th>
+                                <td colspan="9">{{currSelected}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Working Status</th>
+                                <td colspan="9">{% if status == 9  %}<span class="label label-danger">No</span>{% else %}<span class="label label-success">Yes</span>{% endif %}</td>
+                            </tr>
+                            {% if costnumber %}
+                            <tr>
+                                <th colspan="2">Cost Center</th>
+                                <td colspan="9">{{ costnumber }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th style="text-align:center;">Particulars</th>
+                                <th style="text-align:center;">Claimed Amount</th>                                
+                                <th style="text-align:center;">Total Amount</th>
+                                <th style="text-align:center;">Change by Approver</th>
+                                <th style="text-align:center;">Net Payable Amount</th>
+                                <th style="text-align:center;">Auditor Change Amount</th>
+                                <th style="text-align:center;">Auditor's Add Amount</th>
+                                <th style="text-align:center;">Final Payable Amount</th>
+                                <th style="text-align:center;">Company Card</th>
+                            </tr>
+                            {% set paybletotal = 0 %}
+                            {% for r in heads %}
+                                {% set audit = r.finalAmount - r.didbyapprover %}
+                                {% set changebyapr =  r.didbyapprover - (r.claimedAmount + r.add + r.gst)  %}
+                            <tr>
+                               <td style="text-align:center;">{{r.particulars}}</td>
+                               <td style="text-align:center;">{{r.claimedAmount}} </td>                               
+                               <td style="text-align:center;">{{r.claimedAmount + r.add + r.gst}}</td>
+                               <td style="text-align:center;">{%if(changebyapr) > 0 %} +{{changebyapr}} {%else%} {{changebyapr}} {%endif%}</td>
+                               <td style="text-align:center;">{{r.didbyapprover}}</td>
+                               <td style="text-align:center;">{%if(audit) < 0 %} {{audit|abs}} {%else%} {{"0"}} {%endif%}</td>
+                               <td style="text-align:center;">{%if(audit) > 0 %} {{audit|abs}} {%else%} {{"0"}} {%endif%}</td>
+                               <td style="text-align:center;">{{r.finalAmount}} </td>
+                               <td style="text-align:center;">{{r.cmpcardAmount}}</td>
+                            </tr>
+                            {%endfor%}
+                            <tr>
+                                <th style="text-align:center;">Total</th>
+                                <th style="text-align:center;">{{claimedAmount}}</th>                                
+                                <th style="text-align:center;">{{claimedAmount + add + gst}}</th>
+                                <th style="text-align:center;">{{claimedAmount + add + gst - didbyapprover}}</th>
+                                <th style="text-align:center;">{{didbyapprover}}</th>
+                                {% set finalaudit = finalAmount - didbyapprover %}
+                                <th style="text-align:center;">{{dedAuditorAmount|abs}}</th>
+                                <th style="text-align:center;">{{addAuditorAmount|abs}}</th>
+                                <th style="text-align:center;">{{finalAmount}}</th>
+                                <th style="text-align:center;">{{cmpcardAmount}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Final Payable Amount <span class="netpayment">({{currSelected}})</span></th>
+                                <th colspan="9">{{finalAmount}}</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print" > <i class="fa fa-print"></i>Print</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        $moveUrl = "{{request.getPath()}}?action=getemp";
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+            $("#monthSelect").on('change', function() {
+                if($("#monthSelect ").val() != 0){
+                    $data = {status:$("#statusSelect").val(),month:$("#monthSelect ").val()};
+
+                    quickPost($moveUrl,$data,function(data){
+
+                        if(data.length > 0){
+                            $("#empdropdown").show();
+                            $("#btnSearch").show();
+                            $('#empSelect').html("");
+                            var toAppend = '';
+                            for (var i = 0; i < data.length; i++) {
+                                toAppend += '<option value="'+data[i]['empid']+'">'+data[i]['empName']+'</option>';
+                            }
+                            $('#empSelect').append(toAppend);
+                        }else{
+                            $("#empdropdown").hide();
+                            $("#btnSearch").hide();
+                        }
+                    });
+                }else{
+                    $("#empdropdown").hide();
+                }
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+    </script>
+{% endblock %} 

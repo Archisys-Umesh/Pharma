@@ -1,0 +1,139 @@
+{% extends "app.twig" %}
+{% block title %} Campaign Outlets {% endblock %}
+{% block page %}
+    
+        <div class="col-md-12" id="positionList">
+            <div class="card-box table-responsive">
+                <table id="datagridpo" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>                    
+                            <th><input type="checkbox" class="datatableCheckbox" id="toggle-all"/></th>  
+                            <th>Outlet Name</th>
+                            <th>Outlet Code(Legacy)</th>
+                            <th>P Code</th>
+                            <th>Classification</th>
+                            <th>Territory</th>
+                            <th>Position</th>
+                            <th>Beat</th>
+                            <th>Visit Fq.</th>
+                        </tr>
+                    </thead>
+                </table> 
+                <div class="">
+                    <a href="JavaScript:void(0)" class="btn btn-primary bulkActions" style="float: inline-end;">Submit</a>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+{% block script %}
+<script>
+    var url = window.location.href;
+    var campiagnId = url.substr(url.lastIndexOf('=') + 1);
+
+    $dataUrl = "{{request.getPath()}}?campaignId="+campiagnId+"&action=list";
+    $bulkUrl = "{{request.getPath()}}?action=bulk";
+    var $grid = "";
+    jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function ( a ) {
+            var ukDatea = a.split('/');
+            return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+        },
+        "date-uk-asc": function ( a, b ) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+        "date-uk-desc": function ( a, b ) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+    $(document).ready(function(){
+        $grid = $('#datagridpo').DataTable({
+            "bPaginate": false,
+            ajax: {
+                url: $dataUrl,
+                type: 'GET',
+            },
+            columns: [
+                { "data": "OutletOrgId","render": function ( data, type, row ) {  
+                        return "<input type='checkbox' name='checkboxcked' name='OutletOrgId' value="+row.OutletOrgId+" class='nodeCheckbox'/>";
+                    }, 
+                },
+                {data: 'OutletName', name: 'OutletName'},
+                {data: 'OutletCode', name: 'OutletCode'},
+                { "data": "OutletOrgCode","render": function ( data, type, row ) {
+                        if(row.OutletOrgCode == null){
+                            return null;
+                        }else{
+                            return row.OutletOrgCode;
+                        }
+                    }, 
+                },
+                {data: 'Classification', name: 'Classification'},
+                {data: 'TerritoryName', name: 'TerritoryName'},
+                {data: 'PositionName', name: 'PositionName'},
+                {data: 'BeatName', name: 'BeatName'},
+                {data: 'VisitFq', name: 'VisitFq'},
+            ],
+            select: true,
+            "rowCallback": function( row, data, dataIndex ) {
+                $(row).attr("OutletOrgId",data.OutletOrgId);
+            },
+        });
+    });
+      
+    function loadGrid()
+    {
+        $(".bulkActions").hide();
+        showLoader();
+        quickPost($dataUrl,$("#gridFilters").serialize(),function(res){
+            $('#datagridpo').dataTable().fnClearTable();
+            hideLoader();
+        });
+    }
+      
+    $( document ).ready(function() {
+        $("input:checkbox[class=datatableCheckbox]:checked").each(function () {
+            $('.sorting_disabled').hide();
+            $('td.select-checkbox').hide();
+        });
+        $('#toggle-all').click(function() {
+            if ($(this).is(':checked')) {
+                $('table input:checkbox').prop('checked', true);
+            } else {
+                $('table input:checkbox').prop('checked', false);
+            }
+        });
+    });
+
+     $(".bulkActions").click(function(){
+        var OutletOrgId = [];
+        $(':checkbox:checked').each(function(i){
+            OutletOrgId.push($(this).val()); 
+        });
+        
+        if(OutletOrgId.length > 0)
+        {
+            quickPost($bulkUrl,{"OutletOrgId" : OutletOrgId,"CampiagnId":campiagnId},function(res){
+
+            });
+        }else{
+            toastr["error"]("Please select atleast one outlet.");
+        }
+     });
+</script>
+<style>
+        
+    #datagrid tbody tr 
+    {
+        cursor: pointer;
+    }
+    #datagrid tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #datagrid tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+    
+</style>
+{% endblock %}

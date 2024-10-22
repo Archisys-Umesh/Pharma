@@ -1,0 +1,96 @@
+{% extends 'reports/partials/partials.twig' %}
+
+{% block content %}
+  <div class="row text-center">
+    <h3>{{ Title }}</h3>
+  </div>
+  
+  {# <div class="col-md-12" style="margin-bottom:15px">
+        <table>
+            <tr>
+                <th>Employee Name</th>
+                <th>Employee Code</th>
+                <th>Business Org Unit</th>
+                <th>Reporting To </th>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Location</th>
+                <th>Location Planned</th>
+            </tr>
+            <tr>
+                <td>{{ employee['FirstName'] }} {{ employee['LastName'] }}</td>
+                <td>{{ employee['EmployeeCode'] }}</td>
+                <td>{{ employee['OrgUnit']['UnitName'] }}</td>
+                <td>{{ employeeManagerName }}</td>
+                <td>{{ date }} </td>
+                <td>{{ day }} </td>
+                <td>{{ employee['GeoTowns']['Stownname'] }}</td>
+                <td>{{ dayplan }} </td>
+            </tr>
+        </table>
+    </div> #}
+  <div class="col-md-12" style="margin-top:15px;overflow-x:auto;">
+  {# <button id="darBtnExport" class="btn btn-success" style="padding: 5px;width: 5%;margin-bottom: 10px;">Export</button> #}
+    <table>
+      <tr>
+        <th colspan="2">Employee Name</th>
+        <th colspan="2">Employee Code</th>
+        <th colspan="2">Business Org Unit</th>
+        <th colspan="2">Reporting To</th>
+        <th colspan="2">Date</th>
+        <th>Day</th>
+        <th colspan="2">Location</th>
+        <th colspan="2">Location Planned</th>
+      </tr>
+      <tr>
+        <td colspan="2">{{ employee['FirstName'] }} {{ employee['LastName'] }}</td>
+        <td colspan="2">{{ employee['EmployeeCode'] }}</td>
+        <td colspan="2">{{ employee['OrgUnit']['UnitName'] }}</td>
+        <td colspan="2">{{ employeeManagerName }}</td>
+        <td colspan="2">{{ date }}</td>
+        <td>{{ day }}</td>
+        <td colspan="2">{{ employee['GeoTowns']['Stownname'] }}</td>
+        <td colspan="2">{{ dayplan }}</td>
+      </tr>
+      <tr class="row"></tr>
+      <tr>
+        <th>Sr No.</th>
+        <th>Location/Account</th>
+        <th>Customer Details</th>
+        <th>Tags</th>
+        <th>Agenda</th>
+        <th>Joint Working</th>
+        <th>Planned</th>
+        <th>Sync Date/Time</th>
+        <th>Input</th>
+        <th>Brands detailed</th>
+        <th>POB Value</th>
+        <th>RCPA Potential</th>
+        <th>RCPA Contribution</th>
+        <th>E-Detailing</th>
+        <th>SGPI</th>
+      </tr>
+      {% for data in darData %}
+        {% set counter = (counter|default(0)) + 1 %}
+        <tr>
+          <td>{{ counter }}</td>
+          <td>{{ data['Stownname'] }}</td>
+          <td>{{ data['OutletName'] }}</td>
+          <td>{{ data['Tags'] }}</td>
+          <td>{{ data['Agenda'] }}</td>
+          <td>{{ data['JointWorking'] }}</td>
+          <td>{{ data['Planned'] }}</td>
+          <td>{{ date }} {{ data['CreatedAt'] }}</td>
+          <td>{{ data['SgpiOut'] }}</td>
+          <td>{{ data['Brands'] }}</td>
+          <td>{{ data['PobTotal'] }}</td>
+          <td>{{ data['Potential'] }}</td>
+          <td>{{ data['Contribution'] }}</td>
+          <td>{{ data['Edetailing'] }}</td>
+          <td>{{ data['Sgpi'] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+  </div>
+{% endblock %}

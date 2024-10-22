@@ -1,0 +1,68 @@
+{% extends "base.twig" %}
+{% block content %}
+    
+	<div class="account-pages"></div>
+        <div class="clearfix"></div>
+        <div class="wrapper-page">
+            <div class="text-center">
+                <a href="{{router.baseUrl('')}}" class="logo"><img src="{{router.baseUrl()}}images/logo.png" style="height: 50px;"></a>
+                <h5 class="text-muted m-t-0 font-600">Easy, Simple & Powerful ERP</h5>
+            </div>
+            <div class="m-t-40 card-box">
+                <div class="text-center">
+                    <h4 class="text-uppercase font-bold m-b-0">Reset Password</h4>
+                    <p class="text-muted m-b-0 font-13 m-t-20">Enter your email id and we'll send system admin an email to reset your password.  </p>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t-20" action="{{router.getPath('forgotPwd')}}" method="POST">
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input class="form-control" type="email" required="" name="username" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="form-group text-center m-t-20 m-b-0">
+                            <div class="col-xs-12">
+                                <button class="btn btn-custom btn-bordred btn-block waves-effect waves-light" type="submit">Send Email</button>
+                            </div>
+                        </div>
+                        {% set message = session.getFlash('message') %}
+                        {% if message != "" %}
+                        <div class="form-group text-center m-t-30">
+                            <div class="col-xs-12">
+                                <div class="alert alert-info" role="alert">
+                                    {{message}}
+                                </div>
+                                
+                            </div>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+            <!-- end card-box-->            
+        </div>
+        <!-- end wrapper page -->
+                
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    
+    function FCMTokenCallBack($data)
+    {
+        var $fcm = JSON.parse($data);
+        //alert($fcm.data);
+        $("#fcmtoken").val($fcm.data);
+    }
+    $(document).ready(function(){
+             
+        CallBackMobilePar('FCMToken','FCMTokenCallBack');                               
+        
+    });
+
+     
+
+
+</script>
+{% endblock %}

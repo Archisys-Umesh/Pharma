@@ -1,0 +1,779 @@
+{#{% extends "base.twig" %}#}
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="description" content=" Register for free and start reaping the benefits of one of the best Trip and Expense Management Software Solutions in the market. Expense reimbursement made easy.">
+<link rel="icon" href="images/favicon.png" sizes="16x16" type="image/png"> 
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<title>Register for Free on Xpensys – Trip and Expense Management Software</title>
+
+{% block content %}
+    <div class="main">
+
+        <!-- Left section -->
+        <section class="sign-in">
+            <div class="container">
+                <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="{{router.baseUrl()}}images/logo_1.png" alt="logo"></figure>
+                        <h2 class="form-title">Axe your Enterprise's Expenses</h2>
+                        <p>With our all new enterprise expense management app</p>
+                        <div id="imagestack">
+                            <ul id="imgs">
+                                <li><img src="{{router.baseUrl()}}images/01.Dashboard.jpeg" alt="dashboard"></li>
+                                <li><img src="{{router.baseUrl()}}images/02.SideSwapmenu.jpeg" alt="Sideswapmenu"></li>
+                                <li><img src="{{router.baseUrl()}}images/03.Createtrip.jpeg" alt="Createtrip"></li>
+                                <li><img src="{{router.baseUrl()}}images/04.AddExpense.jpeg" alt="AddExpense"></li>
+                                <li><img src="{{router.baseUrl()}}images/05.viewtriplist.jpeg" alt="ViewTripList"></li>
+                                <li><img src="{{router.baseUrl()}}images/06.viewexpenselists.jpeg" alt="viewexpenselists"></li>
+
+                            </ul>
+                            <div id="controler"> </div>
+                            {#<link href="{{router.baseUrl('css/select2.min.css')}}" rel="stylesheet" type="text/css" />#}
+                            
+                            <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script> 
+                            <script type="text/javascript" src="{{router.baseUrl()}}js/ImageScroll.js"></script>
+                            <script type="text/javascript" src="{{router.baseUrl()}}js/scripts.js"></script>
+                            <script type="text/javascript" src="{{router.baseUrl()}}js/select2.min.js"></script>
+                            <script type="text/javascript">
+                                jQuery(document).ready(function () {
+                                    jQuery('#imgs').imageScroll({
+                                        orientation: "left",
+                                        speed: 1000,
+                                        interval: 1000,
+                                        hoverPause: true,
+
+                                    });
+                                });
+
+
+                            </script>
+
+                        </div>
+                    </div>
+
+                    <div class="signin-form">
+                        <div class="form">
+                            <h2 class="form-title">Create your account</h2>
+                            <p> It's for FREE!</p>
+
+                            {% set error = session.getFlash('error') %}
+                            {% if error != "" %}
+                                <div class="form-group text-center">
+                                    <div class="col-xs-12">
+                                        <div class="alert alert-danger small" role="alert">
+                                            {{error}}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% set message = session.getFlash('message') %}
+                            {% if message != "" %}
+                                <div class="form-group text-center m-t-30">
+                                    <div class="col-xs-12">
+                                        <div class="alert alert-info" role="alert">
+                                            <h3>{{message}}</h3>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {% else %}    
+
+                                <form class="form-horizontal m-t-20 register-form" id="login-form" action="{{router.getPath('register')}}" method="POST">
+
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="CompanyName"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                            <input class="form-control" type="txt" id="OwnerName" required="" name="OwnerName"  value="{{post.OwnerName}}" placeholder="Name of the Owner">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+
+                                            <label for="CompanyName"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                            <input class="form-control" type="text" id="CompanyName" required="" name="CompanyName"  value="{{post.CompanyName}}" placeholder="Name of the Company">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="OwnerEmail"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                            <input class="form-control" type="email" id="OwnerEmail" required="" name="OwnerEmail"  value="{{post.OwnerEmail}}" placeholder="Email">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="Password"><i class="zmdi zmdi-lock"></i></label>
+                                            <input class="form-control" type="password" id="Password" required="" name="Password"  value="{{post.OwnerEmail}}" placeholder="Password">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+
+                                            <label for="CompanyContactNumber"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                            <input class="form-control" type="text" id="CompanyContactNumber" required="" name="CompanyContactNumber"  value="{{post.CompanyContactNumber}}" placeholder="Contact Number">
+                                        </div>
+                                    </div>
+                                    {#<div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="CompanyName">Address of the company: </label>                                
+                                            <textarea id="CompanyAddress1" required="" name="CompanyAddress1" class="form-control" data-parsley-id="50">{{post.CompanyAddress1}}</textarea>
+                                        </div>
+                                    </div>#}
+                                    <div class="form-group">
+                                        <div class="col-xs-12">
+                                            <label for="CountryName"> </label>
+                                            {#<input class="form-control" type="text" id="autocompletecountry" required="" name="CountryId"  list="json-datalist" value="{{post.CountryId}}" placeholder="Country Name">#}
+                                            {#<select required="" id="autocompletecountry" class="form-control" name="CountryId"></select>#}
+                                            <select class="form-control select2 select2-hidden-accessible" required tabindex="-1" id="autocompletecountry" required="" name="CountryId"  aria-hidden="true"> 
+                                            <option value="" disabled selected> Country Name
+                                            </select>
+                                            
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-12">                                
+                                            <input class="form-control" type="hidden" id="CompanyDefaultCurrency" name="CompanyDefaultCurrency" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+
+                                        <p class="tandc"> By clicking "I'm In'. you agree to our <a  target="_blank" href="https://www.archisys.co/termsofuse">Terms</a> of and <a  target="_blank" href="https://www.archisys.co/privacypolicy">Privacy Policy.</a></p>
+
+                                    </div>
+                                    <div class="form-group form-button">
+                                        <input type="submit" name="signin" id="signin" class="form-submit" value="I'm In"/>
+                                    </div>
+
+
+                                </form>
+
+                            {% endif %}
+                        </div>
+                        <div class="appstore">
+                            <ul class="socials">
+                                <li><a target="_blank" href="https://play.google.com/store/apps/details?id=archisys.com.xpensys&hl=en"><img src={{router.baseUrl()}}images/google.png></a></li>
+                                <li><a target="_blank" href="https://itunes.apple.com/us/app/xpensys/id1258072140?mt=8"><img src={{router.baseUrl()}}images/ios.png></a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+
+
+    <!-- end wrapper page -->
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+
+        function FCMTokenCallBack($data)
+        {
+            var $fcm = JSON.parse($data);
+            //alert($fcm.data);
+            jQuery("#fcmtoken").val($fcm.data);
+        }
+        jQuery(document).ready(function () {
+
+            CallBackMobilePar('FCMToken', 'FCMTokenCallBack');
+
+        });
+        
+        $("#autocompletecountry").click(function () {
+            var $country = $("#autocompletecountry").val();
+            $getCountryForRegisterUrl = '{{router.baseUrl()}}getCountryForRegister';
+            quickPost($getCountryForRegisterUrl,{'country' : $country},function(data){
+                
+                $.each(data, function (i, item) {
+                     $html = '<option selected="selected" value="' + item.Icountryid + '">' + item.Scountry + '</option>';
+                     $('#autocompletecountry').append($html);
+                });
+            });
+        });
+        
+       {#$(".select2").select2();
+
+                $(".select2-limiting").select2({
+                    maximumSelectionLength: 2
+                });#}
+
+    </script>
+
+    <style>
+        /* @extend display-flex; */
+        .alert-danger {
+            background-color: rgba(240, 80, 80, 0.2) !important;
+            border-color: rgba(240, 80, 80, 0.3) !important;
+            color: #ff5b5b !important;
+            width: 70%;
+            margin-left: 10px;
+            text-align: center;
+
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .small, small {
+            font-size: 76%;
+        }
+        #imgs {
+            display: block;
+            padding: 0;
+            width: 400%;
+        }
+
+        #imgs li {
+            padding-right: 10px;
+            display: inline-block;
+            *display:inline;
+        }
+
+        #imgs img {
+            width: 200px;
+            height: 355px;  
+        }
+
+        {#
+        .main {
+          
+            float: left;
+            background-image: url('../images/mainbg.png');
+                background-position: 100px 72%;
+            width: 100%;
+                height: 100%;
+        }#}
+        .container {background: transparent !important;}
+        /* @extend display-flex; */
+        display-flex, .display-flex, .display-flex-center, .signup-content, .signin-content, .appstore, .socials {
+            display: flex;
+            display: -webkit-flex; }
+
+        /* @extend list-type-ulli; */
+        list-type-ulli, .socials {
+            list-style-type: none;
+            margin: 0;
+            padding: 0; }
+
+
+        a:focus, a:active {
+            text-decoration: none;
+            outline: none;
+            transition: all 300ms ease 0s;
+            -moz-transition: all 300ms ease 0s;
+            -webkit-transition: all 300ms ease 0s;
+            -o-transition: all 300ms ease 0s;
+            -ms-transition: all 300ms ease 0s; }
+
+        input, select, textarea {
+            outline: none;
+            appearance: unset !important;
+            -moz-appearance: unset !important;
+            -webkit-appearance: unset !important;
+            -o-appearance: unset !important;
+            -ms-appearance: unset !important; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+            appearance: none !important;
+            -moz-appearance: none !important;
+            -webkit-appearance: none !important;
+            -o-appearance: none !important;
+            -ms-appearance: none !important;
+            margin: 0; }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            -o-box-shadow: none !important;
+            -ms-box-shadow: none !important; }
+
+        input[type=checkbox] {
+            appearance: checkbox !important;
+            -moz-appearance: checkbox !important;
+            -webkit-appearance: checkbox !important;
+            -o-appearance: checkbox !important;
+            -ms-appearance: checkbox !important; }
+
+        input[type=radio] {
+            appearance: radio !important;
+            -moz-appearance: radio !important;
+            -webkit-appearance: radio !important;
+            -o-appearance: radio !important;
+            -ms-appearance: radio !important; }
+
+        img {
+            max-width: 100%;
+            height: auto; }
+
+        figure {
+            margin: 0;
+            text-align: left; }
+
+        p {
+            margin-bottom: 8px;
+            margin-top: 0px;
+            font-size: 18px;
+            font-weight: 500;  
+            line-height: 22px; }
+        a{color: #0e94d1;}
+
+        h2 {
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+            color: #222;
+            font-family: 'Roboto', sans-serif;
+            font-size: 31px; }
+
+        .main {
+            /*background: #ffffff;*/
+            float: left;
+            width: 100%;
+            background-image: url(../images/mainbg.png);
+            background-position: 100px 100%;
+            height: 100%;
+            background-repeat: repeat-x;
+
+
+        }
+
+        .clear {
+            clear: both; }
+
+        body {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #222;
+
+            font-weight: 400;
+
+            font-family: 'Roboto', sans-serif;}
+
+        .container {
+            width: 1300px;
+            /*background: #f8f8f8;*/
+            background: transparent;
+            margin: 0 auto; }
+
+        .display-flex {
+            justify-content: space-between;
+            -moz-justify-content: space-between;
+            -webkit-justify-content: space-between;
+            -o-justify-content: space-between;
+            -ms-justify-content: space-between;
+            align-items: center;
+            -moz-align-items: center;
+            -webkit-align-items: center;
+            -o-align-items: center;
+            -ms-align-items: center; }
+
+        .display-flex-center {
+            justify-content: center;
+            -moz-justify-content: center;
+            -webkit-justify-content: center;
+            -o-justify-content: center;
+            -ms-justify-content: center;
+            align-items: center;
+            -moz-align-items: center;
+            -webkit-align-items: center;
+            -o-align-items: center;
+            -ms-align-items: center; }
+
+        .signup {
+            margin-bottom: 150px; }
+
+        .signup-content {
+            padding: 75px 0; }
+
+        .signup-form, .signup-image, .signin-form{
+            width: 35%;
+            /*overflow: hidden;*/  }
+
+        .signin-image {
+            width: 65%;
+            overflow: hidden; }
+
+        .signup-image {
+            margin-top: 45px; }
+
+
+        .form-submit {
+            font-size: 14px;
+            display: inline-block;
+            background: red;
+            color: #fff;
+            border-bottom: none;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -o-border-radius: 5px;
+            -ms-border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer; }
+
+        .form-submit:hover {
+            background: #333333; }
+
+        #signin {
+            margin-top: 0px; }
+
+        .signup-image-link {
+            font-size: 14px;
+            color: #222;
+            display: block;
+            text-align: center; }
+
+        #imagestack{float:left;width: 100%;}
+        #stackimg{float:left;width: 24%;padding-right: 1%;}
+
+        .form h2{padding-left: 10px;}
+        .form p{padding-left: 15px;}
+        .signup-form {
+            margin-left: 75px;
+            margin-right: 75px;
+            padding-left: 34px; }
+
+        .register-form {
+            width: 80%;
+            padding-left: 10px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 7px;
+            overflow: hidden; }
+
+        .form-group:last-child {
+            margin-bottom: 0px; }
+
+        input {
+            width: 100%;
+            display: block;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 12px 12px;
+            box-sizing: border-box; }
+        input::-webkit-input-placeholder {
+            color: #999; }
+        input::-moz-placeholder {
+            color: #999; }
+        input:-ms-input-placeholder {
+            color: #999; }
+        input:-moz-placeholder {
+            color: #999; }
+        input:focus {
+            border-bottom: 1px solid #222; }
+        input:focus::-webkit-input-placeholder {
+            color: #222; }
+        input:focus::-moz-placeholder {
+            color: #222; }
+        input:focus:-ms-input-placeholder {
+            color: #222; }
+        input:focus:-moz-placeholder {
+            color: #222; }
+
+        input[type=checkbox]:not(old) {
+            width: 2em;
+            margin: 0;
+            padding: 0;
+            font-size: 1em;
+            display: none; }
+
+        input[type=checkbox]:not(old) + label {
+            display: inline-block;
+            line-height: 1.5em;
+            margin-top: 6px; }
+
+        input[type=checkbox]:not(old) + label > span {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            margin-right: 15px;
+            margin-bottom: 3px;
+            border: 1px solid #999;
+            border-radius: 2px;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            -o-border-radius: 2px;
+            -ms-border-radius: 2px;
+            background: white;
+            background-image: -moz-linear-gradient(white, white);
+            background-image: -ms-linear-gradient(white, white);
+            background-image: -o-linear-gradient(white, white);
+            background-image: -webkit-linear-gradient(white, white);
+            background-image: linear-gradient(white, white);
+            vertical-align: bottom; }
+
+        input[type=checkbox]:not(old):checked + label > span {
+            background-image: -moz-linear-gradient(white, white);
+            background-image: -ms-linear-gradient(white, white);
+            background-image: -o-linear-gradient(white, white);
+            background-image: -webkit-linear-gradient(white, white);
+            background-image: linear-gradient(white, white); }
+
+        input[type=checkbox]:not(old):checked + label > span:before {
+            content: '\f26b';
+            display: block;
+            color: #222;
+            font-size: 11px;
+            line-height: 1.2;
+            text-align: center;
+            font-family: 'Material-Design-Iconic-Font';
+            font-weight: bold; }
+
+        .agree-term {
+            display: inline-block;
+            width: auto; }
+
+        label {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            -moz-transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            -o-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            color: #222; }
+
+        .label-has-error {
+            top: 22%; }
+
+        label.error {
+            position: relative;
+            background: url("../images/unchecked.gif") no-repeat;
+            background-position-y: 3px;
+            padding-left: 20px;
+            display: block;
+            margin-top: 20px; }
+
+        label.valid {
+            display: block;
+            position: absolute;
+            right: 0;
+            left: auto;
+            margin-top: -6px;
+            width: 20px;
+            height: 20px;
+            background: transparent; }
+        label.valid:after {
+            font-family: 'Material-Design-Iconic-Font';
+            content: '\f269';
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            /* right: 0; */
+            font-size: 16px;
+            color: green; }
+
+        .signin-content {
+            padding-top: 20px;
+        }
+
+        p.tandc{
+            font-size: 12px;
+            font-weight: 400;
+            padding-left: 3px;
+            line-height: 15px;
+            color: #888;
+        }
+
+        .appstore {
+            align-items: center;
+            -moz-align-items: center;
+            -webkit-align-items: center;
+            -o-align-items: center;
+            -ms-align-items: center;
+            margin-top: 15px;
+            padding-left: 32px; }
+
+        .social-label {
+            display: inline-block;
+            margin-right: 15px; }
+
+        .socials li {
+            padding: 5px; }
+        .socials li:last-child {
+            margin-right: 0px; }
+        .socials li a {
+            text-decoration: none; }
+        .socials li a i {
+            width: 30px;
+            height: 30px;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -o-border-radius: 5px;
+            -ms-border-radius: 5px;
+            transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-property: transform;
+            transition-property: transform;
+            -webkit-transition-timing-function: ease-out;
+            transition-timing-function: ease-out; }
+        .socials li:hover a i {
+            -webkit-transform: scale(1.3) translateZ(0);
+            transform: scale(1.3) translateZ(0); }
+
+        .zmdi-facebook {
+            background: #3b5998; }
+
+        .zmdi-twitter {
+            background: #1da0f2; }
+
+        .zmdi-google {
+            background: #e72734; }
+
+        .signin-form {
+            height: 555px;
+            margin-right: 70px;
+            margin-left: 45px;
+        }
+
+        .form {
+            background: #fff;
+            padding: 20px 0px 20px 10px; 
+            box-shadow: 0 0 10px 5px #ccc; 
+        }
+
+
+        .signin-image {
+            margin-left: 90px;
+            margin-top: 10px; }
+
+        @media screen and (max-width: 1200px) {
+            .container {
+                width: calc( 100% - 30px);
+                max-width: 100%; } }
+        @media screen and (min-width: 1024px) {
+            .container {
+                max-width: 1200px; } }
+        @media screen and (max-width: 768px) {
+
+            .signin-form {padding: 0px !important; } 
+
+            .signup-content, .signin-content {
+                flex-direction: column;
+                -moz-flex-direction: column;
+                -webkit-flex-direction: column;
+                -o-flex-direction: column;
+                -ms-flex-direction: column;
+                justify-content: center;
+                -moz-justify-content: center;
+                -webkit-justify-content: center;
+                -o-justify-content: center;
+                -ms-justify-content: center; }
+
+            .signin-content{padding-top: 0px;}
+
+            .signup-form {
+                margin-left: 0px;
+                margin-right: 0px;
+                padding-left: 0px;
+                /* box-sizing: border-box; */
+                padding: 0 30px; }
+
+            .signin-image {
+                margin-left: 0px;
+                margin-right: 0px;
+                margin-top: 50px;
+                order: 1;
+                -moz-order: 1;
+                -webkit-order: 1;
+                -o-order: 1;
+                -ms-order: 1; }
+
+            .signup-form, .signup-image, .signin-form, .signin-image {
+                width: auto; }
+
+            .appstore {
+                justify-content: center;
+                -moz-justify-content: center;
+                -webkit-justify-content: center;
+                -o-justify-content: center;
+                -ms-justify-content: center; }
+
+            .form-button {
+                text-align: center; }
+
+            .signin-form {
+                order: 2;
+                -moz-order: 2;
+                -webkit-order: 2;
+                -o-order: 2;
+                -ms-order: 2;
+                margin-right: 0px;
+                margin-left: 0px;
+                padding: 0 30px; }
+
+        }
+
+        @media screen and (max-width: 400px) {
+
+            h2{font-size: 27px;}
+
+            .signin-form {padding: 0px !important; }
+
+            .appstore {
+                flex-direction: column;
+                -moz-flex-direction: column;
+                -webkit-flex-direction: column;
+                -o-flex-direction: column;
+                -ms-flex-direction: column; }
+
+            .form{ margin-top: 50px;}
+
+
+            .signin-content{padding-top: 0px;}
+
+            .social-label {
+                margin-right: 0px;
+                margin-bottom: 10px; } }
+
+        /*# sourceMappingURL=style.css.map */
+        select#autocompletecountry {
+            width: 100%;
+            width: 100%;
+            display: block;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 12px 12px;
+            box-sizing: border-box;
+        }
+        select:required:invalid {
+            color: gray;
+          }
+          option[value=""][disabled] {
+            display: none;
+          }
+          option {
+            color: black;
+          }
+    </style>
+{% endblock %}

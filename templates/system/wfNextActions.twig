@@ -1,0 +1,19 @@
+
+    
+{%if type == 1 %} <div class="card-box hidemonth"> {% endif %}
+    
+    {% for step in steps %}
+       
+       <a onclick="return loadModalURL(this)" id="approveReject" href='#' remote="{{router.getPath(stepRoute,{id:pk,stepid:step.WfStepsId})}}" class="btn btn-primary btn-trans waves-effect w-md m-b-5">{{step.WfBtnDesc}}</a>
+   
+    {%  endfor %}
+    {% if cancelbtn == TRUE %}
+    <a onclick="cancelDoc({{pk}})" href='#' id="cancelExpense" class="btn btn-danger btn-trans waves-effect w-md m-b-5">Cancel</a> 
+    {%endif%}
+   {#<a onclick="cancelExpense({{pk}})" href='#' id="cancelExpense" class="btn btn-danger btn-trans waves-effect w-md m-b-5">Cancel</a>#}
+{%if type == 1 %} </div> {% endif %}
+
+ 
+ 
+
+    

@@ -1,0 +1,98 @@
+{% extends "app.twig" %}
+{% block title %} Outlet Sales Report {% endblock %}
+{% block page %}
+        <div class="row m-b-15">                
+            <div class="col-sm-12">
+                <div class="project-sort">
+                    <div class="project-sort-item">
+                        <form class="form-inline" id="gridFilters" href="{{request.getPath()}}?action=load" method="post">
+                            <div class="form-group col-md-2">
+                                <label>Month :</label>                            
+                                <select class="form-control input-sm" name="month" id="monthSelect">
+                                    {{monthList|raw}}        
+                                </select>                   
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Outlet Types :</label>                            
+                                <select class="form-control input-sm" name="outletType" id="outletType">
+                                    {{outletTypes|raw}}                            
+                                </select>                   
+                                         
+                            </div>                                                   
+                            <div class="form-group col-md-2">                            
+                                <input type="hidden" name="action" value="load"/>
+                                <input type="submit" class="btn btn-info" id="searchBtn" name="salesReport" value="View" />                             
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end col-->
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">  
+                    <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1" style="font-size: 12px;">
+                    <thead>
+                        <th>Territory</th>
+                        <th>Type</th>
+                        <th>Name</th>                        
+                        <th>Contact</th>
+                        <th>Target</th>
+                        <th>Achived</th>
+                        <th>%</th>   
+                        {% for cat in categories%}                     
+                        <th>{{cat}}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for outlet in outlets %}
+                            <tr>
+                                <td>{{outlet.getTerritories().getTerritoryName()}}</td>
+                                <td>{{outlet.getOutletType().getOutlettypeName()}}</td>
+                                <td>{{outlet.OutletName}}{{outlet.OutletCode()}}</td>                                
+                                <td>{{outlet.OutletContactName}}</td>
+                                <td>{{outlet.OutletPotential}}</td>
+                                {% if sales[outlet.Id] %}
+                                    {% if outlet.OutletPotential > 0 %}
+                                        {%  set percent = (sales[outlet.Id].TotalSales / outlet.OutletPotential) *100  %}
+                                    {% else %}
+                                        {% set percent = 0 %}
+                                    {% endif %}
+                                <td>{{sales[outlet.Id].TotalSales}} / {{percent | round }}%</td>                                
+                                <td><progress id="sales" value="{{percent | round }}" max="100">{{percent | round }} % </progress></td>                                
+                                {% else %}
+                                <td colspan=2> </td>
+                                {% endif %}    
+
+                                {% for cat in categories%}                     
+                                <td>{{sales[outlet.Id][cat]}}</td>
+                                {% endfor %}
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    <button class="btn btn-warning waves-effect waves-light m-b-5" id="print"> <i class="fa fa-print"></i>Print</button>
+                </div>
+            </div>      
+        </div>
+{% endblock %} 
+{% block script %}
+    
+ <script type ='text/javascript'>                
+        
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+        }
+    </script>
+{% endblock %} 

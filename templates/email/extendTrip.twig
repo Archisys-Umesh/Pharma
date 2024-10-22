@@ -1,0 +1,23 @@
+{% extends "email/emailBase.twig" %}
+{% block content %}
+
+<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0; background-color:#ce9595;">
+    <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 28px; vertical-align: top; margin: 0; padding: 23px 0 20px; text-align: center;"
+        valign="top">Trip Extension Request Received</td>
+</tr>
+<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+    <td class="content-block " style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
+
+        <p>Hello {{name}}, </p>
+
+        <p>Following Trips Extension have has been requested by the employee,</p>
+
+        <p>visit trip for more information.</p>
+
+        <p><a href="{{baseurl}}">View Trips</a></p>
+        <p><br></p>
+        <p>Best Regards, <br>Xpensys Team</p>
+        <p><br></p>
+    </td>
+</tr>
+{% endblock %}

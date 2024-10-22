@@ -1,0 +1,141 @@
+{% extends "base.twig" %}
+{% block content %}
+    
+	<div class="account-pages"></div>
+        <div class="clearfix"></div>
+        <div class="wrapper-page">
+            <div class="text-center">
+                <a href="{{router.baseUrl('')}}" class="logo"><img src="{{router.baseUrl()}}images/logo.png" style="height: 50px;"></a>
+                <h5 class="m-t-0 font-600">Simple and Easy Expense Management</h5>
+                
+            </div>
+            <div class="m-t-40 card-box">
+                <div class="text-center">
+                    <h2 class="text-uppercase font-bold m-b-0">WELCOME TO XPENSYS!</h2> 
+                    <p class="text-muted m-b-20 font-20">It's free and always will be*.</p>
+                </div>
+                
+                <div class="panel-body">
+                    
+                    
+                        {% set error = session.getFlash('error') %}
+                        {% if error != "" %}
+                        <div class="form-group text-center">
+                            <div class="col-xs-12">
+                                <div class="alert alert-danger small" role="alert">
+                                    {{error}}
+                                </div>
+                                
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% set message = session.getFlash('message') %}
+                        {% if message != "" %}
+                        <div class="form-group text-center m-t-30">
+                            <div class="col-xs-12">
+                                <div class="alert alert-info" role="alert">
+                                    <h3>{{message}}</h3>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        {% else %}    
+                    <form class="form-horizontal m-t-20" action="{{router.getPath('register')}}" method="POST">
+                        
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <label for="CompanyName">Name of the Owner: </label>
+                                    <input class="form-control" type="text" id="OwnerName" required="" name="OwnerName" placeholder="eg: John Doe" value="{{post.OwnerName}}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <label for="CompanyName">Name of the Company: </label>
+                                    <input class="form-control" type="text" id="CompanyName" required="" name="CompanyName" placeholder="eg: Tata Consultancy Services" value="{{post.CompanyName}}">
+                                </div>
+                            </div>
+                           {# <div class="form-group">
+                                <div class="col-xs-12">
+                                    <label for="CompanyCode">Short Name for your Company: </label>
+                                    <input class="form-control" type="text" id="CompanyCode" required="" name="CompanyCode" placeholder="For eg: TCS" value="{{post.CompanyCode}}">
+                                </div>
+                            </div>#}
+                        
+                        
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <label for="CompanyName">Email ID: </label>
+                                <input class="form-control" type="email" id="OwnerEmail" required="" name="OwnerEmail" placeholder="" value="{{post.OwnerEmail}}">
+                            </div>
+                        </div>
+                            
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <label for="CompanyName">Password: </label>
+                                <input class="form-control" type="password" id="Password" required="" name="Password" placeholder="Between 6 to 20 character" value="{{post.OwnerEmail}}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <label for="CompanyName">Contact Number: </label>
+                                <input class="form-control" type="text" id="CompanyContactNumber" required="" name="CompanyContactNumber" placeholder="" value="{{post.CompanyContactNumber}}">
+                            </div>
+                        </div>
+                        {#<div class="form-group">
+                            <div class="col-xs-12">
+                                <label for="CompanyName">Address of the company: </label>                                
+                                <textarea id="CompanyAddress1" required="" name="CompanyAddress1" class="form-control" data-parsley-id="50">{{post.CompanyAddress1}}</textarea>
+                            </div>
+                        </div>#}
+                        
+                        <div class="form-group">
+                            <div class="col-xs-12">                                
+                                <input class="form-control" type="hidden" id="CompanyDefaultCurrency" name="CompanyDefaultCurrency" value="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                
+                            <h6 class="m-t-0">*the basic version that includes all the features stated here is for free. only the addons will be chargeable.</h6>
+
+                        </div>
+                        <div class="form-group text-center m-t-20 m-b-0">
+                            <div class="col-xs-12">
+                                
+                                <button class="btn btn-custom btn-bordred btn-block waves-effect" type="submit"><b>I'm in</b></button>
+                            </div>
+                        </div>
+                        
+                    </form>
+                            {% endif %}
+                </div>
+                
+            </div>
+            
+        </div>
+            <!-- end card-box-->            
+        </div>
+        <!-- end wrapper page -->
+                
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    
+    function FCMTokenCallBack($data)
+    {
+        var $fcm = JSON.parse($data);
+        //alert($fcm.data);
+        $("#fcmtoken").val($fcm.data);
+    }
+    $(document).ready(function(){
+             
+        CallBackMobilePar('FCMToken','FCMTokenCallBack');                               
+        
+    });
+
+     
+
+
+</script>
+{% endblock %}

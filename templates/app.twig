@@ -1,0 +1,288 @@
+{% extends "base.twig" %}
+{% block content %}
+    <!-- Begin page -->
+        <div id="wrapper">
+            <!-- Top Bar Start -->
+            <div class="topbar">
+                <!-- LOGO -->
+                <div class="topbar-left">
+                    <a href="{{router.baseUrl()}}" class="logo"><img src="{{router.baseUrl('images/logo.png')}}" style="height: 50px;"></a>
+                    {#<h1 class="text-uppercase font-bolder">Akums</h1>#}
+                </div>
+                <!-- Button mobile view to collapse sidebar menu -->
+                <div class="navbar navbar-default" role="navigation">
+                    <div class="container">
+                        <!-- Page title -->
+                        <ul class="nav navbar-nav navbar-left">
+                            <li>
+                                <button class="button-menu-mobile open-left">
+                                    <i class="zmdi zmdi-menu"></i>
+                                </button>
+                            </li>                    
+                            <li>
+                                <button class="btn btn-info m-t-15 hidden-sm visible-lg text-white" onclick="window.location.href='{{router.baseUrl()}}';" id="home"><i class="fa fa-home"></i></button> 
+                            </li>
+                            <li>
+                                <button class="btn btn-info m-t-15 hidden-sm visible-lg text-white" title="Back" onclick="window.history.back();return false;" id="backbtn"><i class="fa fa-arrow-left"></i></button>
+                            </li>
+                            <li>
+                                <button class="btn btn-info m-t-15 text-white" title="FullScreen" id="fullScreen" ><i class="fa fa-eye-slash"></i></button>
+                            </li>
+                            <li>
+                                <button class="btn btn-info m-t-15 text-white" title="FullScreen" id="fullScreenShow" ><i class="fa fa-eye"></i></button>
+                            </li>
+                            <li>
+                                <h4 class="page-title">{% block title %} {% endblock %}</h4>
+                            </li>
+                        </ul>
+                            
+                        <!-- Right(Notification and Searchbox -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <!-- Notification -->
+                                <div class="notification-box">
+                                    <ul class="list-inline m-b-0">
+                                        <li>
+                                            <a href="javascript:void(0);" class="right-bar-toggle" id="pendingActionLink">
+                                                <i class="zmdi zmdi-notifications-none"></i>
+                                            </a>
+                                            {% if actions|length > 0 %}
+                                                <div class="noti-dot">
+                                                    <span class="dot"></span>
+                                                    <span class="pulse"></span>
+                                                </div>
+                                            {% endif %}
+                                        </li>                                        
+                                    </ul>
+                                </div>
+                                <!-- End Notification bar -->
+                            </li>
+                            <li> 
+                                <div class="list-inline m-b-0 ">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" 
+                                       style='font-size: 26px;
+                                              padding-right: 5px;
+                                              padding-left: 10px;
+                                              padding-top: 17px;
+                                              display:block;'
+                                       data-toggle="dropdown" aria-expanded="false"><i class="zmdi zmdi-account"></i>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a onclick='loadModalURL(this)' href='#' remote="{{router.getPath('changepwd')}}">Change Password</a></li>                                        
+                                        <li><a class="logoutbtn" href="{{router.getPath('logout')}}">Logout</a></li>                                        
+                                    </ul>
+                                </div>
+                            </li>
+                            {% if auth.checkPerm("super_admin") %}
+                            <li> 
+                                <div class="list-inline m-b-0 ">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" 
+                                       style='font-size: 26px;
+                                              padding-right: 5px;
+                                              padding-left: 10px;
+                                              padding-top: 17px;
+                                              display:block;'
+                                         data-toggle="dropdown" aria-expanded="false"><i class="zmdi zmdi-settings"></i>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu">                                        
+                                        <li><a href="{{router.getPath('sys_superSettings')}}">Super Settings</a></li>                                        
+                                    </ul>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+
+                    </div><!-- end container -->
+                </div><!-- end navbar -->
+            </div>
+            <!-- Top Bar End -->
+
+
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="left side-menu sidemenubar" id="left-sideMenu" style="position:fixed !important;display:none">
+                <div class="sidebar-inner slimscrollleft">
+                    
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">                        
+                        <ul><li>
+                                <a href="{{router.baseUrl()}}home" class="waves-effect"><i class="zmdi zmdi-view-dashboard"></i> <span> Dashboard </span> </a>
+                            </li>
+                        </ul>
+                        {{ renderer.render(menuItems,{'template':'knpMenu.twig'}) | raw }}
+                        <div class="clearfix"></div>
+                    </div>
+                    <!-- Sidebar -->
+                    <div class="clearfix"></div>
+                    
+                    <div class="p-20 card-box">
+                        <div>                            
+                            <div class="wid-u-info">
+                                <h4 class="m-t-0 m-b-5">{{auth.getUser().Name}}</h4>
+                                <p class="text-muted m-b-5 font-13">{{auth.getUser().getCompany().CompanyName}}</p>                                
+                                <p class="text-muted m-b-5 font-13">{{auth.getUser().Username}}</p>
+                                
+                                {{ widgetmgr.render("\\Modules\\HR\\Widgets\\employeeBalance") | raw }}   
+                                <small class="text-warning"><b>Live System</b></small>
+                                <small class="text-dark">Ver : 2.01</small>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                        
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container">
+                            
+                        {% block page %}
+			{% endblock %}
+
+                    </div> <!-- container -->
+
+                </div> <!-- content -->
+
+            </div>
+
+
+            <!-- ============================================================== -->
+            <!-- End Right content here -->
+            <!-- ============================================================== -->
+            
+            <!-- Right Sidebar -->
+            <div class="side-bar right-bar">
+                <a href="javascript:void(0);" class="right-bar-toggle">
+                    <i class="zmdi zmdi-close-circle-o"></i>
+                </a>
+                <h4 class="">Pending Actions</h4>
+                <div class="notification-list nicescroll">
+                    <ul class="list-group list-no-border user-list">
+                        {% for action in actions %}
+                            
+                            <li class="list-group-item" {% if action.WfEntityName == 'Expenses' %} style="background-color: #e3fefa" {% else %} style="background-color: #fff8df" {% endif %} >
+                            
+                            <a href="{{router.getPath(action.WfRoute)}}?id={{action.WfDocPk}}" class="user-list-item">                        
+                            
+                                <div class="avatar">
+                                    {% if action_emps[action.WfOriginEmployee].ProfilePicture == "" %}
+                                    <img src="{{router.baseUrl('images/users/avatar-2.jpg')}}" alt="">
+                                    {% else %}
+                                    <img src="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{action_emps[action.WfOriginEmployee].ProfilePicture}}"> 
+                                    {% endif %}
+                                </div>
+                                <div class="user-desc">
+                                    <span class="name">{{action.WfEntityName}}</span>
+                                    <span class="desc">{{action_emps[action.WfOriginEmployee].FirstName}} {{action_emps[action.WfOriginEmployee].LastName}}</span>
+                                    <span class="desc"> -- {{action.WfDesc}}</span>
+                                    <span class="time">{{action.getCreatedAt().format("d-m-Y h:i a")}}</span>
+                                </div>
+                            </a>
+                        </li>
+                        {%  endfor %}
+
+                    </ul>
+                </div>
+            </div>
+            <!-- /Right-bar -->
+            
+        </div>
+        <!-- END wrapper -->                
+        {# <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a> #}
+            <button onclick="scrollToTop()" id="scrollToTopBtn" class="btn btn-primary btn-lg back-to-top" title="Go to top"><span class="glyphicon glyphicon-chevron-up"></span></button>     
+        <div id="preloader"></div>
+        
+        <script>           
+            window.onscroll = function() {
+                scrollFunction();
+            };
+            function scrollFunction() {
+                const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    scrollToTopBtn.style.display = "block";
+                } else {
+                    scrollToTopBtn.style.display = "none";
+                }
+            }
+            function scrollToTop() {
+               window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+        </script>
+
+<style type="text/css">		
+	#scrollToTopBtn {	
+		right: 30px;	
+		border-radius: 10px; 		
+	}
+	#scrollToTopBtn:hover {
+		background-color: #124ab6 !important;
+	}
+</style>
+
+{% endblock %}
+{% block footerScript %}
+
+    $(document).ready(function(){
+        if (localStorage.getItem('sidebarhide') === 'true') {
+            $(".topbar-left").hide();
+            $("#left-sideMenu").hide();
+            $(".content-page").css("margin-left", "0px");
+            $("#fullScreen").hide();
+            $("#fullScreenShow").show();
+        } 
+        if (localStorage.getItem('sidebarhide') === 'false') {
+            $(".topbar-left").show();
+            $("#left-sideMenu").show();
+            $(".content-page").css("margin-left", "250px");
+            $("#fullScreen").show();
+            $("#fullScreenShow").hide();
+        }
+    });
+
+    $(".logoutbtn").click(function(){
+        localStorage.setItem('sidebarhide',false);
+    });
+                
+            setTimeout(function(){
+                $(window).scroll(function () {
+                       if ($(this).scrollTop() > 50) {
+                           $('#back-to-top').fadeIn();
+                       } else {
+                           $('#back-to-top').fadeOut();
+                       }
+                    });
+                    // scroll body to 0px on click
+                    $('#back-to-top').click(function () {
+                        $('#back-to-top').tooltip('hide');
+                        $('body,html').animate({
+                            scrollTop: 0
+                        }, 800);
+                        return false;
+                    });
+                    $('#back-to-top').tooltip('show');
+                },3000);
+    
+                var width = document.body.clientWidth;
+                if(width > 600 && localStorage.getItem('sidebarhide') === 'false')
+                {
+                    document.getElementById("left-sideMenu").style.display = 'block';
+                }else{
+                    document.getElementById("left-sideMenu").style.display = 'none';
+                }
+                {# setTimeout(function(){                
+                    document.getElementById("left-sideMenu").style.display = 'block';                
+                },1500); #}
+
+                
+                
+{% endblock %}

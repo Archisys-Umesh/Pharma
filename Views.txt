@@ -1,0 +1,108 @@
+<table name="inventory_view" idMethod="native" phpName="InventoryView" readOnly="true" skipSql="true">
+        <column name="unique_id" phpName="UniqueId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="outlet_id" phpName="OutletId" type="INTEGER"/>
+        <column name="company_id" phpName="CompanyId" type="INTEGER"/>
+        <column name="product_id" phpName="ProductId" type="INTEGER"/>
+        <column name="serial_no" phpName="SerailNo" type="VARCHAR" size="50" />
+        <column name="batch_no" phpName="BatchNo" type="VARCHAR" size="50"/>
+        <column name="Available" phpName="Available" type="INTEGER"/>    
+        <column name="InTransit" phpName="InTransit" type="INTEGER"/>    
+</table>
+
+<table name="sales_view" idMethod="native" phpName="SalesView" readOnly="true" skipSql="true">
+        <column name="soid" phpName="Soid" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="zone_id" phpName="ZoneId" type="INTEGER"/>
+        <column name="zone_name" phpName="ZoneName" type="VARCHAR" size="200"/>
+        <column name="territory_id" phpName="TerritoryId" type="INTEGER"/>
+        <column name="territory_name" phpName="TerritoryName" type="VARCHAR" size="200"/>
+        <column name="employee_id" phpName="EmployeeId" type="INTEGER"/>
+        <column name="first_name" phpName="FirstName" type="VARCHAR" size="200"/>
+        <column name="last_name" phpName="LastName" type="VARCHAR" size="200"/>
+        <column name="employee_code" phpName="EmployeeCode" type="VARCHAR" size="200"/>
+        <column name="order_number" phpName="OrderNumber" type="VARCHAR" size="200"/>
+        <column name="so_number" phpName="SoNumber" type="VARCHAR" size="200"/>
+        <column name="outlet_from" phpName="OutletFrom" type="INTEGER"/>
+        <column name="Billed_To" phpName="BilledTo" type="VARCHAR" size="200"/>
+        <column name="outlet_to" phpName="OutletTo" type="INTEGER"/>
+        <column name="Billed_By" phpName="BilledBy" type="VARCHAR" size="200"/>
+        <column name="shipping_order_date" phpName="ShippingOrderDate" type="DATE"/>
+        <column name="invoice_amount" phpName="InvoiceAmount" type="DECIMAL" size="20" scale="2"/>
+        <column name="so_status" phpName="SoStatus" type="VARCHAR" size="200"/>
+        <column name="company_id" phpName="CompanyId" type="INTEGER"/>        
+</table>
+
+<table name="item_sales_view" idMethod="native" phpName="ItemSalesView" readOnly="true" skipSql="true">
+        <column name="solid" phpName="Solid" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="Date" phpName="Date" type="Date"/>
+        <column name="billedto_outlet" phpName="BilledtoOutlet" type="INTEGER"/>
+        <column name="outlet_name" phpName="OutletName" type="VARCHAR" size="200"/>
+        <column name="outlet_code" phpName="OutletCode" type="VARCHAR" size="200"/>
+        <column name="outlet_potential" phpName="OutletPotential" type="DECIMAL" size="20" scale="2"/>
+        <column name="outletType_id" phpName="OutletTypeId" type="INTEGER"/>
+        <column name="outletType_name" phpName="OutletTypeName" type="VARCHAR" size="200"/>
+        <column name="employee_id" phpName="EmployeeId" type="INTEGER"/>
+        <column name="Name" phpName="Name" type="VARCHAR" size="200"/>
+        <column name="employee_code" phpName="EmployeeCode" type="VARCHAR" size="200"/>
+        <column name="salestarget" phpName="Salestarget" type="DECIMAL" size="20" scale="2"/>
+        <column name="product_id" phpName="ProductId" type="INTEGER"/>
+        <column name="product_name" phpName="ProductName" type="VARCHAR" size="200"/>
+        <column name="product_images" phpName="ProductImages" type="VARCHAR" size="200"/>
+        <column name="product_sku" phpName="ProductSku" type="VARCHAR" size="200"/>
+        <column name="tag_id" phpName="TagId" type="INTEGER"/>
+        <column name="tag_name" phpName="TagName" type="VARCHAR" size="200"/>
+        <column name="category_id" phpName="CategoryId" type="INTEGER"/>
+        <column name="category_name" phpName="CategoryName" type="VARCHAR" size="200"/>
+        <column name="company_id" phpName="CompanyId" type="INTEGER"/>
+        <column name="qty" phpName="Qty" type="DECIMAL" size="20" scale="2"/>
+        <column name="rate" phpName="Rate" type="DECIMAL" size="20" scale="2"/>
+        <column name="Sales" phpName="Sales" type="DECIMAL" size="20" scale="2"/>
+        <column name="order_number" phpName="OrderNumber" type="VARCHAR" size="200"/>
+        <column name="so_number" phpName="SoNumber" type="VARCHAR" size="200"/>
+        <column name="so_status" phpName="SoStatus" type="VARCHAR" size="200"/>
+        <column name="sv_id" phpName="SvId" type="INTEGER"/>
+</table>
+
+<table name="outlet_view" idMethod="native" phpName="OutletView" readOnly="true" skipSql="true">
+        <column name="outlet_org_id" phpName="OutletOrgId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='tags' phpName='Tags' type="VARCHAR" size="50"/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='comments' phpName='Comments' type="VARCHAR" size="50"/>
+        <column name='org_potential' phpName='OrgPotential' type='INTEGER'/>
+        <column name='brand_focus' phpName='BrandFocus' type="VARCHAR" size="50"/>
+        <column name='customer_fq' phpName='CustomerFq' type="VARCHAR" size="50"/>
+        <column name='id' phpName='Id' type='INTEGER'/>
+        <column name='outlet_media_id' phpName='OutletMediaId' type="VARCHAR" size="50"/>
+        <column name='outlet_name' phpName='OutletName' type="VARCHAR" size="50"/>
+        <column name='outlet_code' phpName='OutletCode' type="VARCHAR" size="50"/>
+        <column name='outlet_email' phpName='OutletEmail' type="VARCHAR" size="50"/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type="VARCHAR" size="50"/>
+        <column name='outlet_classification' phpName='OutletClassification' type='INTEGER'/>
+        <column name='classification' phpName='Classification' type="VARCHAR" size="50"/>
+        <column name='outlet_opening_date' phpName='OutletOpening_date' type='Date'/>
+        <column name='outlet_contact_name' phpName='OutletContactName' type="VARCHAR" size="50"/>
+        <column name='outlet_landlineno' phpName='OutletLandlineno' type="VARCHAR" size="50"/>
+        <column name='outlet_alt_landlineno' phpName='OutletAltLandlineno' type="VARCHAR" size="50"/>
+        <column name='outlet_contact_bday' phpName='OutletContactBday' type='Date'/>
+        <column name='outlet_contact_anniversary' phpName='OutletContactAnniversary' type='Date'/>
+        <column name='outlet_isd_code' phpName='OutletIsdCode' type="VARCHAR" size="50"/>
+        <column name='outlet_contact_no' phpName='OutletContactNo' type="VARCHAR" size="50"/>
+        <column name='outlet_alt_contact_no' phpName='OutletAltContactNo' type="VARCHAR" size="50"/>
+        <column name='outlet_status' phpName='OutletStatus' type="VARCHAR" size="50"/>
+        <column name='outlettype_id' phpName='OutlettypeId' type='INTEGER'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type="VARCHAR" size="50"/>
+        <column name='company_id' phpName='CompanyId' type='INTEGER'/>
+        <column name='created_at' phpName='CreatedAt' type='Date'/>
+        <column name='updated_at' phpName='UpdatedAt' type='Date'/>
+        <column name='outlet_otp' phpName='OutletOtp' type="VARCHAR" size="50"/>
+        <column name='outlet_verified' phpName='OutletVerified' type="VARCHAR" size="50"/>
+        <column name='outlet_created_by' phpName='OutletCreatedBy' type='INTEGER'/>
+        <column name='outlet_approved_by' phpName='OutletApprovedBy' type='INTEGER'/>
+        <column name='outlet_potential' phpName='OutletPotential' type="VARCHAR" size="50"/>
+        <column name='integration_id' phpName='IntegrationId' type="VARCHAR" size="50"/>
+        <column name='itownid' phpName='Itownid' type='INTEGER'/>
+        <column name='outlet_qualification' phpName='OutletQualification' type="VARCHAR" size="50"/>
+        <column name='outlet_regno' phpName='OutletRegno' type="VARCHAR" size="50"/>
+        <column name='outlet_marital_status' phpName='OutletMaritalStatus' type="VARCHAR" size="50"/>
+        <column name='outlet_media' phpName='OutletMedia' type="VARCHAR" size="50"/>
+</table>

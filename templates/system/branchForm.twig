@@ -1,0 +1,39 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+        
+    $(document).ready(function(){                    
+    
+    $( "#location" ).autocomplete({ source: "{{router.getPath('sys_locationSearch')}}",
+      minLength: 2,
+      select: function( event, ui ) {
+        
+            $("#branchlocation").val(ui.item.id);
+            $("#location").val(ui.item.label);
+            
+            return false;
+        }
+        });
+
+    });
+    function checkUniqueBranch(data)
+    {
+        if(data.status)
+        {
+            
+            $("#saveuser").removeAttr("disabled");
+        }
+        else 
+        {
+            $("#saveuser").attr("disabled","true");
+            $("#Branchname").val("");
+            toastr["error"]("Branch Name/HQ name exists", "");
+        }
+    }
+
+</script>
+{% endblock %}        

@@ -1,0 +1,108 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+        
+    $(document).ready(function(){                    
+        $("#Mode").tagsinput({
+            allowDuplicates: true,
+        });
+        $("#Mode").on("change",function(){
+            $(".tag span").addClass("fa fa-window-close m-l-10");  
+        });
+        $(".tag span").addClass("fa fa-window-close m-l-10");  
+        toggleCity();
+        toggleIsRateBased();
+        toggleIsdaily();
+        
+        $("#checkCity").on("change",function(){
+            toggleCity();
+        });
+        
+        $("#Israteapplied").on("change",function(){
+            toggleIsRateBased();
+        });
+        
+        $("#Isdaily").on("change",function(){
+            toggleIsdaily();
+        });
+        $("#Permonth").on("change",function(){
+            if($(this).prop('checked') == true){
+                //$('label[for="IsPrefilled"]').hide();
+                $("#IsPrefilled").attr("disabled","disabled")
+                $('#IsPrefilled').attr('checked', false);
+            }else{
+                //$('label[for="IsPrefilled"]').show();
+                $("#IsPrefilled").removeAttr("disabled");
+            }
+        });
+        $("#IsPrefilled").on("change",function(){
+            if($(this).prop('checked') == true){
+                //$('label[for="Permonth"]').hide();
+                $("#Permonth").attr("disabled","disabled")
+                $('#Permonth').attr('checked', false);
+            }else{
+                //$('label[for="Permonth"]').show();
+                $("#Permonth").removeAttr("disabled");
+            }
+        });
+        
+        $("#policykey").parent("div").attr("id","policykey_div");
+        $("#policykey_div").removeClass("col-sm-9");
+        $("#policykey_div").addClass("col-sm-6");
+        $("#policykey_div").parent().append("<div class='col-sm-3'><a onclick='loadModalURL(this)' remote='/system/policyKeyForm' class='btn btn-default'> +Add New Key </a></div>");
+    });
+
+function toggleCity()
+{
+    $checkCity = $("#checkCity").prop('checked');
+    if($checkCity)
+    {
+        $("#policyA").parents(".form-group").show();
+        $("#policyB").parents(".form-group").show();
+        $("#policyC").parents(".form-group").show();
+    }
+    else 
+    {
+        $("#policyA").parents(".form-group").hide();
+        $("#policyB").parents(".form-group").hide();
+        $("#policyC").parents(".form-group").hide();
+    }
+}
+function toggleIsRateBased()
+{
+    $Israteapplied = $("#Israteapplied").prop('checked');
+    if($Israteapplied)
+    {
+        $("#Rate").parents(".form-group").show();
+     
+    }
+    else
+    {
+        $("#Rate").parents(".form-group").hide();
+     
+    }
+}
+
+function toggleIsdaily()
+{
+    $Isdaily = $("#Isdaily").prop('checked');
+    if($Isdaily)
+    {        
+        $("#Mode").parents(".form-group").show();
+    }
+    else
+    {     
+        $("#Mode").parents(".form-group").hide();
+    }
+}
+
+function newKeySaved()
+{
+    $("#btnAddPrimary").click();
+}
+</script>
+{% endblock %}        

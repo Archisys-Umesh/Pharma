@@ -1,0 +1,548 @@
+{% extends "app.twig" %}
+
+{% set formAction = request.getPath() ~ "?action=form&pk=" %}
+{% if actionFunc %}
+{% set formAction = router.getPath(actionFunc,{id:''}) %}
+{% endif %}    
+
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+
+	<div class="card-box">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-4">
+					{% if isNotTop%}
+						<a href="{{formAction}}0" data-toggle="ajaxModal" class="btn btn-success m-b-20">
+							<i class="zmdi zmdi-plus"></i>
+							Add
+							{{form_name}}</a>
+					{% else %}
+						<div class="clearfix p-20"></div>
+					{% endif %}
+				</div>
+
+				<div class="col-sm-8">
+					<div class="project-sort pull-right">
+						<div class="project-sort-item">
+
+							<form class="form-inline" id="gridFilters">
+								{%if showStatus %}
+									<div class="form-group">
+										<label>Status :</label>
+										<select class="form-control input-sm filterRadio" id="StatusList" name="filterRadio" style="width:100px">
+											{% if isNotTop %}
+												<option value="A">My Leaves</option>
+											{% endif %}
+											<option value="1">Raised</option>
+											<option value="2">Approved</option>
+											<option value="3">Rejected</option>
+											{# <option value="P" {% if page == "P" %} selected="selected" {% endif %}>Team Leave</option> #}
+											<option value="P">All</option>
+										</select>
+										<label>From Date :</label>
+										<input class="form-control datepicker fromdate" type="text" name="from_date" id="fromDate">
+										<label>To Date :</label>
+										<input class="form-control datepicker todate" type="text" name="to_date" id="todate">
+									</div>
+								{% endif %}
+                                {# <div class="form-group" id="hidemonth">
+                                    <label>Month :</label>
+                                    <select class="form-control input-sm filterdate filterRadio newfilterdate" id="filterdate" name="filterdate">
+        
+                                            {% for key,value in monthLists %}
+                                                <option value="{{key}}" {% if key == setMonth %} selected="selected" {%endif%}>{{value}}</option>
+                                            {%endfor%}    
+                                            
+        
+                                    </select>
+                                </div> #}
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<div class="row">
+    
+    <div class="col-sm-12" id="leaveListView">        
+        <div class="card-box table-responsive">                        
+            <div class="clearfix p-b-10"></div>
+            <table id="{{form_name|lower}}_datagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        {% for col,key in cols %}
+                        <th>{{col}}</th>
+                        {% endfor %}                        
+                        <th>View</th>
+                    </tr>
+                </thead>                                
+            </table>
+        </div>
+    </div><!-- end col -->    
+    
+    <div class="col-sm-4" id="leaveQuickView" style="display:none">
+    
+    </div>
+    
+</div>    
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+      $leavefromdate = localStorage.getItem("leavefromdate")
+      $leavetodate = localStorage.getItem("leavetodate")
+    $( "#fromDate" ).datepicker({ 
+         dateFormat: 'dd-mm-yy',
+        defaultDate: new Date() });
+   if($leavefromdate !=null){
+        $("#fromDate").datepicker( "setDate" ,  $leavefromdate);
+        }
+        else{
+        $("#fromDate").datepicker( "setDate" , new Date() );
+        }
+     $( "#todate" ).datepicker({
+         dateFormat: 'dd-mm-yy',
+         defaultDate: new Date() });
+    if($leavetodate !=null){
+        $("#todate").datepicker( "setDate" ,  $leavetodate);
+        }
+        else{
+        $("#todate").datepicker( "setDate" , new Date() );
+        }
+
+    ${{form_name|lower}}_datagrid = "";
+    $valKeys = [];
+    {% if valKeys %}
+        {% for val,keys in valKeys %}
+            $valKeys['{{val}}'] = {{keys|json_encode|raw}};
+        {% endfor %}                                        
+    {% endif%}
+    
+    $dateFields = [];
+    {% if dateFields %}
+        $dateFields = {{dateFields|json_encode|raw}};        
+    {% endif %}
+
+    $fromd = $('.fromdate').val();
+    $tod = $('.todate').val();
+
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter=&fromdate="+$fromd+"&todate="+$tod;
+    $filter = "";
+    $filterdate = "";
+    $dateFilterUrl = "{{request.getPath()}}?action=datefilter";
+    $QuickViewUrl = "{{request.getPath()}}?action=quickView&leaveid=";
+    $deleteUrl = "{{request.getPath()}}?action=deleteLeave&leaveid=";
+
+     document.addEventListener('DOMContentLoaded', (event) => {
+        const logoutButton = document.querySelector('.logoutbtn');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function() {
+                localStorage.clear(); // Clear all items in local storage              
+            });
+        }
+    });
+
+    $(document).ready(function(){      
+
+        {% if setMonth %}
+            $("#filterdate").val("{{setMonth}}");
+        {% endif %}
+       
+        $(".filterRadio").change(function(){           
+            $filter = $('.filterRadio').val();
+            $fromd = $('.fromdate').val();
+            $tod = $('.todate').val();
+            
+            localStorage.setItem("leaveStatusList", $filter)
+            localStorage.setItem("leavefromdate", $fromd)
+            localStorage.setItem("leavetodate", $tod)
+
+            leavenewfilterdate();
+            showLoader();
+            setTimeout(function(){ 
+                $filterdate = $('.filterdate').val();
+                getLeavelist($DataTableUrl,$filter,$filterdate);
+            }, 1500);
+            
+       });
+
+        $(".fromdate").change(function(){
+            $filter = $('#StatusList').val();
+            $fromd = $('.fromdate').val();
+            $tod = $('.todate').val();
+
+            localStorage.setItem("leaveStatusList", $filter)
+            localStorage.setItem("leavefromdate", $fromd)
+            localStorage.setItem("leavetodate", $tod)
+
+            //localStorage.removeItem("leaveStatusList")
+            
+            showLoader();
+            setTimeout(function(){
+                $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&fromdate="+$fromd+"&todate="+$tod;
+                showLoader();
+                ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+            }, 1500);
+            
+        });
+
+        $(".todate").change(function(){
+            $filter = $('#StatusList').val();
+            $fromd = $('.fromdate').val();
+            $tod = $('.todate').val();
+
+            localStorage.setItem("leaveStatusList", $filter)
+            localStorage.setItem("leavefromdate", $fromd)
+            localStorage.setItem("leavetodate", $tod)
+            
+            showLoader();
+            setTimeout(function(){
+                $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&fromdate="+$fromd+"&todate="+$tod;
+                showLoader();
+                ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+            }, 1500);
+            
+        });
+
+
+
+       $(".filterRadio").change(function(){           
+            $filter = $('#StatusList').val();
+            $fromd = $('.fromdate').val();
+            $tod = $('.todate').val();
+
+            localStorage.setItem("leaveStatusList", $filter)
+            localStorage.setItem("leavefromdate", $fromd)
+            localStorage.setItem("leavetodate", $tod)
+
+            showLoader();
+            setTimeout(function(){
+                $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&fromdate="+$fromd+"&todate="+$tod;
+                showLoader();
+                ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+            }, 1500);
+       });
+       $("#StatusList").change(function(){
+            leavenewfilterdate();
+            
+       });
+       $(".filterRadio").first().prop("checked","checked");
+       $filter = $(".filterRadio").first().val();              
+       $filterdate = $(".filterdate").first().val();              
+       
+       leaveDatatable($DataTableUrl ,"{{page}}",$filterdate)
+        
+        {#$leaveFilter = localStorage.getItem("leaveFilter");
+        if(!$leaveFilter){
+            $leaveFilter = 0;
+        }
+        
+        if($leaveFilter == 1){
+            $(".filterRadio_1").click();
+            leaveDatatable($DataTableUrl , $leaveFilter)
+        }else if($leaveFilter == 2){
+            
+            $(".filterRadio_2").click();
+            leaveDatatable($DataTableUrl , $leaveFilter)
+            
+        }else if($leaveFilter == 3){
+            $(".filterRadio_3").click();
+            leaveDatatable($DataTableUrl , $leaveFilter)
+        }else if($leaveFilter == 4){
+            $(".filterRadio_4").click();
+            leaveDatatable($DataTableUrl , $leaveFilter)
+        }else {
+            $(".filterRadio_").click();
+            leaveDatatable($DataTableUrl , $leaveFilter)
+        }#}
+        
+        
+        {#$(".filterRadio").each(function() {
+            if($(this).val() == $leaveFilter){
+                console.log(this);
+                console.log("filterRadio_"+$(this).val());
+                $(this).attr("checked", true);
+            }
+        });#}
+       
+    });
+    
+    
+function leavenewfilterdate(){
+    $filter = $('#StatusList').val();
+    $fromd = $('.fromdate').val();
+    $tod = $('.todate').val();
+
+     localStorage.setItem("leaveStatusList", $filter)
+     localStorage.setItem("leavefromdate", $fromd)
+     localStorage.setItem("leavetodate", $tod)
+
+    quickPost($dateFilterUrl,{"filter" : $filter},function(res){
+        var options;
+        $('.newfilterdate').html("");
+        if($.makeArray(res).length > 0){
+            $("#hidemonth").show();
+            $.each(res, function(index, object) {
+                options += '<option value="' + index + '">' + object + '</option>';
+            });
+        }else{
+            options = '<option value="{{"now"|date("Y-m")}}">{{"now"|date("M-Y")}}</option>';
+            $("#hidemonth").hide();
+        }
+        $('.newfilterdate').html(options);
+    });
+}
+
+function leaveDatatable($DataTableUrl , $filter,$filterdate){
+    // $curmonth = "{{ now|date('Y-m') }}";
+    // $("#filterdate option").each(function(){
+    //     if($curmonth == $(this).val()){
+    //         $filterdate = $curmonth;
+    //         $(this).attr('selected','selected');
+    //     }
+    // });
+
+    $fromd = $('.fromdate').val();
+    $tod = $('.todate').val();
+    $filter = 1;
+    $filterdate = "";
+
+     $leaveStatusList = localStorage.getItem("leaveStatusList", $filter)
+     $leavefromdate = localStorage.getItem("leavefromdate", $fromd)
+     $leavetodate = localStorage.getItem("leavetodate", $tod)
+    
+     if($leaveStatusList != null && $leavefromdate != null && $leavetodate != null){
+       
+         $filter = $leaveStatusList;
+         $fromd = $leavefromdate;
+         $tod = $leavetodate;          
+      }
+
+      $("#StatusList").select2("destroy").select2();
+       $('#StatusList').val($filter).trigger('change');    
+
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&fromdate="+$fromd+"&todate="+$tod;
+    
+     jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function ( a ) {
+            var ukDatea = a.split('/');
+            return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+        },
+        "date-uk-asc": function ( a, b ) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+        "date-uk-desc": function ( a, b ) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+        } );
+    ${{form_name|lower}}_datagrid = $('#{{form_name|lower}}_datagrid').DataTable({
+            ajax: {
+                "url" : $DataTableUrl,
+                "complete" : function(d)
+                {                    
+                    //$('.filterRadio:checked').parent().find("span").html("(" + d.responseJSON.data.length + ")");                
+                    hideLoader();
+                }
+            },
+            {% if defaultOrderIdx%}
+                    "order": [[ {{defaultOrderIdx}}, "asc" ]],
+            {% else %}
+                "order": [[ 0, "asc" ],[ 1, "asc" ]],
+            {% endif %}
+            
+            "aoColumns": [                    
+                {% for col,key in cols %}                                             
+                    { "data" : "{{pk}}","sType": "date-uk",render: function ( data, type, row ) {
+                        return replacements("{{key}}",row.{{key}});
+                    }},
+                {% endfor %}                                        
+                { "data" : "{{pk}}","sType": "date-uk",render: function ( data, type, row ) {                            
+                        $str = "";
+                        
+                        if(canEdit(row)) {
+                            if($('.filterRadio').val() == "A"){
+                                $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs editbtn' href='#' remote='{{formAction}}"+row.{{pk}}+"'><i class='zmdi zmdi-edit'></i></a>";
+                            }else{
+                                $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs editbtn' href='#' remote='{{formAction}}"+row.{{pk}}+"'><i class='zmdi zmdi-edit'></i></a>";
+                            }
+                        }
+                        {% if singleFunc %}
+                            $str = $str + " <a class= 'singleView' href='{{router.getPath(singleFunc,{id:""})}}"+row.{{pk}}+"'><i class='fa fa-eye'></i></a>";
+                        {% endif%}
+                        {% if rowButtons %}
+                            {% for path,icon in rowButtons %}
+                                {% if 'ajaxModal' in icon %}
+                                    $str = $str + " <a onclick='return loadModalURL(this)' 'title='Manage' class='btn btn-default btn-xs'  href='#' remote='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'><i class='{{icon}}'></i></a>";
+                                {% else %}
+                                    $str = $str + " <a href='{{router.getPath(path,{id:""})}}"+row.{{pk}}+"'title='Manage' class='btn btn-default btn-xs'><i class='{{icon}}'></i></a>";
+                                {% endif %}
+                            {% endfor %}
+                        {% endif%}
+                            
+                            {#$str = $str + " <a target='_blank' class= 'btn btn-default btn-xs' title='PDF Report' href='{{router.getPath('ess_leaves_report',{id:""})}}"+row.{{pk}}+"'><i class='fa fa-file-pdf-o'></i></a>";#}
+                        return $str;
+                }}
+            ],
+            {% if colorRows %}
+            "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                
+                $(nRow).attr("pk",aData.{{pk}});
+                
+                {% for col,keys in colorRows %}                        
+                    if(aData.LeaveStatus == {{col}}){
+                        $('td', nRow).css('background-color', {{keys|json_encode|raw}});
+                    }
+                {%endfor%}
+            },
+            {% endif %}
+            "fnDrawCallback": function(settings, json) {
+                                        
+                    
+                    $("#{{form_name|lower}}_datagrid tr").click(function(){     
+                        clickrow(this);        
+                    });
+            },        
+                    
+        dom: "lBfrtip",        
+        buttons: [{
+            extend: "excel",
+            className: "btn-sm"
+        }],
+        "fnDrawCallback": function(oSettings) {
+            /*if ($('#leave_datagrid tr').length < 11) {              
+                $('.dataTables_paginate').hide();
+            }*/
+        },
+        responsive: !0,
+        "order": [[0,'asc']],            
+        
+        });
+        //getLeavelist($DataTableUrl , $filter)
+        
+}
+function getLeavelist($DataTableUrl , $filter,$filterdate){
+    
+    $fromd = $('.fromdate').val();
+    $tod = $('.todate').val();
+
+    $DataTableUrl = "{{request.getPath()}}?action=list&filter="+$filter+"&fromdate="+$fromd+"&todate="+$tod;
+    showLoader();
+    ${{form_name|lower}}_datagrid.ajax.url( $DataTableUrl).load();
+    
+}    
+function loadGrid($msg)
+{
+    showLoader();
+    ${{form_name|lower}}_datagrid.ajax.reload();
+    toastr["success"]($msg, "");
+}
+
+function replacements($key,$val)
+{        
+    if($valKeys[$key] != undefined)
+    {    
+        return $valKeys[$key][$val];
+    }
+    else if($dateFields.indexOf($key) > -1) // is Datetime
+    {
+        return propelDate($val,0);
+        /*$d = new Date($val);
+        return $d.toLocaleString();
+        */
+    }
+    else {
+        return $val;
+    }
+}
+function canEdit($row){
+    {% if canEditIf %}
+            return findinString($row.{{canEditIf.col}},"{{canEditIf.val}}");
+    {% else%}
+            return true;
+    {% endif%}
+    
+}
+
+function clickrow(row)
+{
+    $pk = $(row).attr("pk");
+    quickLeaveView($pk);
+    $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+    $(this).addClass("selected");
+    return false;
+}
+   
+$(document).ready(function() {
+    $.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function (a){
+            return parseInt(moment(a, "DD/MM/YYYY").format("X"), 10);
+        },
+        "date-uk-asc": function (a, b) {
+            return a - b;
+        },
+        "date-uk-desc": function (a, b) {
+            return b - a;
+        }
+    });
+});
+
+function quickLeaveView($pk)
+{
+    if($pk > 0 ) 
+    {
+        showLoader();    
+        $.get($QuickViewUrl+$pk,function(data){
+            $("#leaveListView").removeClass("col-md-12").addClass("col-md-8");
+            hideLoader();
+            $("#leaveQuickView").show();        
+            $("#leaveQuickView").html(data);
+        });
+    }
+}
+    
+function closeQuickView()
+{
+        $("#leaveListView").removeClass("col-md-8").addClass("col-md-12");
+        $("#leaveQuickView").html("");
+        $("#leaveQuickView").hide();  
+        $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+}
+    
+function deletLeave($pk,$msg)
+{
+    if(confirm($msg)) {        
+
+        $.get($deleteUrl+$pk,function(data){
+            showLoader();
+            $("#leaveListView").removeClass("col-md-8").addClass("col-md-12");
+            $("#leaveQuickView").html("");
+            $("#leaveQuickView").hide();  
+            $('#{{form_name|lower}}_datagrid tr').removeClass("selected");
+            loadGrid();
+            hideLoader();        
+        });
+    }
+}
+
+</script>    
+
+<style>
+    #{{form_name|lower}}_datagrid tbody tr {cursor: pointer;}                
+    #{{form_name|lower}}_datagrid tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #{{form_name|lower}}_datagrid tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+</style>
+    
+
+
+{% endblock %}

@@ -1,0 +1,278 @@
+{% extends "app.twig" %}
+{% block title %} Outlets  {% endblock %}
+{% block page %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-box task-detail">            
+                <div class="dropdown pull-right">
+                    <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                        <i class="zmdi zmdi-edit"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a onclick='return loadModalURL(this)' href='#' remote="{{router.getPath('outlets_addedit',{pk:outlet.Id})}}">Edit</a></li>                    
+                    </ul>
+                </div>            
+                <div class="media m-b-20">
+                    <div class="media-left fileupload">
+                        <a href="#" id='profilePic'>                        
+                            <img class="media-object img-circle" alt="64x64" src="../../images/users/avatar-2.jpg" style="width: 48px; height: 48px;">
+                        </a>
+                        <input type='file' id="profilePicInput" name="profilePic" class="upload">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading m-b-0">{{outlet.OutletName}} | {{outlet.OutletSalutation}} {{outlet.OutletContactName}} [ {{outlet.OutletCode}} ]</h4>                                        
+                        <p class="text-muted m-b-5 font-13">Type : {{outlet.getOutletType().getOutlettypeName()}} | {{outlet.getTerritories().getTerritoryName()}}</p>
+                        <hr/>
+                        <p class="text-muted m-b-5 font-13">{{outlet.OutletAddress}} {{outlet.OutletPincode}}</p>
+                        <p class="text-muted m-b-5 font-13">{{outlet.OutletLandlineno}}</p>
+                        <p class="text-muted m-b-5 font-13">{{outlet.OutletIsdCode}} {{outlet.OutletContactNo}}</p>
+                        <p class="text-muted m-b-5 font-13">Email : {{outlet.OutletEmail}}</p>
+                        <hr/>
+                        <p class="text-muted m-b-5 font-13">OpeningDate : {{outlet.OutletOpeningDate|date('Y-m-d')}}</p>                    
+                        <p class="text-muted m-b-5 font-13">Birthday : {{outlet.OutletContactBday|date('Y-m-d')}}</p>
+                        <p class="text-muted m-b-5 font-13">Anniversary : {{outlet.OutletContactAnniversary|date('Y-m-d')}}</p>
+                        <p class="text-muted m-b-5 font-13">Status : {{outlet.OutletStatus}}</p>                    
+                        <p class="m-b-5 font-14">Potential : {{outlet.OutletPotential}}</p>                    
+                    </div>
+                </div>    
+                <div class="clearfix p-20"></div>
+                <div class="clearfix"></div>
+            </div>   
+        </div>
+
+        <div class="col-md-6">                  
+            <div class="card-box" widgitize = "{{router.getPath('outletAccount',{id:outlet.getPrimaryKey()})}}" data-toggle="dataWidgets">
+            </div>            
+        </div>
+       
+    </div>
+    
+
+    {% if outlet.getOutletType().getIsoutletprimary() != 1 %}
+
+        <div class="row">
+            <div class="col-md-6">   
+                <div class="card-box table-responsive">                         
+                    <div class="">                
+                        <h4 class="header-title col-md-6 m-t-0 m-b-30">Primary Mapping</h4>                
+                    </div>
+
+
+                    <div class="btn-group m-b-30 pull-right">
+                        <a href="{{router.getPath('OutletMapping',{id:outlet.getPrimaryKey()})}}?action=form&mappingid=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i>Mapping</a>                                
+                    </div>           
+
+                    <table id="outletMapping" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>                                                
+
+                                <th>Primary</th>
+                                <th>Category Type</th>
+                                <th>PriceBook</th>                       
+                                <th>isDefault</th>
+                                <th>Action</th>  
+
+                            </tr>
+                        </thead>
+
+                    </table>                      
+
+                </div>                                                
+            </div>      
+
+        <div class="col-md-6">   
+            <div class="card-box table-responsive">                         
+                <div class="">                
+                    <h4 class="header-title col-md-6 m-t-0 m-b-30">Addresses</h4>                
+                </div>
+
+                <div class="btn-group m-b-30 pull-right">
+                    <a href="{{router.getPath('AddEditoutletAddress',{id:outlet.getPrimaryKey()})}}?action=orgdata&OutletAddressId=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i>Add Address</a>                                
+                </div>           
+
+                <table id="outletAddress" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>                                                
+                            <th>AddressName</th>
+                            <th>OutletAddress</th>
+                            <th>OutletStreetName</th>                       
+                            <th>OutletCity</th>
+                            <th>OutletState</th>
+                            <th>OutletPincode</th>
+                            <th>Action</th>  
+                        </tr>
+                    </thead>
+
+                </table>                      
+
+            </div>                                                
+        </div>                                    
+        </div>
+
+    {% endif %}    
+        
+<div class="row">
+    <div class="col-md-12">   
+        <div class="card-box table-responsive">                         
+            <div class="">                
+                <h4 class="header-title col-md-6 m-t-0 m-b-30">Organization Customer Record</h4>                
+            </div>
+
+            <div class="btn-group m-b-30 pull-right">
+                <a href="{{router.getPath('AddEditoutletOrgData',{id:outlet.getPrimaryKey()})}}?action=orgdata&OutletOrgId=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i>Add Unit</a>                                
+            </div>           
+
+            <table id="orgdata" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                                                
+                        <th>OrgUnit</th>
+                        <th>Town</th>                        
+                        <th>VisitFq</th>                       
+                        <th>Tags</th>
+                        <th>Comments</th>
+                        <th>Action</th>  
+                    </tr>
+                </thead>
+
+            </table>                      
+
+        </div>                                                
+    </div>                     
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <!-- X-editable css -->
+
+    <link type="text/css" href="{{router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}" rel="stylesheet">
+    <script src="{{router.baseUrl('plugins/moment/moment.js')}}"></script>
+    <script type="text/javascript" src="{{router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js')}}"></script>
+
+
+    <script type="text/javascript">
+
+    
+            $profileurl = "{{request.getPath()}}";
+
+
+            $(document).ready(function () {
+                
+          
+
+            });
+
+            function reloadMapping()
+            {
+                $outletMapping.ajax.reload();
+            }
+
+            $outletMapping = $('#outletMapping').DataTable({
+
+                ajax: "{{router.getPath('OutletMapping',{id:outlet.getPrimaryKey()})}}?action=list",
+                "columns": [
+                    {"data": "Outlets", render: function (data, type, row) {
+                            return data.OutletName + " | " + data.OutletCode;
+                        }},
+                    {"data": "CategoryType", render: function (data, type, row) {
+                            return data;
+                    }},
+                    {"data": "Pricebooks", render: function (data, type, row) {
+                            if(data != null)
+                            {
+                                return data.PricebookName;
+                            }
+                            else {
+                                return '-';
+                            }
+                            
+                        }},
+                    
+                    {"data": "Isdefault", render: function (data, type, row) {
+                            if (data == 1) {
+                                return "Yes";
+                            } else {
+                                return "No";
+                            }
+                        }
+                    },
+                    {"data": "MappingId", render: function (data, type, row) {
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('OutletMapping',{id:outlet.getPrimaryKey()})}}?action=form&mappingid=" + row.MappingId + "'><i class='zmdi zmdi-edit'></i></a>";
+                            
+                            
+                        }
+                    },
+                ],
+            });
+
+            function reloadorgData()
+            {
+                $orgdata.ajax.reload();
+            }
+
+            $orgdata = $('#orgdata').DataTable({
+
+                ajax: "?action=orgdata",
+                "columns": [
+                    {"data": "OrgUnit", render: function (data, type, row) {
+                            return data.UnitName + " | " + data.OrgUnitCode;
+                        }},
+                    {"data": "itownid", render: function (data, type, row) {
+                            return row.GeoTowns.Stownname;
+                        }},
+                    {"data" : "VisitFq"}, 
+                    {"data" : "Tags"}, 
+                    {"data" : "Comments"}, 
+                    {"data": "OutletOrgId", render: function (data, type, row) {
+
+                        $str = "";
+                        $str = $str + "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('AddEditoutletOrgData',{id:outlet.getPrimaryKey()})}}?action=form&OutletOrgId=" + row.OutletOrgId + "'><i class='zmdi zmdi-edit'></i></a> ";
+                        $str = $str + "<a title='Edit' class='btn btn-primary btn-xs' href='{{router.getPath('outletorg',{id:''})}}"+row.OutletOrgId+"'><i class='zmdi zmdi-layers'></i></a> ";                        
+                        return $str;
+                        }
+                    },
+                ],
+            });
+
+
+            function reloadAddress()
+            {
+                $OutletAddress.ajax.reload();
+            }
+
+            $OutletAddress = $('#outletAddress').DataTable({
+
+                ajax: "?action=outletAddress",
+                "columns": [                    
+                    {"data" : "AddressName"}, 
+                    {"data" : "OutletAddress"}, 
+                    {"data" : "OutletStreetName"}, 
+                    {"data" : "OutletCity"}, 
+                    {"data" : "OutletState"}, 
+                    {"data" : "OutletPincode"}, 
+                    {"data": "OutletAddressId", render: function (data, type, row) {
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('AddEditoutletAddress',{id:outlet.getPrimaryKey()})}}?action=form&OutletAddressId=" + row.OutletAddressId + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    },
+                ],
+            });
+            
+
+            function reloadGrid()
+            {
+                document.location.reload();
+            }
+                            
+    </script>
+
+<style>
+ .mapContainer {width:100%;min-height:850px; display: block;}
+  #map {
+    min-height: 400px;
+  }
+
+</style>
+
+{% endblock %}

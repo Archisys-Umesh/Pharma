@@ -1,0 +1,179 @@
+{% extends "app.twig" %}
+{% block title %} Company Master {% endblock %}
+{% block page %}
+
+<div class="row">
+     <div class="content">
+                    <div class="container">
+
+                        <div class="row">
+							<div class="col-sm-12">
+                                                        <div class="card-box">
+                                                            <div class="row">
+                                                            <div class="col-lg-12">
+                                                                    <h4 class="m-b-30 m-t-0 header-title"><b>Company Info</b></h4>
+                                                                     
+                                                                    <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Code</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyCode}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                        <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Name</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyName}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Email</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyEmail}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Phone Number</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyPhoneNumber}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Contact Number</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyContactNumber}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                  
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Fax</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyFax}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                  
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Owner Name</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.OwnerName}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                  
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">CompanyAddress 1</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyAddress1}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                   <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Address 2</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyAddress2}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                   <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Type</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyType}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                         
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Since From Year</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanySinceFromYear}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Gst Number</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.GstNumber}}</a>
+                                                                            </div>
+                                                                    </div><div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Type</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyType}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                         
+                                                                           
+                                                                               <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Address Country</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.AddrCountry}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                               <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Address City</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.AddrCity}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                               <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Address State</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.AddrState}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                               <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Address Pincode</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.AddrPincode}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                             
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company About</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyAbout}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Financial Year</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyFinancialYear}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                             <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Company Privacy Policy</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.CompanyPrivacyPolicy}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            <div class="form-group col-md-6">
+                                                                            <label class="col-sm-4 control-label">Website</label>
+                                                                            <div class="col-sm-8">
+                                                                                    <a id="inline-username" data-type="text" data-pk="1" data-title="Enter username">{{compnyData.Website}}</a>
+                                                                            </div>
+                                                                    </div>
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                  
+                                                                            
+                                                                            
+                                                                  
+                                                                  
+
+
+                                                            </div><!-- end col -->
+
+                                                            </div><!-- end row -->
+                                                        </div>
+							</div><!-- end col -->
+						</div>
+                        <!-- end row -->
+
+
+                    </div> <!-- container -->
+
+                </div> <!-- content -->
+ 
+        
+</div>
+<!-- end row -->
+    
+{% endblock %}
+{% block script %}
+ 
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+{% block page %}
+
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="card-box table-responsive">
+                <div class="col-sm-12 p-0">
+                    <div class="col-sm-2">
+                        <a href="{{request.getPath()}}?action=form&pk=0" data-toggle="ajaxModal" class="btn btn-success" id="btnAddPrimary"><i class="zmdi zmdi-plus"></i> Add Announcement</a>
+                    </div>
+
+                </div>
+                <div class="clearfix p-b-10"></div>
+
+                <table id="expenseDatagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+
+                        <th>Announcement Message</th>
+                        <th>Announcement Title</th>
+                        <th>AnnouncementSdate</th>
+                        <th>AnnouncementEDate</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div><!-- end col -->
+
+
+
+    </div>
+
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+
+        $expenseDatagrid = "";
+        $expenseForm = "{{request.getPath()}}?action=form&pk=";
+        $DataTableUrl = "{{request.getPath()}}?action=list";
+
+        $budgetDatagrid = "";
+        $budgetForm = "{{router.getPath("hr_budgetGroups")}}?action=form&pk=";
+        $budgetUrl = "{{router.getPath("hr_budgetGroups")}}?action=list";
+
+        $valKeys = [];
+        {% if valKeys %}
+        {% for val,keys in valKeys %}
+        $valKeys['{{val}}'] = {{keys|json_encode|raw}};
+        {% endfor %}
+        {% endif%}
+
+
+
+
+        $(document).ready(function(){
+
+            initExpenseGrid();
+            initBudgetGrid();
+
+        });
+
+        function initExpenseGrid()
+        {
+            $expenseDatagrid = $('#expenseDatagrid').DataTable({
+                ajax: {
+                    "url" : $DataTableUrl,
+                    "complete" : function(d)
+                    {
+                        hideLoader();
+                    }
+                },
+                "order": [[ 0, "desc" ]],
+                "columns": [
+                    { "data" : "AnnouncementMessage" ,render: function ( data, type, row ) {
+                            return replacements("AnnouncementMessage",data);
+                        }},
+                    { "data" : "AnnouncementTitle" ,render: function ( data, type, row ) {
+                            return replacements("AnnouncementTitle",data);
+                        }},
+                    { "data" : "AnnouncementStdate" ,render: function ( data, type, row ) {
+                            return replacements("AnnouncementStdate",data);
+                        }},
+                    { "data" : "AnnouncementEdate" ,render: function ( data, type, row ) {
+                            return replacements("AnnouncementEdate",data);
+                        }},
+                    { "data" : "ExpenseId" ,render: function ( data, type, row ) {
+                            $str = "";
+                            $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{request.getPath()}}?action=form&pk="+row.AnnouncementId+"'><i class='zmdi zmdi-edit'></i></a>";
+                            $str = $str + " <a onclick='return loadModalURL(this)' 'title='Manage' class='btn btn-default btn-xs'  href='#' remote='{{router.getPath('hr_push_notification')}}?action=form&pk="+row.AnnouncementId+"'><i class='zmdi zmdi-layers'></i></a>";
+                            return $str;
+                        }}
+                ],
+
+                responsive: !0,
+
+            });
+        }
+
+        function initBudgetGrid()
+        {
+            $budgetDatagrid = $('#budgetDatagrid').DataTable({
+                ajax: {
+                    "url" : $budgetUrl,
+                    "complete" : function(d)
+                    {
+                        hideLoader();
+                    }
+                },
+                "order": [[ 0, "desc" ]],
+                "columns": [
+                    { "data" : "GroupName" ,render: function ( data, type, row ) {
+                            return replacements("GroupName",data);
+                        }},
+                    {#{ "data" : "Groupcode" ,render: function ( data, type, row ) {
+                        return replacements("Groupcode",data);
+                    }},#}
+                    { "data" : "Notes" ,render: function ( data, type, row ) {
+                            return replacements("Notes",data);
+                        }},
+                    { "data" : "Status" ,render: function ( data, type, row ) {
+                            return replacements("Status",data);
+                        }},
+                    { "data" : "Maxlimit" ,render: function ( data, type, row ) {
+                            return replacements("Maxlimit",data);
+                        }},
+                    { "data" : "Bgid" ,render: function ( data, type, row ) {
+                            $str = "";
+                            $str =  "<a onclick='return loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('hr_budgetGroups')}}?action=form&pk="+row.Bgid+"'><i class='zmdi zmdi-edit'></i></a>";
+                            $str = $str + " <a onclick='return loadModalURL(this)' 'title='Manage' class='btn btn-default btn-xs'  href='#' remote='{{router.getPath('hr_manageBudget')}}?action=form&pk="+row.Bgid+"'><i class='zmdi zmdi-layers'></i></a>";
+                            return $str;
+                        }}
+                ],
+
+                responsive: !0,
+
+            });
+        }
+        function loadExpenseGrid()
+        {
+            showLoader();
+            $expenseDatagrid.ajax.reload();
+        }
+        function loadBudgetGrid()
+        {
+            showLoader();
+            $budgetDatagrid.ajax.reload();
+        }
+        function replacements($key,$val)
+        {
+            if($valKeys[$key] != undefined)
+            {
+                return $valKeys[$key][$val];
+            }
+            else {
+                return $val;
+            }
+        }
+
+    </script>
+
+
+
+
+{% endblock %}

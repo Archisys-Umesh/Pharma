@@ -1,0 +1,186 @@
+{% extends "app.twig" %}
+{% block title %} Tour Plans {% endblock %}
+{% block page %}
+    
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card-box table-responsive">                                    
+            <div class="row">                
+                <form method="get">
+                {% if not employeelist  %}
+                <div class="form-group col-sm-3">                    
+                    OrgUnit : 
+                    <select id="fm-input-4" class="form-control" name="orgUnit">
+                            
+                        {% for key,value in orgUnit %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                        <option value="-1"> -- ALL --</option>
+                            
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">                    
+                    OrgUnit : 
+                    <select id="fm-input-4" class="form-control" name="designation">
+                            
+                        {% for key,value in designation %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                        <option value="-1"> -- ALL --</option>
+                            
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">                    
+                    OrgUnit : 
+                    <select id="fm-input-4" class="form-control" name="monthList">
+                            
+                        {% for key,value in monthList %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}                                                    
+                    </select>
+                </div>                
+                {% endif %}
+                <div class="form-group col-sm-3">                                        
+                    {% if not employeelist  %}
+                    <button type="submit" class="btn btn-danger" style="width:100%;line-height:2 ;margin-top: 15px;" id="filterButton" name="action" value = "empList"> Load</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-danger" style="width:100%;line-height:2 ;margin-top: 15px;"> Back</button>
+                    {% endif %}                    
+                </div>
+                  
+                </form>
+            </div>
+            
+            
+            {% if(employeelist) %}
+            <div class="clearfix"></div>
+            <table id="mainTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Employee</th>
+                        <th>Mobile</th>
+                        <th>Territory</th>                        
+                    </tr>
+                </thead>                                
+                <tbody>
+                    {% for emp in employeelist %}
+                        <tr class="clickable-row" empid = "{{ emp.EmployeeId }}" empname = "{{ emp.FirstName }} {{ emp.LastName }}">
+                            <td> {{ emp.EmployeeCode }} </td>
+                            <td> {{ emp.FirstName }} {{ emp.LastName }} </td>
+                            <td> {{ emp.Phone }} </td>
+                            <td> {{ emp.getTerritoriesRelatedByTerritoryId().getTerritoryName() }} </td>                                                        
+                        </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-sm-6 editable">
+        <div class="card-box table-responsive">
+        <div class="pull-right">                
+                    <button type="button" id="btnApprove" class="btn btn-info" style="width:100%;line-height:2 ;margin-top: 15px;"> Approve </button>
+                <br/>
+            </div>
+            <h2 id="EmpNameTP"></h2>             
+            <table id="empTable" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>                                                
+                        
+                        <th>Date</th>
+                        <th>Activity</th>
+                        <th>Selection</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>                                
+            </table>            
+            
+        </div>
+    </div>
+</div>
+<div class="row">
+    
+        
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        
+    var $empTable;
+    var Startdate = "{{StartDate}}";
+    var EndDate = "{{EndDate}}";
+    var $empid = 0;
+    $(document).ready(function(){
+        
+        $("#btnApprove").hide();
+
+        $("#mainTable .clickable-row td").click(function(){
+            $empTable.clear().draw();
+            
+            showLoader();            
+            $("#mainTable .clickable-row").removeClass("selected");
+            $(this).parent("tr").addClass("selected");
+            $empid = $(this).parent("tr").attr("empid");
+            
+            $("#btnApprove").show();
+
+            reloadActivities();
+            
+            $("#EmpNameTP").html($(this).parent("tr").attr("empname"));
+        });
+        {% if(employeelist) %}
+                
+               initActivityGrid();
+        {% else%}
+            $("#empTable").hide();            
+        {% endif %}
+    }); 
+
+    $("#btnApprove").click(function(){
+
+        showLoader();
+        $.get("{{router.getPath('fsm_PlanActivity')}}?action=approve&id="+$empid+"&Startdate="+Startdate+"&EndDate="+EndDate,function(){
+
+                reloadActivities();
+                hideLoader();
+        });
+
+    });
+    
+    function initActivityGrid()
+    {
+        $empTable = $("#empTable").DataTable({
+            ajax: "{{router.getPath("fsm_PlanActivity")}}?action=blank",                 
+            "columns": [                    
+                { "data" : "TpDate" },
+                { "data" : "TpState" },
+                { "data" : "TpSelection" },
+                { "data" : "TpId", render: function ( data, type, row ) {
+                        if(row.TpStatus == 1) {
+                            return "Approved";
+                        }
+                        else 
+                        {
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('fsm_PlanActivity')}}?TpId="+row.TpId+"&action=form&emp="+$empid+"&TpDate="+row.TpDate+"'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                }},
+                
+            ],
+            "pageLength": 50,
+            "drawCallback": function(settings, json) {
+                    hideLoader();
+            },
+        });                 
+    }
+    
+    function reloadActivities()
+    {        
+        $empTable.ajax.url("{{router.getPath('fsm_PlanActivity')}}?action=list&id="+$empid+"&Startdate="+Startdate+"&EndDate="+EndDate).load();
+    }
+    
+    
+    </script>
+{% endblock %}

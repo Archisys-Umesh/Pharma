@@ -1,0 +1,14 @@
+ {% for exp in expense %}
+     
+     <div class="col-lg-3 col-md-6">
+         <a href="{{router.getPath('hr_payoutReport')}}{{exp.url}}">
+            <div class="card-box widget-user">
+                <div class="text-center">
+                    <h2 class="text-warning" data-plugin="counterup">{{exp.totalExp}}</h2>
+                    <h5>{{exp.label}}</h5>
+                </div>
+            </div>
+         </a>
+    </div>
+
+{% endfor %}

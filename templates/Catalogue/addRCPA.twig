@@ -1,0 +1,28 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+    
+    $(document).ready(function(){ 
+       
+       setTimeout(function(){
+
+       $("#OutletId").change();
+
+       },500);
+        
+    });
+    
+    function selectedOutlet($data)
+    {
+        $('[name="RetailOutletId"]').html($data.retail);
+        
+    }
+    
+
+
+</script>
+{% endblock %}        

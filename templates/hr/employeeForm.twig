@@ -1,0 +1,63 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+        
+    $(document).ready(function(){                    
+                     
+       $("#position").change(function(){
+            
+            if($(this).val() != 0) {                
+                setReporting($(this).val());
+            }
+            else 
+            {
+                $("#reportTo").prop( "disabled", false );
+            }
+                
+        });
+        
+        $("#designation").parent("div").attr("id","designation_div");
+        $("#designation_div").removeClass("col-sm-9");
+        $("#designation_div").addClass("col-sm-6");
+        $("#designation_div").parent().append("<div class='col-sm-3'><a onclick='loadModalURL(this)' remote='/system/designationForm/0' class='btn btn-default'> +New </a></div>");
+        
+        $("#grade").parent("div").attr("id","gradeDiv");
+        $("#gradeDiv").removeClass("col-sm-9");
+        $("#gradeDiv").addClass("col-sm-6");
+        $("#gradeDiv").parent().append("<div class='col-sm-3'><a onclick='loadModalURL(this)' remote='/system/gradeMaster?action=form&pk=0' class='btn btn-default'> +New </a></div>");
+        
+        $("#position").parent("div").attr("id","positionDiv");
+        $("#positionDiv").removeClass("col-sm-9");
+        $("#positionDiv").addClass("col-sm-6");
+        $("#positionDiv").parent().append("<div class='col-sm-3'><a onclick='loadModalURL(this)' remote='/system/postionForm/0' class='btn btn-default'> +New </a></div>");
+
+    });
+
+function setReporting($pos_id)
+{
+    $.getJSON("{{request.getPath()}}?position_id="+$pos_id,function( data ) { 
+        
+        if(data.report_to != 0) {
+            $("#reportTo").val(data.report_to);
+            $("#reportTo").parents(".form-group").show();
+            $("#reportTo").prop( "disabled", false );
+        }
+        else {
+            $("#reportTo").prop( "disabled", true );
+            $("#reportTo").parents(".form-group").hide();
+        }
+    
+    });                                    
+}
+
+function orgSelected($res)
+{
+    $("#position").html($res.pos);
+    $("#reportTo").html($res.rep);
+}
+</script>
+{% endblock %}        

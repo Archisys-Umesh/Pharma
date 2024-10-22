@@ -1,0 +1,138 @@
+{% extends "app.twig" %}
+{% block title %} Campaign Positions {% endblock %}
+{% block page %}
+    
+        <div class="col-md-12" id="positionList">
+            <div class="card-box table-responsive">
+                <table id="datagridcam" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>                    
+                            <th><input type="checkbox" class="datatableCheckbox" id="toggle-all"/></th>  
+                            <th>Employee Name</th>
+                            <th>Employee Code</th>
+                            <th>Position</th>
+                            <th>Reporting To</th> 
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table> 
+                <div class="">
+                    <a href="JavaScript:void(0)" class="btn btn-primary bulkActions" style="float: inline-end;">Submit</a>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+{% block script %}
+<script>
+    $dataUrl = "{{request.getPath()}}?action=list";
+    $bulkUrl = "{{request.getPath()}}?action=bulk";
+    var $grid = "";
+    jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+        "date-uk-pre": function ( a ) {
+            var ukDatea = a.split('/');
+            return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+        },
+        "date-uk-asc": function ( a, b ) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+        "date-uk-desc": function ( a, b ) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+    $(document).ready(function(){
+        var url = window.location.href;
+        var campId = url.substr(url.lastIndexOf('/') + 1);
+
+        $grid = $('#datagridcam').DataTable({
+            "bPaginate": false,
+            ajax: {
+                url: $dataUrl,
+                type: 'GET',
+            },
+            columns: [
+                { "data": "PositionId","render": function ( data, type, row ) { 
+                        return "<input type='checkbox' name='PositionId' value="+row.PositionId+" class='nodeCheckbox'/>";
+                    }, 
+                },
+                { "data": "EmployeeId","render": function ( data, type, row ) {
+                        return row.FirstName+" " + row.LastName;
+                    }, 
+                },
+                {data: 'EmployeeCode', name: 'EmployeeCode'},
+                {data: 'PositionsRelatedByPositionId.PositionName', name: 'PositionsRelatedByPositionId.PositionName'},
+                {data: 'PositionsRelatedByReportingTo.PositionName', name: 'PositionsRelatedByReportingTo.PositionName'},
+                { "data": "PositionId","render": function ( data, type, row ) {
+                        return "<a href='{{router.getPath("brandCampaignPositionOutlet",{id:""})}}"+data+"?campaignId="+campId+"'><i class='fa fa-list'></i></a>" ;
+                    }, 
+                },
+            ],
+            select: true,
+            "rowCallback": function( row, data, Positions ) {
+                console.log();
+                $(row).attr("PositionId",data.Position);
+            },
+        });
+    });
+      
+    function loadGrid()
+    {
+        $(".bulkActions").hide();
+        showLoader();
+        quickPost($dataUrl,$("#gridFilters").serialize(),function(res){
+            $('#datagridcam').dataTable().fnClearTable();
+            hideLoader();
+
+            //console.log(res);
+        });
+    }
+      
+    $( document ).ready(function() {
+        $("input:checkbox[class=datatableCheckbox]:checked").each(function () {
+            $('.sorting_disabled').hide();
+            $('td.select-checkbox').hide();
+        });
+        $('#toggle-all').click(function() {
+            if ($(this).is(':checked')) {
+                $('table input:checkbox').prop('checked', true);
+            } else {
+                $('table input:checkbox').prop('checked', false);
+            }
+        });
+    });
+
+     $(".bulkActions").click(function(){
+        var url = window.location.href;
+        var campiagnId = url.substr(url.lastIndexOf('/') + 1);
+
+        var PositionId = [];
+        $(':checkbox:checked').each(function(i){
+            PositionId.push($(this).val()); 
+        });
+        
+        if(PositionId.length > 0)
+        {
+            quickPost($bulkUrl,{"PositionId" : PositionId,"CampiagnId":campiagnId},function(res){
+
+            });
+        }else{
+            toastr["error"]("Please select atleast one position.");
+        }
+     });
+</script>
+<style>
+        
+    #datagrid tbody tr 
+    {
+        cursor: pointer;
+    }
+    #datagrid tbody tr:hover
+    {
+        background-color: #fff9d1;
+    }
+    #datagrid tbody tr.selected
+    {
+        background-color: #fff9d1;
+    }
+    
+</style>
+{% endblock %}

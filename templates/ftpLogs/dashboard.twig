@@ -1,0 +1,119 @@
+{% extends "app.twig" %}
+
+{% block title %} {{title}} {% endblock %}
+
+{% block page %}
+<style>
+    caption { 
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .stopped {
+        background-color: #ff0000e6;
+        color: #FFF;
+    }
+
+    .stopping {
+        background-color: #ff5e00;
+        color: #FFF;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <table id="ftpImportLogs_datatable" class="table table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <caption>FTP Imports</caption>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>File</th>
+                        <th>Total Records</th>
+                        <th>No. processed Records</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>Last updated At</th>
+                        <th>Processed %</th>
+                        <th>Processing Time</th>
+                        <th>ETA</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in ftpLogs %}
+                        <tr {% if date(log['UpdatedAt']) < date('-30 mins') %} class="stopped" {% elseif date(log['UpdatedAt']) < date('-15 mins') %} class="stopping" {% endif %}>
+                            <td>{{ log['CreatedAt'] | date('d-m-Y') }}</td>
+                            <td>{{ log['FilePath'] }}</td>
+                            <td>{{ log['NoTotalRecords'] }}</td>
+                            <td>{{ log['NoProcessedRecords'] }}</td>
+                            {% if log['StartTime'] != null and log['StartTime'] != '' %}
+                                <td>In process</td>
+                                <td>{{ log['StartTime'] | date('d-m-Y h:i A') }}</td>
+                            {% else %}
+                                <td>Queue</td>
+                                <td>Not started yet</td>
+                            {% endif %}
+                            {% if log['UpdatedAt'] != null and log['UpdatedAt'] != '' %}
+                                <td>{{ log['UpdatedAt'] | date('d-m-Y h:i A') }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            <td>{{ (log['NoProcessedRecords'] / log['NoTotalRecords']) * 100 }}%</td>
+                            {% set timeDifferentInsecs = date().diff(date(log['StartTime'])) %}
+                            <td>
+                                {% if timeDifferentInsecs.h > 0 %} {{ timeDifferentInsecs.h }}  hours {% endif %} 
+                                {% if timeDifferentInsecs.i > 0 %} {{ timeDifferentInsecs.i }}  mins {% endif %} 
+                                {% if timeDifferentInsecs.s > 0 %} {{ timeDifferentInsecs.s }}  secs {% endif %}
+                            </td>
+                            {% set totalTimeTake = (timeDifferentInsecs.h * 3600) + (timeDifferentInsecs.i * 60) + (timeDifferentInsecs.s) %}
+                            {% set avgTimeForOneRecord = (log['NoProcessedRecords'] > 0 ? (totalTimeTake / log['NoProcessedRecords']) : 0) %}
+                            {% set etaSecs = (log['NoTotalRecords'] - log['NoProcessedRecords']) * avgTimeForOneRecord %}
+                            <td>
+                                {% if (etaSecs / 3600) > 1 %} {{ (etaSecs / 3600) | round(0, 'floor') }}  hours {% endif %}
+                                {% if ((etaSecs / 60) % 60) > 1 %} {{ ((etaSecs / 60) % 60) | round(0, 'floor') }}  mins {% endif %}
+                                {% if (etaSecs % 60) > 0 %} {{ etaSecs % 60 }}  secs {% endif %} 
+                            </td>
+                            <td>
+                                <a onclick="return loadModalURL(this)" title="Reset" class="btn btn-info" action="javascript:;" remote="/ftp-logs/reset/file/{{ log['FtpImportLogId'] }}">Reset</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>         
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <table id="ftpImportLogs_datatable" class="table table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+                <caption>FTP Export</caption>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in ftpExportLogs %}
+                        <tr>
+                            <td>{{ log['FilePath'] }}</td>
+                            <td>{{ log['CreatedAt'] | date('d-m-Y') }}</td>
+                            {% if log['StartTime'] != null and log['StartTime'] != '' %}
+                                <td>In process</td>
+                                <td>{{ log['StartTime'] | date('d-m-Y h:i A') }}</td>
+                            {% else %}
+                                <td>Queue</td>
+                                <td>Not started yet</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>         
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

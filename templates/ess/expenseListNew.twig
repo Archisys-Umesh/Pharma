@@ -1,0 +1,303 @@
+{% extends "app.twig" %}
+{% block title %} Expenses {% endblock %}
+{% block page %}
+    
+    <div class="row">
+        <div class="col-sm-4">            
+            <a href="{{router.getPath('ess_expenseForm',{id:0})}}" class="btn btn-success m-b-20"><i class="zmdi zmdi-plus"></i> Add Expenses</a>
+        </div>
+        
+        <div class="col-sm-8">
+            <div class="project-sort pull-right">
+                <div class="project-sort-item">
+                    <form class="form-inline" id="gridFilters">
+                        <div class="form-group">
+                            <label>Status :</label>
+                            <select class="form-control input-sm" id="StatusList" name="status">
+                                <optgroup label="My Requests">
+                                    <option value="1">Created</option>
+                                    <option value="2">Submited</option>
+                                    <option value="3">Approved</option>
+                                    <option value="4">Rejected</option>
+                                    <option value="7">Cancelled</option>
+                                    {#<option value="10">Proceed for Payment</option>#}
+                                </optgroup>
+                                <optgroup label="Team Requests">
+                                    <option value="P">--To be Approved by Me--</option>
+                                </optgroup>
+                                    <option value="A">-- ALL --</option>
+                                
+                                <!-- <option value="6">Processed</option>-->
+                                
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="empform" style="display: none">
+                            <label>Employee :</label>
+                            <select class="form-control input-sm" id="employeeList" name="employee">                                
+                                {{empList|raw}}                            
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Month :</label>                            
+                            <select class="form-control input-sm" name="month" id="month">
+                                {{monthList|raw}}                            
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- end col-->
+    </div>
+    <!-- end row -->
+    
+    <div class="row " id="expenseCardHolder">
+        <div class="col-md-12">
+            <div class="card-box table-responsive">
+                <table id="datagrid" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="datatableCheckbox"/></th>
+                            <th>ExpenseID</th>
+                            <th>Date</th>
+                            <th>Working</th>
+                            <th>Budget</th>                        
+                            <th>Requested</th>
+                            <th>Add</th>                            
+                            <th>Final</th>
+                            <th>Status</th>
+                            <th>Employee</th>
+                            {#<th>Currency</th>#}
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                </table> 
+                <div class="">
+                   <a href="#" class="btn btn-default bulkActions" matchStatus = "1" moveStatus="2" id="expansesSubmit">Submit for Approval</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "P" moveStatus="3">Approve</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "P" moveStatus="4">Reject</a>
+                    <a href="#" class="btn btn-default bulkActions" matchStatus = "4" moveStatus="1">Re Open</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+{% endblock %}
+{% block script %}
+    <script>
+        
+        $dataUrl = "{{request.getPath()}}?action=list";
+        $bulkUrl = "{{request.getPath()}}?action=bulk";
+        $statusList = {{statusList|json_encode|raw}};
+        var $grid = "";
+        
+        $(document).ready(function(){
+            
+            var dt = new Date();
+            $("#StatusList").change(function(){
+               if($(this).val() == "P"){
+                   $("#empform").show();
+               }else{
+                   $("#empform").hide();
+               } 
+            
+            });
+        $grid =  $('#datagrid').dataTable({
+                
+                "aoData": {"data":[]}, 
+               
+                
+
+                "aoColumns": [
+                    { "data": "ExpId","render": function ( data, type, row ) {                            
+                            
+                            $sl = $("#StatusList").val();
+                            if($sl == "1" ||$sl == "4" || $sl == "P") {
+                                // && row.ExpenseAdditionalAmt == 0
+                                var dts = new Date(row.ExpenseDate);
+                                $creMonth = dts.getMonth()+1;
+                                $nextMonth = dt.getMonth()+1;
+                                if($creMonth != $nextMonth) {
+                                    return "<input type='checkbox' ExpId = "+data+" class='nodeCheckbox'/>";
+                                }
+                                else {                                    
+                                    return "";
+                                }
+                            }
+                            else 
+                            {
+                                return "";
+                            }
+                        }, 
+                    },
+                    { "data": "ExpId","render": function ( data, type, row ) {                            
+                            return "V"+pad(data,6,"0");
+                        }, 
+                    },
+                    { "data": "ExpenseDate","render": function ( data, type, row ) {                            
+                            return propelDate(data,1);
+                        }, 
+                    },
+                    //{ "data": "TripType" ,"render": function ( data, type, row ) {                            
+                            //if(data == 0)
+                            //{
+                                //return "HQ";
+                            //}
+                            //else(data > 0) 
+                            //{
+                                //return "On Trip";
+                            //}
+                            
+                                
+                        //}, 
+                    //},
+                    { "data": "TripType" },
+                    { "data": "ExpId","render": function ( data, type, row ) {                            
+                            return row.BudgetGroup.Groupcode+" " + row.BudgetGroup.GroupName ;
+                        }, 
+                    },
+                    { "data": "ExpenseReqAmt" },
+                    { "data": "ExpenseAdditionalAmt" },                    
+                    { "data": "ExpenseFinalAmt" },
+                    { "data": "ExpenseStatus","render": function ( data, type, row ) {
+                            return $statusList[data];
+                        },  },
+                    { "data": "EmployeeId","render": function ( data, type, row ) {
+                            return row.Employee.FirstName+" " + row.Employee.LastName+" | " + row.Employee.EmployeeCode;
+                        }, 
+                    },
+                    {#{ "data": "OrgunitId","render": function ( data, type, row ) {
+                            return row.OrgUnit.CurrencyId.Name;
+                        }, 
+                    },#}
+                    { "data": "ExpId","render": function ( data, type, row ) {
+                            return "<a href='{{router.getPath("ess_expenseSingle",{id:""})}}"+data+"'><i class='fa fa-eye'></i></a>" ;
+                        }, 
+                    },
+                ],
+                'order': [1, 'asc'],  
+                "rowCallback": function( row, data, dataIndex ) {
+                                        
+                    if(data.ExpenseAdditionalAmt > 0) {
+                        $(row).addClass("danger");
+                    }
+                
+                },
+                 
+            });
+
+            loadGrid();
+            
+            datatableCheckboxManager($grid);
+            
+            $("#gridFilters select").change(function(){
+                
+                loadGrid();
+                
+            });
+            
+            $(".bulkActions").click(function(){
+                
+                $moveStatus = $(this).attr("moveStatus");
+                var rows = $grid.fnGetNodes();
+                var ExpId = [];
+                $('input[type="checkbox"]:checked', rows).each(function(idx,obj){
+                                        
+                    ExpId.push($(obj).attr('ExpId'));                    
+                });
+                if(ExpId.length > 0)
+                {
+                    quickPost($bulkUrl,{"ExpId" : ExpId,"moveStatus":$moveStatus},function(res){
+                        loadGrid();
+                        
+                        if($moveStatus == 3)
+                        {
+                            toastr["info"]("Expenses have been approved and Pending for Audit");
+                        }
+                        else if($moveStatus == 2)
+                        {
+                            toastr["info"]("Your Expenses have been submitted for approval");
+                        }
+                        else if($moveStatus == 4)
+                        {
+                            toastr["error"]("Expenses have been rejected");
+                        }
+                        
+                    });
+                }else{
+                    toastr["error"]("Please select atleast one expense.");
+                }
+            });
+                     
+            
+            {% if setMonth %} 
+                    
+                $("#month").val("{{setMonth}}");                
+                $("#empform").val("{{emp}}");
+                
+            {% endif %}
+                
+            {% if setApprove %} 
+                    
+                $("#StatusList").val("P");
+                $("#StatusList").trigger("change");
+            
+            {% endif %}
+            
+                
+        });
+       
+      
+      function loadGrid()
+      {
+          $(".bulkActions").hide();
+          showLoader();
+          
+          quickPost($dataUrl,$("#gridFilters").serialize(),function(res){
+                            
+                $('#datagrid').dataTable().fnClearTable();
+                
+                if(res.length > 0) {
+                    $('#datagrid').dataTable().fnAddData(res);
+                    $status = $("#StatusList").val();
+                    $(".bulkActions[matchStatus="+$status+"] ").show();
+                    $month = $("#month").val().split("|");
+                    var dt = new Date($month[0]);
+                    var dts = new Date();
+                    $creMonth = dts.getMonth()+1;
+                    $nextMonth = dt.getMonth()+1;
+                    if($creMonth != $nextMonth) {
+                                                                        
+                        if($status != "P")
+                        {
+                            $("#expansesSubmit").show();
+                        }                        
+                        
+                    }else{
+                        $("#expansesSubmit").hide();
+                    }
+                    $StatusList = $("#StatusList").val()
+                    if($StatusList == "3"){
+                        $("#expansesSubmit").hide();
+                    }
+                    if($StatusList == "2"){
+                        $("#expansesSubmit").hide();
+                    }
+                    if($StatusList == "10"){
+                        $("#expansesSubmit").hide();
+                    }
+                    
+                }
+                
+                hideLoader();
+          });
+          
+      }
+      
+  
+
+        
+    </script>
+
+{% endblock %}

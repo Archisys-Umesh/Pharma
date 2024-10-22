@@ -1,0 +1,23 @@
+
+
+<div class="card-box">            
+        <h3 class="p-b-10"><span class="label {{status.WfCssClass}}">Status :: {{status.WfStatusName}}</span></h3>        
+        <ul class="list-group m-b-0 user-list">
+            {% for log in logs %}
+            <li class="list-group-item">
+                <a href="#" class="user-list-item"  style="cursor:default !important;">
+                    <div class="avatar">
+                        <img src="{{router.baseUrl('uploads/')}}{{auth.getUser().getCompanyId()}}/{{log.getEmployee().ProfilePicture}}" alt="">                            
+                    </div>
+                    <div class="user-desc">
+                        <span class="name">{{log.getWfTitle()}}</span>
+                        <span class="desc">{{log.getEmployee().FirstName}} {{log.getEmployee().LastName}} [ {{log.getEmployee().getEmployeeCode()}} ]</span>                                                        
+                        <span class="desc">{{log.getCreatedAt().format("d-m-Y h:i a")}}</span>
+                        <span class="name" title="{{log.getWfNote()}}">{{log.getWfNote()}}</span>
+                    </div>
+                </a>
+            </li>
+            {%  endfor %}            
+        </ul>
+</div>
+        

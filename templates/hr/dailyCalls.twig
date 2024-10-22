@@ -1,0 +1,232 @@
+{% extends "app.twig" %}
+{% block title %} Employees Daily Calls {% endblock %}
+{% block page %}
+    {% if emp.IsLocked %}
+        <div class="col-xs-12">
+            <div class="alert alert-danger" role="alert">
+                <a href="{{ router.getPath('hr_unlockEmp') }}?emp={{ emp.EmployeeId }}" data-toggle="ajaxModal"
+                   class="btn btn-danger pull-right mtp-lock"><i class="zmdi zmdi-lock"></i> UnLock</a>
+                {{ emp.Lockedreason }} : {{ emp.Lockeddate |date('Y-m-d') }}
+            </div>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-box task-detail">
+                <div class="media m-b-20">
+                    <div class="media-left fileupload">
+                        <a href="#" id='profilePic'>
+                            {% if emp.ProfilePicture == "" %}
+                                <img class="media-object img-circle" alt="64x64" src="../../images/users/avatar-2.jpg"
+                                     style="width: 48px; height: 48px;">
+                            {% else %}
+                                <img class="media-object img-circle" alt="64x64"
+                                     src="{{ router.baseUrl('uploads/') }}{{ auth.getUser().getCompanyId() }}/{{ emp.ProfilePicture }}"
+                                     style="width: 48px; height: 48px;">
+                            {% endif %}
+                        </a>
+                        <input type='file' id="profilePicInput" name="profilePic" class="upload">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading m-b-0">{{ emp.FirstName }} {{ emp.LastName }}
+                            [ {{ emp.getEmployeeCode() }} ]</h4>
+                        <p class="text-muted m-b-5 font-13">{{ emp.getDesignations().getDesignation() }}</p>
+                        <p class="text-muted m-b-5 font-13">{{ emp.Email }}</p>
+                        {% if emp.BaseMtarget > 0 %}
+                            <p class="m-b-5 font-15">Base Sales Target : {{ emp.BaseMtarget }}</p>
+                        {% endif %}
+                        {% if emp.getPositionId > 0 %}
+                            <span class="label label-danger">Position: {{ emp.getPositionsRelatedByPositionId().getPositionName() }}</span>
+                        {% endif %}
+                        <span class="label label-success">Reports To: {{ emp.getPositionsRelatedByReportingTo().getPositionName() }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-box task-detail">
+                <div class="media-body">
+                    <h4 class="media-heading m-b-0">Date : {{ attendance.AttendanceDate | date("Y-m-d") }}</h4>
+                    <h4 class="media-heading m-b-0">Time : {{ attendance.StartTime | date("h:i a") }}
+                        - {{ attendance.EndTime | date("h:i a") }}</h4>
+                    <h4 class="media-heading m-b-0">Area : {{ attendance.StartAddress }}
+                        - {{ attendance.EndAddress }}</h4>
+                    <h4 class="media-heading m-b-0">Time : {{ (attendance.ShiftMins /60) |round }} Hrs</h4>
+                    <h4 class="media-heading m-b-0">Visit Count : {{ VisitCount }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <h4 class="header-title col-md-12 m-t-0 m-b-30">Daily Calls</h4>
+            </div>
+            <table id="dailycalls" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>Agendacontroltype</th>
+                    <th>Outletcode</th>
+                    <th>Outletname</th>
+                    <th>Customer Type</th>
+                    <th>Manager Designation</th>
+                    <th>Agendatypes</th>
+                    <th>Towns</th>
+                    <th>DCR Status</th>
+                    <th>Planned</th>
+                    <th>manager</th>
+                    <th>Brand Deatails</th>
+                    <th>SGPI Out</th>
+                    <th>POB Total</th>
+                    <th>Ed Duration</th>
+                    <th>Submission Time</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+            <a href="?action=form&pk=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i>
+                DCR</a>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card-box table-responsive">
+            <div class="">
+                <h4 class="header-title col-md-12 m-t-0 m-b-30">Expense</h4>
+            </div>
+            <table id="expense" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Place of Work</th>
+                    <th>Exp Req. Amt</th>
+                    <th>Exp Approve Amt</th>
+                    <th>Exp Final Amt</th>
+                    <th>Status</th>
+                    <th>Trip Type</th>
+                    <th>Remark</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+
+    <script type="text/javascript">
+        var $id_fields = {% if id_fields %} {{ id_fields|json_encode|raw }} {% else %} [] {% endif %};
+
+        $empId = {{ emp.getPrimaryKey() }};
+        {% if expense != null %}
+        $expenseUrl = "{{ router.getPath("hr_attendance_expense",{id:attendance.ExpenseId}) }}";
+        {% else %}
+        $expenseUrl = "{{ router.getPath("hr_attendance_expense",{id:0}) }}";
+        {% endif %}
+
+        function reloadAttendance() {
+            $dailycalls.ajax.url("?action=list").load();
+        }
+
+        $(document).ready(function ()
+         {
+            $maxYear = (new Date()).getFullYear() + 1;
+            $dailycalls = $('#dailycalls').DataTable({
+                ajax: "?action=list",
+                "columns": [
+                    {"data": "Agendacontroltype"},
+                    {"data": "OutletCode"},
+                    {"data": "OutletName"},
+                    {"data": "OutlettypeName"},
+                    {"data": "ManagerDesignation"},
+                    {"data": "Agendname"},
+                    {"data": "Stownname"},
+                    {"data": "DcrStatus"},
+                    {"data": "Planned"},
+                    {
+                        "data": "Managers", render: function (data, type, row) {
+                            try {
+                                return replacements("Managers", data);
+                            } catch (err) {
+                                console.log(err);
+                                return "";
+                            }
+
+                        }
+                    },
+
+                    {"data": "BrandsDetailed"},
+                    {"data": "SgpiOut"},
+                    {"data": "PobTotal"},
+                    {"data": "EdDuration"},
+                    {"data": "UpdatedAt"},
+                    {
+                        "data": "EdDuration", "render": function (data, type, row) {
+                            console.log(type);
+                            {% if user_role == 'NSM' %}
+                                return "";
+                            {% else %}
+                                return "<a href='{{ request.getPath() }}?action=form&pk=" + row.DcrId + "'><i class='fa fa-trash-o'></i></a>";
+                            {% endif %}
+                                
+                        }
+                    },
+                ],
+            });
+
+            $expense = $('#expense').DataTable({
+                ajax: $expenseUrl,
+                "columns": [
+                    {"data": "Expenses.ExpenseDate"},
+                    {"data": "Expenses.ExpensePlacewrk"},
+                    {"data": "Expenses.ExpenseReqAmt"},
+                    {"data": "Expenses.ExpenseApprovedAmt"},
+                    {"data": "Expenses.ExpenseFinalAmt"},
+                    {"data": "Expenses.ExpenseStatus"},
+                    {"data": "Expenses.TripType"},
+                    {"data": "ExpenseRemark"},
+                    {
+                        "data": "Expenses.ExpId", "render": function (data, type, row) {
+                            return "<a href='{{ router.getPath("ess_expenseSingle",{id:""}) }}" + data + "'><i class='fa fa-eye'></i></a>";
+                        }
+                    },
+                ]
+            });
+        });
+
+
+        function replacements($key, $val) {
+            if ($id_fields.includes($key)) {
+                return fetchDataFromBack($key, $val);
+            } else {
+                return $val;
+            }
+        }
+
+        function fetchDataFromBack(key, values) {
+
+            var returnValues = '';
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "{{ router.getPath('sys_table_data') }}",
+                data: {
+                    key: key,
+                    values, values
+                },
+                dataType: "json",
+                success: function (response) {
+                    returnValues = response.value;
+                }
+            });
+
+            return returnValues;
+        }
+
+        function reloadGrid() {
+            document.location.reload();
+        }
+
+    </script>
+
+{% endblock %}

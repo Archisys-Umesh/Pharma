@@ -1,0 +1,42 @@
+<div class="card-box table-responsive">            
+    <div class="col-md-12">                                    
+        <div class="pull-right">                                                                                    
+                <a href="#" onclick="closeQuickView()" class=""><i class="fa fa-remove"></i></a>                                        
+        </div>
+        <div class="profile-info-name">            
+                <div class="profile-info-detail">
+                    <h3 class="m-t-0 m-b-0">{{event.EventRemark}}</h3>
+                    <p class="text-muted m-b-20"><i>{{event.EventDate|date('d-m-Y')}}</i></p>                    
+                </div>
+                <div class="clearfix"></div>
+    </div>
+    </div>
+    <div class="col-md-12 p-20">                            
+        {{event_actions|raw}}
+        <div class="pull-right">                                                                                    
+            {% if getEventStatus  %}
+                <a href="#" class="btn btn-danger deleteEntity"><i class="fa fa-trash-o"></i> Delete </a>                                                
+            {% endif %}
+            
+        </div>
+    </div>                            
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    
+    $(".deleteEntity").click(function(){
+        
+        deletEntity({{event.TripId}},"Are you sure you want to delete event for {{event.EventDate|date('d-m-Y')}} ?");
+    });
+    
+});
+
+function reloadExpenseSingle()
+{    
+    loadGrid();
+    quickTripView({{event.TripId}});
+}
+
+</script>

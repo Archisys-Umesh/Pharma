@@ -1,0 +1,348 @@
+{% extends "app.twig" %}
+{% block title %} Organization Structure {% endblock %}
+{% block page %}
+
+    <div class="col-sm-12">
+            <div class="col-sm-6">
+                <div class="card-box table-responsive">
+                    <div class="">
+                        <a href="{{ router.getPath('sys_unitForm',{id:0}) }}" data-toggle="ajaxModal" class="btn btn-success">
+                            <i class="zmdi zmdi-plus"></i>
+                            Org-Unit</a>
+                    </div>
+
+                    <div class="btn-group m-b-30"></div>
+
+                    <table id="unitGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                {# <th>Currency</th> #}
+                                <th>Country</th>
+                                <th>CustomPlaylist</th>
+                                <th>IsExposed</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+
+        <div class="col-sm-6">
+            <div class="card-box table-responsive">
+                <div class="">
+                    <a href="{{ router.getPath('sys_branchForm',{id:0}) }}" data-toggle="ajaxModal"
+                       class="btn btn-success"><i class="zmdi zmdi-plus"></i> Branch/HQ</a>
+                </div>
+
+                <div class="btn-group m-b-30">
+
+                </div>
+
+                <table id="branchGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>State</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div><!-- end col -->
+    </div>
+
+    <div class="col-sm-12">
+        <div class="col-sm-6">
+            <div class="card-box table-responsive">
+                <div class="">
+                    <a href="{{ router.getPath('sys_designationForm',{id:0}) }}" data-toggle="ajaxModal"
+                       class="btn btn-success"><i class="zmdi zmdi-plus"></i> Designation</a>
+                </div>
+
+                <div class="btn-group m-b-30">
+
+                </div>
+
+                <table id="degGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%">
+                    <thead>
+                    <tr>
+                        <th>Designations</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="card-box table-responsive">
+                <div class="">
+                    <a href="{{ router.getPath('sys_outletType',{id:0}) }}" data-toggle="ajaxModal"
+                       class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add OutletType</a>
+                </div>
+
+                <div class="btn-group m-b-30">
+
+                </div>
+
+                <table id="outletGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>isPrimary</th>
+                        <th>isEndCustomer</th>
+                        <th>Active</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="col-sm-6">
+            <div class="card-box table-responsive">
+                <div class="">
+                    <a href="{{ router.getPath('sys_languageForm',{id:0}) }}" data-toggle="ajaxModal"
+                       class="btn btn-success"><i class="zmdi zmdi-plus"></i> Languages</a>
+                </div>
+
+                <div class="btn-group m-b-30">
+
+                </div>
+
+                <table id="languageGrid" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%">
+                    <thead>
+                    <tr>
+                        <th>Language Name</th>
+                        <th>Language Code</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+    <!-- Tree view js -->
+    <script src="{{ router.baseUrl('plugins/jstree/jstree.min.js') }}"></script>
+    <script type="text/javascript">
+        $btree = "";
+        $degtable = "";
+        $deptable = ""
+        $branchTable = "";
+        $unitOrg = "";
+        $(document).ready(function () {
+            $posUrl = "{{ router.getPath('sys_postionForm',{id:""}) }}";
+
+            $btree = $('#basicTree').jstree({
+                'core': {
+                    'data': {
+                        'url': '{{ router.getPath('sys_masters') }}?action=tree',
+                        'data': function (node) {
+                            return {'id': node.id};
+                        }
+                    },
+                }
+            });
+
+            $("#basicTree").on("click", ".jstree-anchor", function (e) {
+                var id = $("#basicTree").jstree(true).get_node($(this)).id;
+                modalURL($posUrl + id);
+            });
+
+            $degtable = $('#degGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=designation",
+                "columns": [
+                    {"data": "Designation"},
+                    {
+                        "data": "DesignationId", render: function (data, type, row) {
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_designationForm',{id:""}) }}" + row.DesignationId + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    }
+                ]
+            });
+
+            $branchTable = $('#branchGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=branch",
+                "columns": [
+                    {"data": "Branchname"},
+                    //{"data": "GeoState.Sstatename"},
+                     {
+                    "data": "GeoState.Sstatename",
+                    "render": function (data, type, row) {
+                        return data ? data : '';
+                      }
+                    },
+                    {
+                        "data": "BranchId", render: function (data, type, row) {
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_branchForm',{id:""}) }}" + row.BranchId + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    }
+                ]
+            });
+
+            $deptable = $('#departmentGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=department",
+                "columns": [
+                    {"data": "DepartmentName"},
+                    {"data": "ShortName"},
+                    {
+                        "data": "DepartmentId", render: function (data, type, row) {
+
+                            return row.Employee.FirstName + " " + row.Employee.LastName
+
+                        }
+                    },
+                    {
+                        "data": "DepartmentId", render: function (data, type, row) {
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_departmentForm',{id:""}) }}" + row.DepartmentId + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    }
+                ]
+            });
+
+            $unitOrg = $('#unitGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=unit",
+                "columns": [
+                    {"data": "UnitName"},
+                    {# {
+                        "data": "CurrencyId", render: function (data, type, row) {
+                            return row.Currencies.Name;
+                        }
+                    }, #}
+                    {
+                        "data": "CountryId", render: function (data, type, row) {
+                            return row.GeoCountry.Scountry;
+                        }
+                    },
+                    {
+                        "data": "CanDoCustomPlaylist", render: function (data, type, row) {
+                          return row.CanDoCustomPlaylist ? "Yes" : "No";                           
+                        }
+                    },
+                    {
+                        "data": "IsExposed", render: function (data, type, row) {                            
+                           return row.IsExposed ? "Yes" : "No";
+                        }
+                    },
+                    {
+                        "data": "Orgunitid", render: function (data, type, row) {
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_unitForm',{id:""}) }}" + row.Orgunitid + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    },
+                ]
+            });
+
+            $outletGrid = $('#outletGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=outletType",
+                "columns": [
+                    {"data": "OutlettypeName"},
+                    {
+                        "data": "Isoutletprimary", render: function (data, type, row) {
+
+                            if (row.Isoutletprimary == 1) {
+                                return "Yes";
+                            } else {
+                                return "No";
+                            }
+                        }
+                    },
+                    {
+                        "data": "Isoutletendcustomer", render: function (data, type, row) {
+
+                            if (row.Isoutletendcustomer == 1) {
+                                return "Yes";
+                            } else {
+                                return "No";
+                            }
+
+                        }
+                    },
+                    {
+                        "data": "Isenabled", render: function (data, type, row) {
+
+                            if (row.Isenabled == 1) {
+                                return "Yes";
+                            } else {
+                                return "No";
+                            }
+                        }
+                    },
+
+                    {
+                        "data": "OutlettypeId", render: function (data, type, row) {
+                            var action = "<a  title='Edit' class='btn btn-danger btn-xs' href='{{ router.getPath('outlettypesmodule',{id:""}) }}" + row.OutlettypeId + "'><i class='zmdi zmdi-edit'></i></a>";
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_outletType',{id:""}) }}" + row.OutlettypeId + "'><i class='zmdi zmdi-edit'></i></a>" + action;
+                        }
+                    },
+                ]
+            });
+
+            $languagetable = $('#languageGrid').DataTable({
+                ajax: "{{ request.getPath() }}?action=language",
+                "columns": [
+                    {"data": "LanguageName"},
+                    {"data": "LanguageCode"},
+                    {
+                        "data": "LanguageId", render: function (data, type, row) {
+
+                            return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='javascript:;' remote='{{ router.getPath('sys_languageForm',{id:""}) }}" + row.LanguageId + "'><i class='zmdi zmdi-edit'></i></a>";
+                        }
+                    }
+                ]
+            });
+
+
+        });
+
+        function reloadTree() {
+            $('#basicTree').jstree(true).refresh();
+        }
+
+        function reloadGridDesignation() {
+            $degtable.ajax.reload();
+        }
+
+        function reloadBranch() {
+            $branchTable.ajax.reload();
+        }
+
+        function reloadUnit() {
+            $unitOrg.ajax.reload();
+        }
+
+        function reloadoutletGrid() {
+
+            $outletGrid.ajax.reload();
+        }
+
+
+    </script>
+
+    <style>
+
+        .addNode {
+            position: absolute;
+            margin-left: 10px;
+        }
+
+    </style>
+{% endblock %}

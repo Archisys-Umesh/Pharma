@@ -1,0 +1,32 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+    
+    $(document).ready(function(){ 
+       
+       setTimeout(function(){
+
+       //$("#OrgUnitId").change();
+
+       },500);
+        
+    });
+    
+    function changeOrgUnitId($data)
+    {
+        $('[name="TerritoryId"]').html($data.terr);
+        $("#TerritoryId").change();
+    }
+
+    function changeTerritoryId($data)
+    {
+        $('[name="Itownid"]').html($data.towns);
+    }
+
+
+</script>
+{% endblock %}        

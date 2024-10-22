@@ -1,0 +1,117 @@
+{% extends "app.twig" %}
+{% block title %} Employee Report {% endblock %}
+{% block page %}
+
+    <div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive" id="printableTable">         
+            <table id="datagrid" class="table table-bordered nowrap buttonTable" cellspacing="0" width="100%" border="1">
+                <thead>
+                    <tr>
+                        <th colspan="6" style="text-align:center;" style="font-size: 20px;">Employee Expense Report | {{ reportname }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Employee Name</th>
+                        <td colspan="4">{{Name}}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Employee Code</th>
+                        <td colspan="4">{{empcode}}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Designation</th>
+                        <td colspan="4">{{Designation}}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">State</th>
+                        <td colspan="4">{{State}}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Head Quarter/ Location</th>
+                        <td colspan="4">{{Location}}</td>
+                    </tr>
+                    {% if costnumber %}
+                    <tr>
+                        <th colspan="2">Cost Center</th>
+                        <td colspan="4">{{ costnumber }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr >
+                        <th style="text-align:center;">IO Number</th>
+                        <th style="text-align:center;">Expense Head</th>
+                        <th style="text-align:center;">Approved Amount(Final)</th>
+                        <th style="text-align:center;">Auditor's GST Amount</th>
+                        <th style="text-align:center;">Net Payable Amount</th>
+                        <th style="text-align:center;">Company Card</th>
+                    </tr>
+                    {% set auditdudtotal = 0 %}
+                    {% for r in data %}
+                    <tr>
+                       <td style="text-align:center;">{{r.Budget}}</td>
+                       <td style="text-align:center;">{{r.exphead}}</td>
+                       <td style="text-align:center;">{{r.paybleAmount-r.tax}}</td>
+                       <td style="text-align:center;">{{r.tax}}</td>
+                       <td style="text-align:center;">{{r.paybleAmount}}</td>
+                       <td style="text-align:center;">{{r.cmpcard}}</td>
+                    </tr>
+                    {%endfor%}
+                    <tr>
+                        <th colspan="2">Total</th>
+                        <th style="text-align:center;">{{finalpayable-taxFinal}}</th>
+                        <th style="text-align:center;">{{taxFinal}}</th>
+                        <th style="text-align:center;">{{finalpayable}}</th>
+                        <th style="text-align:center;">{{cmpcardAmount}}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="1">Net Payable Amount <span class="netpayment"></span></th>
+                        <th colspan="5">{{finalpayable}}</th>
+                    </tr>
+                </thead>
+            </table>
+            <button class="btn btn-warning waves-effect waves-light m-b-5" id="print"> <i class="fa fa-print"></i>Print</button>
+        </div>
+    </div>
+        
+</div>
+<!-- end row -->
+{% endblock %}
+{% block script %}
+    <script type ='text/javascript'>                
+        
+        $(document).ready(function(){            
+            $("#print").on('click', function() {
+                printData()
+            });
+            var abc = url[0].split("?");
+            
+            if(abc[0] == "empExpReport"){
+                console.log(abc[0]);
+                $("#backbtn").attr("onclick","");
+                document.getElementById("backbtn").onclick = function() {
+                    window.location.href='{{router.baseUrl("hr/reports/expenseReport")}}';
+                }
+            }
+        });
+        function printData()
+        {
+           var divToPrint=document.getElementById("datagrid");
+           newWin= window.open("*");
+           newWin.document.write(divToPrint.outerHTML);
+           newWin.print();
+           newWin.close();
+           
+        }
+        
+    </script>
+    <style>
+        @media print {
+            * {
+              display: none;
+            }
+            #printableTable {
+              display: block;
+            }
+          }
+    </style>
+{% endblock %}    
+{# empty Twig template #}

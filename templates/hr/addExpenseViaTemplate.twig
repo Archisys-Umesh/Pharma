@@ -1,0 +1,33 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    
+    <table id="template_datagrid" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+        <thead>
+            <tr>                                        
+                <th></th>                
+                <th>Expense Name</th>                
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+    
+    <div class="p-t-10">        
+    {{form | raw}} 
+    </div>
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+$(document).ready(function(){
+   
+   $("#template_datagrid").DataTable();
+   
+});
+
+
+</script>
+{% endblock %}        
+

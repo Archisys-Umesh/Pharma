@@ -1,0 +1,86 @@
+{% extends "app.twig" %}
+{% block title %} Organization Structure {% endblock %}
+{% block page %}
+
+<div class="col-md-12">
+    <div class="card-box">
+
+        <div class="btn-group m-b-20 filters">
+            {{org_form | raw}}            
+        </div>
+
+        <div class="pull-right">                
+            <a href="{{router.getPath('sys_postionForm',{id:0})}}" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Position</a>                                
+        </div>
+
+        
+            
+        <div id="basicTree" class="jstree" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j3_2" aria-busy="false"></div>
+        
+        <br/><br/><br/>
+
+         <a href="#" class="btn btn-default" id="updateCAV"><i class="zmdi zmdi-save"></i> Update CAV</a>                                   
+    </div>        
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <!-- Tree view js -->
+    <script src="{{router.baseUrl('plugins/jstree/jstree.min.js')}}"></script>        
+    <script type="text/javascript">
+        $btree = "";
+        $degtable = "";
+        $deptable = ""
+        $branchTable = "";
+        $unitOrg = "";
+        $(document).ready(function(){                
+            $posUrl = "{{router.getPath('sys_postionForm',{id:""})}}";                                 
+            $treeURL = '{{router.getPath('sys_orgStructure')}}?action=tree&'+$(".filters select").serialize();;
+            $cavUrl = "{{router.getPath('system_doCAV',{id:""})}}";                                 
+            $btree = $('#basicTree').jstree({
+                'core' : {
+                    'data' : {
+                        'url' : $treeURL,
+                        'data' : function (node) {
+                            return { 'id' : node.id };
+                        }
+                    },                    
+                }});
+            
+            $("#basicTree").on("click", ".jstree-anchor", function(e) {
+                var id = $("#basicTree").jstree(true).get_node($(this)).id;            
+                modalURL($posUrl+id);
+            });
+
+            $(".filters select").change(function(){
+               
+               reloadTree();
+               
+            });
+
+            $("#updateCAV").click(function(){
+
+                
+                $id = $("#OrgUnitId").val();
+                window.open($cavUrl+$id);
+
+            });
+
+        });
+            
+    function reloadTree()
+    {
+        $treeURL = '{{router.getPath('sys_orgStructure')}}?action=tree&'+$(".filters select").serialize();
+        $('#basicTree').jstree(true).settings.core.data.url = $treeURL;
+        $('#basicTree').jstree(true).refresh();
+    }
+        
+</script>
+    
+    <style>
+        
+        .addNode {position: absolute;margin-left: 10px;}
+        
+    </style>
+{% endblock %}

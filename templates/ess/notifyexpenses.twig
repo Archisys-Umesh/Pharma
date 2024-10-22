@@ -1,0 +1,226 @@
+{% extends "app.twig" %}
+{% block title %}
+	Send Expense Notifications
+{% endblock %}
+{% block page %}
+	<div class="row m-b-10">
+		<div class="col-sm-4">
+			{# Code here #}
+		</div>
+		<div class="col-sm-8">
+			<div class="project-sort pull-right">
+				<div class="project-sort-item">
+					<form class="form-inline" id="gridFilters">
+						<div class="form-group">
+							<label>Org Units :</label>
+							<select class="form-control input-sm filterRadio" id="OrgUnitList" name="orgUnit">
+							<option value="0">--- Select OrgUnit ---</option>
+								{% for key,value in OrgUnits %}
+									<option value={{key}}>{{ value }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="form-group">
+{#							<input type="hidden" name="month" id="month" value="{{setcurrntmonth}}" selectedMonth="{{setcurrntmonth}}">#}
+							<label>Month :</label>
+                            <select class="form-control input-sm" name="month" id="month">
+                                {{monthList|raw}}
+                            </select>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12" id="leaveListView">
+			<div class="card-box table-responsive">
+				<div class="clearfix p-b-10"></div>
+				<table id="datatable-scroller" class="table  table-bordered dt-responsive nowrap buttonTable" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							{% for col,key in cols %}
+								<th>{{col}}</th>
+							{% endfor %}
+							<th>Action</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+	<script type="text/javascript">
+		$DataTableUrl = "?action=list&";
+		$filter = "";
+		$(document).ready(function() {
+			${{ reportname|lower }}_datagrid = $('#datatable-scroller').DataTable({
+				processing: true,
+				serverSide: true,
+				lengthMenu: [
+					[10, 20, 50, 100],
+					[10, 20, 50, 100]
+				],
+				pageLength: 10,
+				ajax: {
+					"url": "?action=list",
+					"complete": function(d) {
+						hideLoader();
+					}
+				},
+				"columns": [
+					{% for col, key in cols %}
+					{
+						data: "{{ key }}",
+						render: function(data, type, row) {
+							return replacements("{{ key }}", row["{{ key }}"]);
+						}
+					},
+					{% endfor %}
+					{
+						"data": null,
+						"render": function(data, type, row) {
+							var month = $('#month').val();
+							var orgUnit = row.OrgunitId; // Assuming 'OrgunitId' is the column name for the org unit ID in your data
+							var actionUrl = "send_notification";
+							return '<button class="btn btn-primary action-button" data-url="' + actionUrl + '" data-month="' + month + '" data-orgunit="' + orgUnit + '">Send Notification</button>';
+						}
+					}
+				],
+				"fnDrawCallback": function(settings, json) {
+					$("#datatable-scroller tr").click(function() {
+						clickrow(this);
+					});
+
+					$(".action-button").click(function(e) {
+						e.stopPropagation(); // Prevent the row click event
+						var url = $(this).data('url');
+						var month = $(this).data('month');
+						var orgUnit = $(this).data('orgunit');
+
+						$.ajax({
+							url: url,
+							type: 'POST',
+							data: {
+								month: month,
+								orgUnit: orgUnit
+							},
+							success: function(response) {
+							    if (response.status==1){
+                                    toastr["info"]("Notification Sent Successfully");
+                                } else {
+                                    toastr["danger"]("Notification Not Sent Successfully");
+                                }
+
+								// You can update the UI here based on the response if needed
+							},
+							error: function(xhr, status, error) {
+								alert('An error occurred while sending the notification.');
+							}
+						});
+					});
+				},
+				deferRender: false,
+				scrollY: 650,
+				scrollCollapse: true,
+				scroller: false,
+				sScrollX: "100%",
+				sScrollXInner: "110%",
+				paging: true,
+				ordering: true,
+				colReorder: true,
+				dom: "lBfrtip",
+				buttons: [{
+					extend: "csv",
+					className: "btn-sm"
+				}, {
+					extend: "excel",
+					className: "btn-sm"
+				}, {
+					extend: "print",
+					className: "btn-sm"
+				}],
+			});
+
+			$("#month").change(function() {
+				$filter = $('#gridFilters').serialize();
+				loadGrid();
+			});
+
+			$("#OrgUnitList").change(function() {
+				$filter = $('#gridFilters').serialize();
+				loadGrid();
+			});
+
+			$("#gridFilters :input").change(function() {
+				console.log("Input Changed .. Implement Dependend Dropdowns");
+			});
+		});
+
+		$valKeys = [];
+		{% if valKeys %}
+		{% for val, keys in valKeys %}
+		$valKeys['{{ val }}'] = {{ keys|json_encode|raw }};
+		{% endfor %}
+		{% endif %}
+
+		function replacements($key, $val) {
+			if ($valKeys[$key] != undefined) {
+				return $valKeys[$key][$val];
+			} else {
+				return $val;
+			}
+		}
+
+		function loadGrid() {
+			showLoader();
+			${{ reportname|lower }}_datagrid.ajax.url($DataTableUrl + $filter).load();
+		}
+
+		function clickrow(row) {
+			$td = $(row).children();
+
+			{% set i = 0 %}
+
+			$rowpost = {
+				"RowId": "",
+				{% for col, key in cols %}
+				"{{ key }}": "",
+				{% endfor %}
+			};
+
+			$rowpost.RowId = $(row).attr("id");
+			{% for col, key in cols %}
+			$rowpost.{{ key }} = $($td[{{ i }}]).text();
+			{% set i = i + 1 %}
+			{% endfor %}
+
+			{% if RowClick %}
+			window.open("?action=RowClick&" + $.param($rowpost), '_blank').focus();
+			{% endif %}
+			return false;
+		}
+
+		$('#TerritoryId').change(function(e) {
+			$('#BeatId option').remove();
+			var beat = $(this).val();
+			$.ajax({
+				type: "GET",
+				url: "{{ router.baseUrl('contact/getTerrId/') }}" + beat,
+				success: function(data) {
+					$("#BeatId").find('option').remove();
+					$("#BeatId").append('<option value="-1" selected>--- Select Beat ---</option>');
+					$.each(data.data, function(key, value) {
+						$('#BeatId')
+								.append($("<option></option>")
+										.attr("value", key)
+										.text(value));
+					});
+				}
+			});
+		});
+	</script>
+
+
+{% endblock %}

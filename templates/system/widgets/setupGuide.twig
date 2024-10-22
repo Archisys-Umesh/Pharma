@@ -1,0 +1,60 @@
+{# empty Twig template #}
+{% if step == 1 %}
+ <div class="alert alert-info show m-b-20">    
+    <h4>Welcome to xPensys</h4>
+    <p>Let's get started by inviting your employee</p>
+    <p class="m-t-10">
+        <a href='{{router.getPath('hr_empList')}}' class="btn btn-info waves-effect waves-light">Let's Go</a>
+        <button type="button" class="btn btn-light waves-effect" data-dismiss="alert" aria-hidden="true">
+            I'll do it later</button>
+    </p>
+</div>
+{% endif %}
+
+{% if step == 2 %}
+ <div class="alert alert-success show m-b-20">    
+    <h4>Wonderful</h4>
+    <p>Now click on setting and go to expense setting</p>
+    <p class="m-t-10">
+        <a href='{{router.getPath('hr_expenseMaster')}}' class="btn btn-info waves-effect waves-light">Let's Go</a>
+        <button type="button" class="btn btn-light waves-effect" data-dismiss="alert" aria-hidden="true">
+            I'll do it later</button>
+    </p>
+</div>
+{% endif %}
+
+{% if step == 3 %}
+ <div class="alert alert-info show m-b-20">    
+    <h4>Awesome</h4>
+    <p>You have your first expense to audit</p>
+    <p class="m-t-10">
+        <a href='{{router.getPath('hr_moveToAudit')}}?stage=3' class="btn btn-info waves-effect waves-light">Let's Go</a>
+        <button type="button" class="btn btn-light waves-effect" data-dismiss="alert" aria-hidden="true">
+            I'll do it later</button>
+    </p>
+</div>
+{% endif %}
+
+{% if step == 4 %}
+ <div class="alert alert-info show m-b-20">    
+    <h4>Hey there!</h4>
+    <p>Let's now know how to approve</p>
+    <p class="m-t-10">
+        <a href='#' onclick='step4()' class="btn btn-info waves-effect waves-light">Let's Go</a>
+        <button id="closeInfo" type="button" class="btn btn-light waves-effect" data-dismiss="alert" aria-hidden="true">
+            I'll do it later</button>
+    </p>
+</div>
+{% endif %}
+
+<script>
+    function step4()
+    {
+        $("#closeInfo").click();
+        setTimeout(function(){
+            approverIntro();
+        },500);
+        
+        
+    }
+</script>

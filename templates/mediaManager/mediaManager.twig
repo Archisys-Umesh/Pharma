@@ -1,0 +1,216 @@
+<div class="content animated fadeInUp mediaManager">    
+    <div class="container">
+        <div class="col-8">
+        <div class="modal-content">            
+                        
+            <div class="modal-header"> <button type="button" class="close" id="mediaCloseDialog" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"> {% block modalTitle %}Select Media{% endblock %} </h4>
+                </div>
+            <div class="modal-body">                                                
+                
+                <div class="row" id="MeidaHome">
+                    <div class="col-md-2 pb-filemng-template-treeview">
+                           <div id="basicTree" class="jstree" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="j3_2" aria-busy="false"></div>
+                    </div>
+                    <div class="col-md-10 pb-filemng-template-body" id="fileListHolder">
+                        <div class="row">
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="FileDetailView" style="display: none;">                        
+                        
+                    </div>
+                </div>
+
+
+<script src="{{router.baseUrl('plugins/jstree/jstree.min.js')}}"></script>        
+<script type="text/javascript">
+        $btree = "";        
+        $currentFolder = 1;
+        $mediaUrl = "{{router.getPath('media')}}";               
+        $deleteUrl = "{{router.getPath('deleteMedia')}}";               
+        $uploadNewFile = "{{router.getPath('uploadNewFile')}}";               
+        
+        functionCaller = "{{inputFunction}}";
+        
+        $posUrl = "{{router.getPath('sys_postionForm',{id:""})}}";                                 
+       
+            $btree = $('#basicTree').jstree({
+                'core' : {
+                    'data' : {
+                        'url' : '{{router.getPath('media_manager')}}?action=tree',
+                        'data' : function (node) {
+                            return { 'id' : node.id };
+                        }
+                    },                    
+                }});
+            
+            $("#basicTree").on("click", ".jstree-anchor", function(e) {
+                var id = $("#basicTree").jstree(true).get_node($(this)).id;            
+                $currentFolder = id;
+                getFiles(id);
+            });
+
+function doUpload()
+{
+    var newInput = document.createElement("input");
+    newInput.type="file";
+    newInput.name="fileUploadMedia";
+    newInput.multiple = true;    
+    
+    $(newInput).simpleUpload({
+            url: $uploadNewFile,            
+            types: ['jpg', 'png'],
+            fields: {
+		currentFolder : $currentFolder,		
+            },
+            start: function(file){
+		$("#uploadNewFile").attr("disabled","true");
+                
+            },
+            progress: function(progress){
+		//received progress
+            },
+            success: function(data){
+                toastr["success"]("file uploaded successfully", "");
+                getFiles($currentFolder);
+                $('#uploadNewFile').removeAttr("disabled");
+                
+            },
+            error : function(error)
+            {
+                console.log(error);
+                $('#uploadNewFile').removeAttr("disabled");
+                
+                toastr["error"]("upload error: " + error.name + ": " + error.message, "");
+            }
+        });
+    $(newInput).click();
+}
+         
+        
+        $("#uploadNewFile").attr("disabled","true");
+        $("#uploadNewFile").click(function(){
+            
+            //$('#uploadFile').click();
+            doUpload();
+        });
+                
+
+function showFileInfoView(obj)
+{
+    $("#fileListHolder").removeClass("col-md-10");
+    $("#fileListHolder").addClass("col-md-7");
+    
+    var fileinfo = {
+        
+        MediaId : $(obj).attr("mediaid"),
+        MediaName : $(obj).attr("medianame"),
+        
+    };
+    console.log(fileinfo);
+    $("#FileDetailView").html(tmpl("fileview",fileinfo));                                       
+    
+    $("#FileDetailView").show();
+    return false;
+}
+
+function closeFileInfoView()
+{
+    $("#fileListHolder").addClass("col-md-10");
+    $("#fileListHolder").removeClass("col-md-7");
+    $("#FileDetailView").hide();
+    
+    
+    return false;
+}
+
+function showNewFolderDialog()
+{
+    $("#new-folder-dialog").show();
+    $("#treeview").hide();
+}
+function getFiles($folder_id)
+{
+    $(".pb-filemng-template-body").html("");
+    
+    $.getJSON("{{router.getPath("mediaFiles")}}?folder_id="+$folder_id, function( data ) {        
+        for($i = 0 ; $i < data.length ; $i++)
+        {
+           $(".pb-filemng-template-body").append(tmpl("fileList",data[$i]));                                       
+        }                                                                  
+        $('#uploadNewFile').removeAttr("disabled");
+    });                                    
+    
+}    
+
+function selectFile($mediaId)
+{
+    eval(functionCaller+"("+$mediaId+");");
+    $("#mediaCloseDialog").click();
+    
+}
+function deleteFile($mediaId)
+{
+    if(confirm("Are you sure to delete this file ?")) {
+        $.getJSON($deleteUrl+"?id="+$mediaId, function( data ) {        
+
+            if(data.status == 1)
+            {
+                toastr["success"]("operation successful", "");
+            }
+            else 
+            {
+                toastr["error"]("could not delete", "");
+            }    
+        }); 
+    }
+    
+    closeFileInfoView();
+    getFiles($currentFolder);
+        
+}
+
+
+</script>
+
+<script type="text/x-tmpl" id="fileList">    
+{% verbatim %}
+    <div class='col-xs-4 col-sm-4 col-md-2 pb-filemng-body-folders'>
+        <a class="fileItem" href="#" mediaid={%= o.MediaId %} medianame = "{%= o.MediaName %}" onClick="return showFileInfoView(this);">
+        <img class="img-responsive" src="{%=$mediaUrl%}?id={%= o.MediaId %}&h=50&w=50"/> 
+        <p class="pb-filemng-paragraphs">{%= o.MediaName %}</p>
+        </a>
+    </div>
+{% endverbatim %}
+</script>                
+
+<script type="text/x-tmpl" id="fileview">    
+{% verbatim %}    
+    <img src="{%=$mediaUrl%}?id={%= o.MediaId %}&h=150&w=150"/>
+    <center><h3>{%= o.MediaName %}</h3></center>
+    <hr/>
+    <a href="#" onClick="return selectFile({%= o.MediaId %});" class="btn btn-primary">Select</a>
+    <a href="#" onClick="return deleteFile({%= o.MediaId %});" class="btn btn-danger">Delete</a>                            
+{% endverbatim %}
+</script>                
+
+
+<!-- File Manager - END -->
+                 
+            </div>
+
+            <div class="modal-footer">                                 
+                <div class="media-left">
+                    <button id="uploadNewFile" name="buttonValue" value="upload" type="submit" class="btn btn-primary">Upload</button>
+                    <input type="file" id="uploadFile" name="fileUploadMedia" multiple class="upload" style="display: none;">
+                </div<
+              
+            </div>               
+            
+        </div>
+        
+        </div>
+    </div>
+</div>
+<script>
+

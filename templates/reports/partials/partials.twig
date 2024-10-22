@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <title>{{ Title }}</title>
+    <link href="{{ router.baseUrl('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ router.baseUrl('plugins/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ router.baseUrl('plugins/datatables/responsive.bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ router.baseUrl('css/core.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ router.baseUrl('css/components.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      td,
+      th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      
+      th {
+        background-color: #dddddd;
+      }
+      tr.row {
+        border-bottom: solid #ebeff2 30px; /* change "white" to your background color */
+      }
+    </style>
+  </head>
+  <body>
+    {% block content %}
+
+    {% endblock %}
+    <footer>
+      <script src="{{ router.baseUrl('js/jquery.min.js') }}"></script>
+      <script src="{{ router.baseUrl('js/bootstrap.min.js') }}"></script>
+      <script src="{{ router.baseUrl('js/tableToExcel.js') }}"></script>
+      {# <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script> #}
+      <script>
+        $(document).ready(function () {
+          $('#darBtnExport').click(function () {
+            let table = document.getElementsByTagName('table')
+            TableToExcel.convert(table[0], {
+              name: `DarReport.xlsx`,
+              sheet: {
+                name: 'DarReport'
+              }
+            })
+          })
+          $('#dvpBtnExport').click(function () {
+            let table = document.getElementsByTagName('table')
+            TableToExcel.convert(table[0], {
+              name: `DvpReport.xlsx`,
+              sheet: {
+                name: 'DvpReport'
+              }
+            })
+          })
+          $('#rcpaBaseBtnExport').click(function () {
+            let table = document.getElementsByTagName('table')
+            TableToExcel.convert(table[0], {
+              name: `RcpaBaseReport.xlsx`,
+              sheet: {
+                name: 'RcpaBaseReport'
+              }
+            })
+          })
+          $('#sgpiBrandWiseDistributionBtnExport').click(function () {
+            let table = document.getElementsByTagName('table')
+            TableToExcel.convert(table[0], {
+              name: `SgpiBrandWiseDistributionReport.xlsx`,
+              sheet: {
+                name: 'SgpiBrandWiseDistributionReport'
+              }
+            })
+          })
+          $('#masBtnExport').click(function () {
+            let table = document.getElementsByTagName('table')
+            TableToExcel.convert(table[0], {
+              name: `MasReport.xlsx`,
+              sheet: {
+                name: 'MasReport'
+              }
+            })
+          })
+        })
+        {# function download_csv(csv, filename) {
+          var csvFile
+          var downloadLink
+        
+          // CSV FILE
+          csvFile = new Blob([csv], { type: 'text/csv' })
+        
+          // Download link
+          downloadLink = document.createElement('a')
+        
+          // File name
+          downloadLink.download = filename
+        
+          // We have to create a link to the file
+          downloadLink.href = window.URL.createObjectURL(csvFile)
+        
+          // Make sure that the link is not displayed
+          downloadLink.style.display = 'none'
+        
+          // Add the link to your DOM
+          document.body.appendChild(downloadLink)
+        
+          // Lanzamos
+          downloadLink.click()
+        } #}
+        
+        {# function export_table_to_csv(html, filename) {
+          var csv = []
+          var rows = document.querySelectorAll('table tr')
+        
+          for (var i = 0; i < rows.length; i++) {
+            var row = [],
+              cols = rows[i].querySelectorAll('td, th')
+        
+            for (var j = 0; j < cols.length; j++) row.push(cols[j].innerText)
+        
+            csv.push(row.join(','))
+          }
+        
+          // Download CSV
+          download_csv(csv.join('\n'), filename)
+        } #}
+        
+        {# document.querySelector('button').addEventListener('click', function () {
+          var html = document.querySelector('table').outerHTML
+          export_table_to_csv(html, 'report.csv')
+        }) #}
+      </script>
+    </footer>
+  </body>
+</html>

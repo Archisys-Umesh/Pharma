@@ -1,0 +1,420 @@
+{% extends "app.twig" %}
+{% block title %} OutletOrg  {% endblock %}
+{% block page %}
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card-box task-detail">            
+                <div class="dropdown pull-right">
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a onclick='return loadModalURL(this)' href='#' remote="{{router.getPath('outlets_addedit',{pk:outlet.Id})}}">Edit</a></li>                    
+                    </ul>
+                </div>           
+                <div class="media m-b-20">
+                    <div class="media-left fileupload">
+                        <a href="#" id='profilePic'>                        
+                            <img class="media-object img-circle" alt="64x64" src="../../images/users/avatar-2.jpg" style="width: 48px; height: 48px;">
+                        </a>
+                        <input type='file' id="profilePicInput" name="profilePic" class="upload">
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading m-b-0">{{outlet.OutletName}} | {{outlet.OutletSalutation}} {{outlet.OutletContactName}} [ {{outlet.OutletCode}} ]</h4>                                        
+                        <p class="text-muted m-b-5 font-13">Type : {{outlet.getOutlettypeName()}}| {{outlet.getTerritoryName()}} | {{outlet.getBeatName()}}</p>
+                        <p class="text-muted m-b-5 font-13">{{outlet.OutletIsdCode}} {{outlet.OutletContactNo}}</p>
+                        <p class="text-muted m-b-5 font-13">Email : {{outlet.OutletEmail}}</p>
+                        <hr/>
+                        <p class="text-muted m-b-5 font-13">Status : {{outlet.getOutletStatus()}}</p>  
+                        <p class="text-muted m-b-5 font-13">OpeningDate : {{outlet.OutletOpeningDate|date('Y-m-d')}}</p> 
+                        <p class="text-muted m-b-5 font-13">Last Visit : {{outlet.LastVisitDate|date('Y-m-d')}}</p>  
+                        <p class="m-b-5 font-14">Potential : {{outlet.OutletPotential}}</p>                    
+                    </div>
+                </div>    
+                <div class="clearfix p-20"></div>
+                <div class="clearfix"></div>
+            </div>   
+        </div>
+        <div class="col-md-4">
+            <div class="card-box task-detail">            
+                <div class="dropdown pull-right">
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a onclick='return loadModalURL(this)' href='#' remote="{{router.getPath('outlets_addedit',{pk:outlet.Id})}}">Edit</a></li>                    
+                    </ul>
+                </div>            
+                <div class="media m-b-20">
+                     <div class="">
+                        <h4 class="media-heading m-b-0">Outlet OrgView</h4>
+                    </div><hr>
+                    <div class="media-body">
+                        <p class="text-muted m-b-5 font-13">BrandFocus : {{outlet.getBrandFocus()}}</p>
+                        <p class="text-muted m-b-5 font-13">Visit Frequency : {{outlet.getVisitFq()}}</p>
+                        <p class="text-muted m-b-5 font-13">Tags : {{outlet.getTags()}}</p>                    
+                        <p class="text-muted m-b-5 font-13">Address : {{outlet.getOutletAddress()}}</p>
+                        <p class="text-muted m-b-5 font-13">OrgUnit : {{orgUnit.getUnitName()}}</p>
+                        <p class="text-muted m-b-5 font-13">Town : {{town.getStownname()}}</p>     
+                    </div>
+                </div>    
+                <div class="clearfix p-20"></div>
+                <div class="clearfix"></div>
+            </div>   
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-box table-responsive">
+                <div class="col-md-12">
+                    <h4 class="header-title col-md-11 m-t-0 m-b-30">DCR</h4>
+                 </div>
+                
+
+                <table id="dcrdata" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Outletcode</th>
+                        <th>Outletname</th>
+                        <th>Agendaname</th>
+                        <th>Towns</th> 
+                        <th>DCR Date</th>
+                        <th>DCR Status</th>  
+                        <th>Planned</th>
+                        <th>manager</th>
+                        <th>Brand Deatails</th>
+                        <th>SGPI Out</th>
+                        <th>POB Total</th>
+                        <th>Ed Duration</th>  
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-box table-responsive">
+                <div class="col-md-12">
+                    <h4 class="header-title col-md-9 m-t-0 m-b-30">SGPI Out Summary</h4>
+                    <div class="btn-group m-b-30 pull-right">
+                        <select class="form-control input-sm" name="month" id="SgpiMonth">
+                            {{ monthList|raw }}
+                        </select>
+                    </div>
+                 </div>
+               
+                <table id="sgpiout" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Moye</th>
+                            <th>Territory Name</th>
+                            <th>OutletOrgdata</th>
+                            <th>SgpiType</th>
+                            <th>Qty</th>
+                            <th>Lastcreate</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-box table-responsive">
+                <div class="col-md-12">
+                    <h4 class="header-title col-md-11 m-t-0 m-b-30">RCPA Summary</h4>
+
+                    <div class="btn-group m-b-30 pull-right">
+                        <select class="form-control input-sm" name="month" id="RcpaMonth">
+                            {{ monthList|raw }}
+                        </select>
+                    </div>
+                 </div>
+                
+
+                <table id="rcpasummary" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>OutletName</th>
+                            <th>BrandName</th>
+                            <th>OutletClassification</th>
+                            <th>Territory Name</th>
+                            <th>Orgunit Name</th>
+                            <th width="100">Tags</th>
+                            <th>VisitFq</th>
+                            <th>RcpaMoye</th>
+                            <th>Lastcreated</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-box table-responsive">
+                <div class="">
+                    <h4 class="header-title col-md-6 m-t-0 m-b-30">Internal Notes</h4>
+                </div>
+
+                <div class="btn-group m-b-30 pull-right">
+                    <a href="{{router.getPath('internalNotes',{id:outletOrg.getPrimaryKey()})}}?action=form&pk=0" data-toggle="ajaxModal" class="btn btn-success"><i class="zmdi zmdi-plus"></i> Add Internal Notes</a>
+                {# return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('AddEditoutletAddress',{id:outlet.getPrimaryKey()})}}?action=form&OutletAddressId=" + row.OutletAddressId + "'><i class='zmdi zmdi-edit'></i></a>";#}
+                </div>
+
+                <table id="orgdata" class="table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>NoteDate</th>
+                        <th>Note</th>
+                        <th>Action</th>
+
+                    </tr>
+                    </thead>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <!-- X-editable css -->
+
+    <link type="text/css" href="{{router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}" rel="stylesheet">
+    <script src="{{router.baseUrl('plugins/moment/moment.js')}}"></script>
+    <script type="text/javascript" src="{{router.baseUrl('plugins/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js')}}"></script>
+
+
+    <script type="text/javascript">
+    var $id_fields = {% if id_fields %} {{ id_fields|json_encode|raw }} {% else %} [] {% endif %};
+
+        $profileurl = "{{request.getPath()}}";
+
+
+        $(document).ready(function () {
+
+
+
+        });
+
+        function reloadorgData()
+        {
+            $orgdata.ajax.reload();
+        }
+
+        $orgdata = $('#orgdata').DataTable({
+
+            ajax: "?action=internalNotes",
+            "columns": [
+
+                {"data" : "NoteDate"},
+                {"data" : "Note"},
+
+                {"data": "OutletOrgNoteId", render: function (data, type, row) {
+                        return "<a onclick='loadModalURL(this)' title='Edit' class='btn btn-danger btn-xs' href='#' remote='{{router.getPath('internalNotes',{id:outletOrg.getPrimaryKey()})}}?action=form&pk=" + row.OutletOrgNoteId + "'><i class='zmdi zmdi-edit'></i></a>"
+
+                    }
+                },
+            ],
+            
+        });
+
+        $dcrdata = $('#dcrdata').DataTable({
+            processing: true,
+            serverSide: true,
+            lengthMenu: [
+                [10, 20, 50,100],
+                [10, 20, 50,100]
+            ],
+            pageLength: 10,
+            ajax: "?action=outletDarView",
+            "columns": [
+
+                {"data" : "FirstName"},
+                {"data" : "OutletCode"},
+                {"data" : "OutletName"},
+                {"data" : "Agendname"},
+                {"data" : "Stownname"},
+                {"data" : "DcrDate"},
+                {"data" : "DcrStatus"},
+                {"data" : "Planned"},
+                {"data" : "Managers",render: function ( data, type, row ) {
+                    try {                 
+                        return replacements("Managers",data);
+                    }
+                    catch(err) {
+                        console.log(err);
+                        return "";
+                    }
+                        
+                }},
+                {"data" : "BrandsDetailed"},
+                {"data" : "SgpiOut"},
+                {"data" : "PobTotal"},
+                {"data" : "EdDuration"},
+                
+            ],
+        });
+
+        function replacements($key,$val)
+        {
+            if($id_fields.includes($key)) {
+                return fetchDataFromBack($key, $val);
+            }
+            else {
+                return $val;
+            }
+        }
+
+        function fetchDataFromBack(key, values) 
+        {
+
+            var returnValues = '';
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "{{ router.getPath('sys_table_data') }}",
+                data: {
+                    key: key,
+                    values, values
+                },
+                dataType: "json",
+                success: function(response) {
+                    returnValues = response.value;
+                }
+            });
+
+            return returnValues;
+        }
+        
+        function reloadSpgi() {
+            $sgpiout.ajax.url("?action=sgpiOut&month=" + $("#SgpiMonth").val()).load();
+        }
+
+        $("#SgpiMonth").change(function () {
+
+            reloadSpgi();
+
+        });
+        $sgpiout = $('#sgpiout').DataTable({
+             processing: true,
+            serverSide: true,
+            lengthMenu: [
+                [10, 20, 50,100],
+                [10, 20, 50,100]
+            ],
+            pageLength: 10,
+            ajax: "?action=sgpiOut&month=" + $("#SgpiMonth").val(),
+            "columns": [
+                {"data" : "Moye"},
+                {"data" : "TerritoryId",render: function ( data, type, row ) {
+                    try {                 
+                        return replacements("TerritoryId",data);
+                    }
+                    catch(err) {
+                        console.log(err);
+                        return "";
+                    }
+                        
+                }},
+                {"data" : "OutletOrgdataId"},
+                {"data" : "SgpiType"},
+                {"data" : "Qty"},
+                {"data" : "Lastcreate"},
+            ],
+
+            dom: "lBfrtip",
+            buttons: [{
+                extend: "excel",
+                className: "btn-sm"
+            },{
+                extend: "print",
+                className: "btn-sm"
+            }],
+
+        });
+        
+        function reloadRCPA() {
+            $rcpasummary.ajax.url("?action=rcpaSummary&month=" + $("#RcpaMonth").val()).load();
+        }
+
+        $("#RcpaMonth").change(function () {
+
+            reloadRCPA();
+
+        });
+        $rcpasummary = $('#rcpasummary').DataTable({
+            processing: true,
+            serverSide: true,
+            lengthMenu: [
+                [10, 20, 50,100],
+                [10, 20, 50,100]
+            ],
+            pageLength: 10,
+            ajax: "?action=rcpaSummary&month=" + $("#RcpaMonth").val(),
+            "columns": [
+                {"data" : "OutletName"},
+                {"data" : "BrandName"},
+                {"data" : "OutletClassification",render: function ( data, type, row ) {
+                    try {                 
+                        return replacements("OutletClassification",data);
+                    }
+                    catch(err) {
+                        console.log(err);
+                        return "";
+                    }
+                        
+                }},
+                {"data" : "TerritoryId",render: function ( data, type, row ) {
+                    try {                 
+                        return replacements("TerritoryId",data);
+                    }
+                    catch(err) {
+                        console.log(err);
+                        return "";
+                    }
+                        
+                }},
+                {"data" : "Orgunitid",render: function ( data, type, row ) {
+                    try {                 
+                        return replacements("Orgunitid",data);
+                    }
+                    catch(err) {
+                        console.log(err);
+                        return "";
+                    }
+                        
+                }},
+                {"data" : "Tags"},
+                {"data" : "VisitFq"},
+                {"data" : "RcpaMoye"},
+                {"data" : "Lastcreated"}
+            ],
+            dom: "lBfrtip",
+            buttons: [{
+                extend: "excel",
+                className: "btn-sm"
+            },{
+                extend: "print",
+                className: "btn-sm"
+            }],
+
+        });
+        
+        function reloadGrid()
+        {
+            document.location.reload();
+        }
+
+    </script>
+
+    <style>
+        .mapContainer {width:100%;min-height:850px; display: block;}
+        #map {
+            min-height: 400px;
+        }
+
+    </style>
+
+{% endblock %}

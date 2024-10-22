@@ -1,0 +1,26 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    <div class="modal-body">
+        <label>Expense Logs : </label> 
+        {% if expLogs != null and expLogs != '' %}
+            {% for expLog in expLogs %}
+                <div class="card-box" style="box-shadow: 0 0px 10px 0 rgba(0, 0, 0, 0.06), 0 15px 0px 0 rgba(0, 0, 0, 0.02);background-color: #e1e1e1;">
+                    <label> Status </label>
+                        {{expLog['WfTitle']}} | {{expLog['CreatedAt'] | date('d-m-Y H:i:s')}}</br>  
+                    <label> Note </label>
+                        {{expLog['WfNote']}} </br>
+                    <label> User </label>
+                        {{expLog['Employee']["FirstName"]}} {{expLog['Employee']["LastName"]}}
+                </div> 
+            {% endfor %}
+        {% else %}
+            <p><h4> No data found!</h4></p>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+$("#saveuser").hide();    
+</script>
+{% endblock %}        

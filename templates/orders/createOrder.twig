@@ -1,0 +1,19 @@
+{% extends "modalCommonForm.twig" %}
+
+{% block script %}
+<script type ='text/javascript'>
+           
+  function OutletFrom($data)
+    {       
+        $('[name="OutletTo"]').html($data.OutletTo);        
+    }
+    
+    function OrderType($data)
+    {
+        $('[name="OutletFrom"]').html($data.OutletFrom);        
+        $('[name="OutletTo"]').val("");
+    }
+
+
+</script>
+{% endblock %}        

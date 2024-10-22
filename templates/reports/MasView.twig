@@ -1,0 +1,104 @@
+{% extends "reports/partials/partials.twig" %}
+
+
+{% block content %}
+<div class="row text-center">
+    <h3>{{ Title }}</h3>
+</div>
+<div class="col-md-12" style="overflow-x:auto;height:93%;">
+{# <button id="masBtnExport" class="btn btn-success" style="padding: 5px;width: 5%;margin-bottom: 10px;">Export</button> #}
+    <table width="100%">
+        <tr>
+            <th>OrgName</th>
+            <th>REPCODE</th>
+            <th>EmployeeCode</th>
+            <th>EmployeeName</th>
+            <th>AmPosition</th>
+            <th>RmPosition</th>
+            <th>ZmPosition</th>
+            <th>Location</th>
+            <th>MonthYear</th>
+            <th>WorkingDays</th>
+            <th>FWD</th>
+            <th>NCA</th>
+            <th>TotalDoctors</th>
+            <th>DrMet</th>
+            <th>DrVfMet</th>
+            <th>DRCA-L</th>
+            <th>DRCVRG%</th>
+            <th>DRVFCVRG%</th>
+            <th>MISSEDDR</th>
+            <th>MISSEDDRCALLS</th>
+            <th>TOTALCHEMIST</th>
+            <th>POBValue</th>
+            <th>RCPAvalueforownbrand</th>
+            <th>RCPAvalueforCompbrand</th>
+            <th>JOINTWORKTotalCalls</th>
+            <th>LEAVEDAYS</th>
+            <th>JoinWorking</th>
+            <th>NoDrCall</th>
+            <th>Agenda</th>
+            <th>ZmPositionCode</th>
+            <th>RmPositionCode</th>
+            <th>AmPositionCode</th>
+            <th>EmpStatus</th>
+            <th>EmpPositionCode</th>
+            <th>EmpPositionName</th>
+            <th>EmpLevel</th>
+            <th>Chemists Met</th>
+            <th>Chemists Calls</th>
+            <th>Chemist Call Average</th>
+            <th>Total Stockists</th>
+            <th>Dr Addition</th>
+            <th>Dr Deletion</th>
+        </tr>
+        {% for data in EmployeeData %}
+            <tr>
+                <td>{{ data['OrgUnitName'] }}</td>
+                <td>{{ data['RepCode'] }}</td>
+                <td>{{ data['EmployeeCode'] }}</td>
+                <td>{{ data['EmployeeName'] }}</td>
+                <td>{{ data['AmPosition'] }}</td>
+                <td>{{ data['RmPosition'] }}</td>
+                <td>{{ data['ZmPosition'] }}</td>
+                <td>{{ data['Location'] }}</td>
+                <td>{{ data['MonthYear'] }}</td>
+                <td>{{ data['WorkingDays'] }}</td>
+                <td>{{ data['Fwd'] }}</td>
+                <td>{{ data['Nca'] }}</td>
+                <td>{{ data['TotalDoctors'] }}</td>
+                <td>{{ data['DrMet'] }}</td>
+                <td>{{ data['DrVfMet'] }}</td>
+                <td>{{ data['DrcaL'] }}</td>
+                <td>{{ data['Drcvrg'] }}</td>
+                <td>{{ data['Drvfcvrg'] }}</td>
+                <td>{{ data['MissedDr'] }}</td>
+                <td>{{ data['MissedDrCalls'] }}</td>
+                <td>{{ data['TotalChemist'] }}</td>
+                <td>{{ data['PobValue'] }}</td>
+                <td>{{ data['RcpaValueForOwnBrand'] }}</td>
+                <td>{{ data['RcpaValueForCompBrand'] }}</td>
+                <td>{{ data['JointWorkTotalCalls'] }}</td>
+                <td>{{ data['LeaveDays'] }}</td>
+                <td>{{ data['JointWorking'] }}</td>
+                <td>{{ data['NoDrCall'] }}</td>
+                <td>{{ data['Agenda'] }}</td>
+                <td>{{ data['ZmPositionCode'] }}</td>
+                <td>{{ data['RmPositionCode'] }}</td>
+                <td>{{ data['AmPositionCode'] }}</td>
+                <td>{{ data['EmployeeStatus'] }}</td>
+                <td>{{ data['EmployeePositionCode'] }}</td>
+                <td>{{ data['EmployeePositionName'] }}</td>
+                <td>{{ data['EmployeeLevel'] }}</td>
+                <td>{{ data['ChemistMet'] }}</td>
+                <td>{{ data['ChemistCalls'] }}</td>
+                <td>{{ data['ChemistCallAvg'] }}</td>
+                <td>{{ data['TotalStockists'] }}</td>
+                <td>{{ data['DrAddition'] }}</td>
+                <td>{{ data['DrDeletion'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h4 style="color:red;">Report shows upto 250 records, to view more, please download.</h4>
+</div>
+{% endblock %}

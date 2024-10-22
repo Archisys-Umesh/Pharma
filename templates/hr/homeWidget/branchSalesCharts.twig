@@ -1,0 +1,46 @@
+
+<div class="col-lg-4">
+    <a href="{{router.getPath('hr_payoutReport',{id:0})}}">
+        <div class="card-box">
+            <h4 class="header-title m-t-0 m-b-25"> Branch view</h4>
+            <div id="branchSalesCharts" style="height: 250px;"></div>
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list">
+                    <li>
+                        <h5 style="color: #5b69bc;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #35b8e0;"></h5>
+                    </li>
+                    <li>
+                        <h5 style="color: #ff8acc;"></h5>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </a>
+</div><!-- end col-->
+
+<script type ='text/javascript'>
+            
+      
+      
+        setTimeout(function(){
+        var color = [];   
+        var $donutData = [
+                {% for branch,val in branchExpense %}
+                    {label: "{{val.branchName}}", value: {{val.branchExpenseCount}}, currency: "{{val.branchcurrency}}"},
+                {%endfor%}
+                
+            ];
+            {% for branch,val in branchExpense %}
+                 color.push("{{val.branchcolor}}");    
+            {%endfor%}
+        createDonutChart('branchSalesCharts', $donutData, color);
+                        
+            
+        },1000);
+                            
+
+</script>
+

@@ -1,0 +1,12 @@
+<h4 class="header-title m-t-0 m-b-20">{{formName}}</h4>
+<form class="form-horizontal" role="form" method='POST' action="{{request.getPath()}}">
+    
+    {{form | raw}}
+    
+    <div class="form-group has-feedback">
+        <div class="col-sm-12">
+            <input type="submit" class="btn btn-success pull-right" value="Save">
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</form>

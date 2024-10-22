@@ -1,0 +1,25 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    {{form | raw}}        	                                        
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+    
+    function checkUnique(data)
+    {
+        if(data.status)
+        {
+            
+            $("#saveuser").removeAttr("disabled");
+        }
+        else 
+        {
+            $("#saveuser").attr("disabled","true");
+            $("#Designations").val("");
+            toastr["error"]("Designation name exists", "");
+        }
+    }
+
+</script>
+{% endblock %}        

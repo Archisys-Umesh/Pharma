@@ -1,0 +1,17 @@
+{% extends "modalForm.twig" %}
+{% block modalTitle %} {{form_name}} {% endblock %}
+{% block modalBody %}
+    
+    <div class="modal-body">
+        <label>User Remark : </label> 
+            {% set note = expNote|split('|') %}
+            {{note[0]}}</br><b>{{note[1]}}</b></br><b>{{note[2]}}</b><br/>     
+        <label>Approval Remark : </label>{{expRemark}}<br/>        
+        <label>Audit Remark : </label> {{expAuditRemark}}
+    </div>
+{% endblock %}
+{% block script %}
+<script type ='text/javascript'>
+$("#saveuser").hide();    
+</script>
+{% endblock %}        

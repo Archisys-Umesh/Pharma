@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native" namespace="\entities" defaultPhpNamingMethod="underscore">
+    <table name="outlet_view" idMethod="native" phpName="OutletView" readOnly="true" skipSql="true">
+        <column name="outlet_org_id" phpName="OutletOrgId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type="VARCHAR" size="50"/>
+        <column name='position_name' phpName='PositionName' type="VARCHAR" size="50"/>
+        <column name='beat_name' phpName='BeatName' type="VARCHAR" size="50"/>
+        <column name='tags' phpName='Tags' type="VARCHAR" size="50"/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='comments' phpName='Comments' type="VARCHAR" size="50"/>
+        <column name='org_potential' phpName='OrgPotential' type='INTEGER'/>
+        <column name='brand_focus' phpName='BrandFocus' type="VARCHAR" size="50"/>
+        <column name='customer_fq' phpName='CustomerFq' type="VARCHAR" size="50"/>
+        <column name='id' phpName='Outlet_Id' type='INTEGER'/>
+        <column name='outlet_media_id' phpName='OutletMediaId' type="VARCHAR" size="50"/>
+        <column name='outlet_name' phpName='OutletName' type="VARCHAR" size="50"/>
+        <column name='outlet_code' phpName='OutletCode' type="VARCHAR" size="50"/>
+        <column name='outlet_email' phpName='OutletEmail' type="VARCHAR" size="50"/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type="VARCHAR" size="50"/>
+        <column name='outlet_classification' phpName='OutletClassification' type='INTEGER'/>
+        <column name='classification' phpName='Classification' type="VARCHAR" size="50"/>
+        <column name='outlet_opening_date' phpName='OutletOpening_date' type='Date'/>
+        <column name='outlet_contact_name' phpName='OutletContactName' type="VARCHAR" size="50"/>
+        <column name='outlet_landlineno' phpName='OutletLandlineno' type="VARCHAR" size="50"/>
+        <column name='outlet_alt_landlineno' phpName='OutletAltLandlineno' type="VARCHAR" size="50"/>
+        <column name='outlet_contact_bday' phpName='OutletContactBday' type='Date'/>
+        <column name='outlet_contact_anniversary' phpName='OutletContactAnniversary' type='Date'/>
+        <column name='outlet_isd_code' phpName='OutletIsdCode' type="VARCHAR" size="50"/>
+        <column name='outlet_contact_no' phpName='OutletContactNo' type="VARCHAR" size="50"/>
+        <column name='outlet_alt_contact_no' phpName='OutletAltContactNo' type="VARCHAR" size="50"/>
+        <column name='outlet_status' phpName='OutletStatus' type="VARCHAR" size="50"/>
+        <column name='outlettype_id' phpName='OutlettypeId' type='INTEGER'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type="VARCHAR" size="50"/>
+        <column name='company_id' phpName='CompanyId' type='INTEGER'/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='outlet_otp' phpName='OutletOtp' type="VARCHAR" size="50"/>
+        <column name='outlet_verified' phpName='OutletVerified' type="VARCHAR" size="50"/>
+        <column name='outlet_created_by' phpName='OutletCreatedBy' type='INTEGER'/>
+        <column name='outlet_approved_by' phpName='OutletApprovedBy' type='INTEGER'/>
+        <column name='outlet_potential' phpName='OutletPotential' type="VARCHAR" size="50"/>
+        <column name='integration_id' phpName='IntegrationId' type="VARCHAR" size="50"/>
+        <column name='itownid' phpName='Itownid' type='INTEGER'/>
+        <column name='outlet_qualification' phpName='OutletQualification' type="VARCHAR" size="50"/>
+        <column name='outlet_regno' phpName='OutletRegno' type="VARCHAR" size="50"/>
+        <column name='outlet_marital_status' phpName='OutletMaritalStatus' type="VARCHAR" size="50"/>
+        <column name='outlet_media' phpName='OutletMedia' type="VARCHAR" size="50"/>
+        <column name='address_name' phpName='AddressName' type='VARCHAR' size='150'/>
+        <column name='outlet_address' phpName='OutletAddress' type='VARCHAR' size='150'/>
+        <column name='outlet_street_name' phpName='OutletStreetName' type='VARCHAR' size='150'/>
+        <column name='outlet_city' phpName='OutletCity' type='VARCHAR' size='150'/>
+        <column name='outlet_state' phpName='OutletState' type='VARCHAR' size='150'/>
+        <column name='outlet_country' phpName='OutletCountry' type='VARCHAR' size='150'/>
+        <column name='outlet_pincode' phpName='OutletPincode' type='VARCHAR' size='150'/>
+        <column name='last_visit_date' phpName='LastVisitDate' type='TIMESTAMP'/>
+        <column name='last_visit_employee' phpName='LastVisitEmployee' type='INTEGER'/>
+        <column name='outlet_org_code' phpName='OutletOrgCode' type='VARCHAR'/>
+        <column name='sgpi_brand_map' phpName='SgpiBrandMap' type='VARCHAR'/>
+        <column name='sgpi_brand_id_map' phpName='SgpiBrandIdMap' type='VARCHAR'/>
+    </table>
+    <table name="outlet_address_view" idMethod="native" phpName="OutletAddressView" readOnly="true" skipSql="true">
+        <column name="outlet_address_id" phpName="OutletAddressId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='outlet_address' phpName='OutletAddress' type="VARCHAR" size="50"/>
+        <column name='outlet_street_name' phpName='OutletStreetName' type="VARCHAR" size="50"/>
+        <column name='outlet_city' phpName='OutletCity' type="VARCHAR" size="50"/>
+        <column name='outlet_state' phpName='OutletState' type="VARCHAR" size="50"/>
+        <column name='outlet_country' phpName='OutletCountry' type="VARCHAR" size="50"/>
+        <column name='outlet_pincode' phpName='OutletPincode' type="VARCHAR" size="50"/>
+        <column name='outlet_id' phpName='OutletId' type='INTEGER'/>
+        <column name='outlet_gps' phpName='OutletGps' type="VARCHAR" size="50"/>
+        <column name='company_id' phpName='CompanyId' type='INTEGER'/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='address_name' phpName='AddressName' type="VARCHAR" size="50"/>
+        <column name='is_default' phpName='IsDefault' type='INTEGER'/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type="VARCHAR" size="50"/>
+    </table>
+    <table name="outlet_mapping_view" idMethod="native" phpName="OutletMappingView" readOnly="true" skipSql="true">
+        <column name="mapping_id" phpName="MappingId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='primary_outlet_id' phpName='PrimaryOutletId' type='INTEGER'/>
+        <column name='secondary_outlet_id' phpName='SecondaryOutletId' type='INTEGER'/>
+        <column name='pricebook_id' phpName='PricebookId' type='INTEGER'/>
+        <column name='isdefault' phpName='IsDefault' type='INTEGER'/>
+        <column name='category_type' phpName='CategoryType' type="VARCHAR" size="50"/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type="VARCHAR" size="50"/>
+        <column name='outlettype_name' phpName='OutlettypeName' type="VARCHAR" size="50"/>
+    </table>
+    <table name="sgpi_employee_balance" idMethod="native" phpName="SgpiEmployeeBalance" readOnly="true" skipSql="true">
+        <column name='uniquecode' phpName='Uniquecode' type="VARCHAR" size="50" primaryKey="true" required="true"/>
+        <column name="employee_id" phpName="EmployeeId" type="INTEGER"/>
+        <column name='sgpi_account_id' phpName='SgpiAccountId' type='INTEGER'/>
+        <column name='sgpi_id' phpName='SgpiId' type='INTEGER'/>
+        <column name='sgpi_media' phpName='SgpiMedia' type='INTEGER'/>
+        <column name='sgpi_name' phpName='SgpiName' type="VARCHAR" size="50"/>
+        <column name='sgpi_type' phpName='SgpiType' type="VARCHAR" size="50"/>
+        <column name='use_start_date' phpName='UseStartDate' type='TIMESTAMP'/>
+        <column name='use_end_date' phpName='UseEndDate' type='TIMESTAMP'/>
+        <column name="max_qty" phpName="MaxQty" type="INTEGER"/>
+        <column name='balance' phpName='Balance' type='INTEGER'/>
+        <column name='credits' phpName='Credits' type='INTEGER'/>
+        <column name='debits' phpName='Debits' type='INTEGER'/>
+        <column name='moye' phpName='Moye' type="VARCHAR" size="50"/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+        <column name='outlettype_id' phpName='OutlettypeId' type='INTEGER'/>
+        <column name='is_strategic' phpName='IsStrategic' type="BOOLEAN" size="1" defaultValue="false"/>
+    </table>
+    <table name="employee_leave_balance" idMethod="native" phpName="EmployeeLeaveBalance" readOnly="true"
+           skipSql="true">
+        <column name='uniquecode' phpName='Uniquecode' type="VARCHAR" size="50" primaryKey="true" required="true"/>
+        <column name="employee_id" phpName="EmployeeId" type="INTEGER"/>
+        <column name='leave_year' phpName='LeaveYear' type='VARCHAR' size="50"/>
+        <column name='leave_type' phpName='LeaveType' type="VARCHAR" size="50"/>
+        <column name='accuration' phpName='Accuration' type="INTEGER"/>
+        <column name='opening' phpName='Opening' type="INTEGER"/>
+        <column name='reward' phpName='Reward' type="INTEGER"/>
+        <column name='consumed' phpName='Consumed' type="INTEGER"/>
+        <column name='balance' phpName='Balance' type='INTEGER'/>
+    </table>
+    <table name="sgpi_out_view" idMethod="native" phpName="SgpiOutView" readOnly="true" skipSql="true">
+        <column name='sgpi_voucher_id' phpName='SgpiVoucherId' type='INTEGER' primaryKey="true" required="true"/>
+        <column name='outlet_org_id' phpName='Outlet_orgId' type='INTEGER'/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='position_name' phpName='PositionName' type='VARCHAR' size="50"/>
+        <column name='territory_name' phpName='TerritoryName' type='VARCHAR' size="50"/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR' size="50"/>
+        <column name='tags' phpName='Tags' type='VARCHAR' size="50"/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type='VARCHAR' size="50"/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' size="50"/>
+        <column name='classification' phpName='Classification' type='VARCHAR' size="50"/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR' size="50"/>
+        <column name='sgpi_name' phpName='SgpiName' type='VARCHAR' size="50"/>
+        <column name='sgpi_code' phpName='SgpiCode' type='VARCHAR' size="50"/>
+        <column name='material_sku' phpName='MaterialSku' type='VARCHAR' size="50"/>
+        <column name='sgpi_type' phpName='SgpiType' type='VARCHAR' size="50"/>
+        <column name='sgpi_qty' phpName='SgpiQty' type='INTEGER'/>
+        <column name='dcr_id' phpName='DcrId' type='INTEGER'/>
+        <column name='dcr_date' phpName='DcrDate' type='DATE'/>
+        <column name='brands_detailed' phpName='BrandsDetailed' type='VARCHAR' size="50"/>
+        <column name='device_time' phpName='DeviceTime' type='VARCHAR' size="50"/>
+        <column name='managers' phpName='Managers' type='VARCHAR' size="50"/>
+        <column name="created_at" phpName="CreatedAt" type="TIMESTAMP" defaultExpr="CURRENT_TIMESTAMP"/>
+        <column name="updated_at" phpName="UpdatedAt" type="TIMESTAMP" defaultValue="NULL"/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+    </table>
+    <table name="sgpi_out_summary" idMethod="native" phpName="SgpiOutSummary" readOnly="true" skipSql="true">
+        <column name='uniqueid' phpName='Uniqueid' type="VARCHAR" size="50" primaryKey="true" required="true"/>
+        <column name='moye' phpName='Moye' type='VARCHAR' size="50"/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='outlet_orgdata_id' phpName='OutletOrgdataId' type='INTEGER'/>
+        <column name='sgpi_type' phpName='SgpiType' type='VARCHAR' size="50"/>
+        <column name='qty' phpName='Qty' type='INTEGER'/>
+        <column name='lastcreate' phpName='Lastcreate' type='TIMESTAMP'/>
+    </table>
+    <table name="outlet_visits_view" idMethod="native" phpName="OutletVisitsView" readOnly="true" skipSql="true">
+        <column name='unique_id' phpName='UniqueId' type="VARCHAR" size="50" primaryKey="true" required="true"/>
+        <column name='moye' phpName='Moye' type='VARCHAR' size="50"/>
+        <column name='position_name' phpName='PsitionName' type='VARCHAR' size="50"/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='cav_positions_up' phpName='CavPositionsUp' type='VARCHAR' size="50"/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type='VARCHAR' size="50"/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR' size="50"/>
+        <column name='outlet_org_data_id' phpName='OutletOrgDataId' type='INTEGER'/>
+        <column name='outlet_id' phpName='OutletId' type='INTEGER'/>
+        <column name='outlettype_id' phpName='OutlettypeId' type='INTEGER'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR' size="50"/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type='VARCHAR' size="50"/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' size="50"/>
+        <column name='outlet_contact_no' phpName='OutletContactNo' type='VARCHAR' size="50"/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='vfcovered' phpName='Vfcovered' type='INTEGER'/>
+        <column name='visits' phpName='Visits' type='INTEGER'/>
+        <column name='rcpa_done' phpName='RcpaDone' type='INTEGER'/>
+        <column name='sgpi_done' phpName='SgpiDone' type='INTEGER'/>
+        <column name='outlet_classification' phpName='OutletClassification' type='INTEGER'/>
+        <column name='employee_id' phpName='EmployeeId' type="INTEGER"/>
+        <column name='territory_position' phpName='TerritoryPosition' type="INTEGER"/>
+        <column name='incharge' phpName='Incharge' type="INTEGER"/>
+    </table>
+    <table name="dar_view" idMethod="native" phpName="DarView" readOnly="true" skipSql="true">
+        <column name="dcr_id" phpName="DcrId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='agendacontroltype' phpName='Agendacontroltype' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type="VARCHAR" size="255"/>
+        <column name='first_name' phpName='FirstName' type="VARCHAR" size="255"/>
+        <column name='outlet_name' phpName='OutletName' type="VARCHAR" size="255"/>
+        <column name='outlet_id' phpName='OutletId' type="INTEGER"/>
+        <column name='outlet_code' phpName='OutletCode' type="VARCHAR" size="255"/>
+        <column name='agendname' phpName='Agendname' type="VARCHAR" size="255"/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='position_name' phpName='PositionName' type="VARCHAR" size="255"/>
+        <column name='stownname' phpName='Stownname' type="VARCHAR" size="255"/>
+        <column name='dcr_date' phpName='DcrDate' type="VARCHAR" size="255"/>
+        <column name='dcr_status' phpName='DcrStatus' type="VARCHAR" size="255"/>
+        <column name="created_at" phpName="CreatedAt" type="TIMESTAMP" defaultExpr="CURRENT_TIMESTAMP"/>
+        <column name="updated_at" phpName="UpdatedAt" type="TIMESTAMP" defaultValue="NULL"/>
+        <column name='planned' phpName='Planned' type="VARCHAR" size="255"/>
+        <column name='unit_name' phpName='UnitName' type="VARCHAR" size="255"/>
+        <column name='datetime' phpName='DateTime' type="TIMESTAMP"/>
+        <column name='managers' phpName='Managers' type="VARCHAR" size="255"/>
+        <column name='brands_detailed' phpName='BrandsDetailed' type="VARCHAR" size="255"/>
+        <column name='sgpi_out' phpName='SgpiOut' type="VARCHAR" size="255"/>
+        <column name='pob_total' phpName='PobTotal' type="INTEGER"/>
+        <column name='employee_id' phpName='EmployeeId' type="INTEGER"/>
+        <column name='ed_duration' phpName='EdDuration' type="INTEGER"/>
+        <column name='territory_id' phpName='TerritoryId' type="INTEGER"/>
+        <column name='outlettype_id' phpName='OutlettypeId' type="INTEGER"/>
+        <column name='outlettype_name' phpName='OutlettypeName' type="VARCHAR" size="255"/>
+        <column name='beat_id' phpName='BeatId' type="INTEGER"/>
+        <column name='beat_name' phpName='BeatName' type="VARCHAR" size="255"/>
+        <column name='tags' phpName='Tags' type="VARCHAR"/>
+        <column name='isjw' phpName='Isjw' type="BOOLEAN" size="1" defaultValue="false"/>
+        <column name='brand_campaign_name' phpName='BrandCampaignName' type="VARCHAR"/>
+    </table>
+    <table name="outlet_contribution_potential" idMethod="native" phpName="OutletContributionPotential" readOnly="true"
+           skipSql="true">
+        <column name='outlet_id' phpName='OutletId' type="INTEGER"/>
+        <column name='rcpa_moye' phpName='RcpaMoye' type='VARCHAR' size="50"/>
+        <column name='contribution' phpName='Contribution' type='INTEGER'/>
+        <column name='other' phpName='Other' type='INTEGER'/>
+        <column name='potential' phpName='Potential' type='INTEGER'/>
+        <column name='contributionValue' phpName='ContributionValue' type='DECIMAL'/>
+        <column name='otherValue' phpName='OtherValue' type='DECIMAL'/>
+        <column name='potentialValue' phpName='PotentialValue' type='DECIMAL'/>
+    </table>
+    <table name="rcpa_summary" idMethod="native" phpName="RcpaSummary" readOnly="true" skipSql="true">
+        <column name="uniqueid" phpName="Uniqueid" type="VARCHAR" size="255" primaryKey="true" required="true"/>
+        <column name='outlet_id' phpName='OutletId' type='INTEGER'/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+        <column name='outlet_name' phpName='OutletName' type="VARCHAR" size="255"/>
+        <column name='outlet_classification' phpName='OutletClassification' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='orgunitid' phpName='Orgunitid' type='INTEGER'/>
+        <column name='tags' phpName='Tags' type="VARCHAR" size="255"/>
+        <column name='rcpa_moye' phpName='RcpaMoye' type="VARCHAR" size="255"/>
+        <column name='brand_name' phpName='BrandName' type="VARCHAR" size="255"/>
+        <column name='rcpa_value' phpName='RcpaValue' type='DECIMAL'/>
+        <column name='potential' phpName='Potential' type='DECIMAL'/>
+        <column name='own' phpName='Own' type='DECIMAL'/>
+        <column name='competition' phpName='Competition' type='DECIMAL'/>
+        <column name='lastcreated' phpName='Lastcreated' type='TIMESTAMP'/>
+        <column name='lastupdated' phpName='Lastupdated' type='TIMESTAMP'/>
+        <column name='min_value' phpName='MinValue' type='INTEGER'/>
+
+    </table>
+    <table name="rcpa_retailer_view" idMethod="native" phpName="RcpaRetailerView" readOnly="true" skipSql="true">
+        <column name="uniqueid" phpName="Uniqueid" type="VARCHAR" size="255" primaryKey="true" required="true"/>
+        <column name='doctorid' phpName='Doctorid' type='INTEGER'/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='retail_outlet_id' phpName='RetailOutletId' type='INTEGER'/>
+        <column name='outlet_name' phpName='OutletName' type="VARCHAR" size="255"/>
+        <column name='rcpa_moye' phpName='RcpaMoye' type="VARCHAR" size="255"/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='rcpa_value' phpName='RcpaValue' type='DECIMAL'/>
+        <column name='potential' phpName='Potential' type='DECIMAL'/>
+        <column name='own' phpName='Own' type='DECIMAL'/>
+        <column name='competition' phpName='Competition' type='DECIMAL'/>
+        <column name='lastcreated' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='lastupdated' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR'/>
+    </table>
+    <table name="export_dcr" idMethod="native" phpName="ExportDcr" readOnly="true" skipSql="true">
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR' size="255"/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR' size="255"/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR' size="255"/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee' phpName='Employee' type='VARCHAR'/>
+        <column name='jw_employee_code' phpName='JwEmployeeCode' type='VARCHAR' size="255"/>
+        <column name='jw_employee' phpName='JwEmployee' type='VARCHAR'/>
+        <column name='jw_position_name' phpName='JwPositionName' type='VARCHAR' size="255"/>
+        <column name='outlet_type' phpName='OutletType' type='VARCHAR' size="255"/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR' size="255"/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' size="255"/>
+        <column name='agendacontroltype' phpName='Agendacontroltype' type='VARCHAR' size="255"/>
+        <column name='agendname' phpName='Agendname' type='VARCHAR' size="255"/>
+        <column name='stownname' phpName='Stownname' type='VARCHAR' size="255"/>
+        <column name='dcr_date' phpName='DcrDate' type='DATE'/>
+        <column name='dcr_status' phpName='DcrStatus' type='VARCHAR' size="255"/>
+        <column name='nca_comments' phpName='NcaComments' type='VARCHAR' size="255"/>
+        <column name='planned' phpName='Planned' type='VARCHAR'/>
+        <column name='managers_name' phpName='ManagersName' type='VARCHAR'/>
+        <column name='brands_detailed_name' phpName='BrandsDetailedName' type='VARCHAR'/>
+        <column name='ed_duration' phpName='EdDuration' type='INTEGER'/>
+        <column name='datetime' phpName='DateTime' type='TIMESTAMP'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+        <column name='customer_town' phpName='CustomerTown' type='VARCHAR'/>
+        <column name='customer_patch' phpName='CustomerPatch' type='VARCHAR'/>
+        <column name='leave_teken' phpName='LeaveTaken' type='VARCHAR'/>
+    </table>
+    <table name="export_edetailing" idMethod="native" phpName="ExportEdetailing" readOnly="true" skipSql="true">
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR' size="255"/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR' size="255"/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR' size="255"/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee' phpName='Employee' type='VARCHAR'/>
+        <column name='device_start_time' phpName='DeviceStartTime' type='TIMESTAMP'/>
+        <column name='device_end_time' phpName='DeviceEndTime' type='TIMESTAMP'/>
+        <column name='outlet_type' phpName='OutletType' type='VARCHAR' size="255"/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR' size="255"/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' size="255"/>
+        <column name='outlet_classification' phpName='OutletClassification' type='VARCHAR' size="255"/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR' size="255"/>
+        <column name='session_id' phpName='SessionId' type='VARCHAR' size="255"/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+        <column name='presentation_order' phpName='PresentationOrder' type='INTEGER'/>
+        <column name='presentation' phpName='Presentation' type='VARCHAR' size="255"/>
+        <column name='playlist' phpName='Playlist' type='VARCHAR' size="255"/>
+        <column name='page_count' phpName='PageCount' type='VARCHAR' size="255"/>
+        <column name='presentation_time' phpName='PresentationTime' type='INTEGER'/>
+        <column name='page_name' phpName='PageName' type='VARCHAR' size="255"/>
+        <column name='smiley' phpName='Smiley' type='VARCHAR'/>
+        <column name='ed_date' phpName='EdDate' type='DATE'/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+    </table>
+    <table name="export_pob" idMethod="native" phpName="ExportPob" readOnly="true" skipSql="true">
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR' size="255"/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR' size="255"/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR' size="255"/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee' phpName='Employee' type='VARCHAR'/>
+        <column name='designation' phpName='Designation' type='VARCHAR' size="255"/>
+        <column name='from_outlet_type' phpName='FromOutletType' type='VARCHAR' size="255"/>
+        <column name='from_outlet_code' phpName='FromOutletCode' type='VARCHAR' size="255"/>
+        <column name='from_outlet_name' phpName='FromOutletName' type='VARCHAR' size="255"/>
+        <column name='from_outlet_classification' phpName='FromOutletClassification' type='VARCHAR' size="255"/>
+        <column name='to_outlet_type' phpName='ToOutletType' type='VARCHAR' size="255"/>
+        <column name='to_outlet_code' phpName='ToOutletCode' type='VARCHAR' size="255"/>
+        <column name='to_outlet_name' phpName='ToOutletName' type='VARCHAR' size="255"/>
+        <column name='to_outlet_classification' phpName='ToOutletClassification' type='VARCHAR' size="255"/>
+        <column name='product_name' phpName='ProductName' type='VARCHAR' size="255"/>
+        <column name='product_sku' phpName='ProductSku' type='VARCHAR' size="255"/>
+        <column name='rate' phpName='Rate' type='DECIMAL'/>
+        <column name='qty' phpName='Qty' type='INTEGER'/>
+        <column name='total_amt' phpName='TotalAmt' type='DECIMAL'/>
+        <column name='order_date' phpName='OrderDate' type='DATE'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+    </table>
+    <table name="export_rcpa_summary" idMethod="native" phpName="ExportRcpaSummary" readOnly="true" skipSql="true">
+        <column name='uniqueid' phpName='Uniqueid' type='VARCHAR'/>
+        <column name='orgunitid' phpName='Orgunitid' type='VARCHAR'/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR'/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR'/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR'/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR'/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR'/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR'/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR'/>
+        <column name='emp_name' phpName='EmpName' type='VARCHAR'/>
+        <column name='drcode' phpName='Drcode' type='VARCHAR'/>
+        <column name='drname' phpName='Drname' type='VARCHAR'/>
+        <column name='retailercode' phpName='Retailercode' type='VARCHAR'/>
+        <column name='retailername' phpName='Retailername' type='VARCHAR'/>
+        <column name='outlet_classification' phpName='OutletClassification' type='VARCHAR'/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='territory' phpName='Territory' type='VARCHAR'/>
+        <column name='tags' phpName='Tags' type='VARCHAR'/>
+        <column name='rcpa_moye' phpName='RcpaMoye' type='VARCHAR'/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR'/>
+        <column name='competitor_name' phpName='CompetitorName' type='VARCHAR'/>
+        <column name='rcpa_qty' phpName='RcpaQty' type='DECIMAL'/>
+        <column name='own_rate' phpName='OwnRate' type='DECIMAL'/>
+        <column name='competitor_rate' phpName='CompetitorRate' type='DECIMAL'/>
+        <column name='potential' phpName='Potential' type='DECIMAL'/>
+        <column name='own' phpName='Own' type='DECIMAL'/>
+        <column name='competition' phpName='Competition' type='DECIMAL'/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='min_value' phpName='MinValue' type='INTEGER'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+    </table>
+    <table name="export_sgpi_out" idMethod="native" phpName="ExportSgpiOut" readOnly="true" skipSql="true">
+        <column name='sgpi_voucher_id' phpName='SgpiVoucherId' type='INTEGER'/>
+        <column name='bu_name' phpName='BuName' type='VARCHAR'/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR'/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR'/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR'/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR'/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR'/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR'/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR'/>
+        <column name='employee_name' phpName='EmployeeName' type='VARCHAR'/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR'/>
+        <column name='brand_focus' phpName='BrandFocus' type='VARCHAR'/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type='VARCHAR'/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR'/>
+        <column name='tags' phpName='Tags' type='VARCHAR'/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type='VARCHAR'/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR'/>
+        <column name='classification' phpName='Classification' type='VARCHAR'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR'/>
+        <column name='sgpi_name' phpName='SgpiName' type='VARCHAR'/>
+        <column name='sgpi_code' phpName='SgpiCode' type='VARCHAR'/>
+        <column name='material_sku' phpName='MaterialSku' type='VARCHAR'/>
+        <column name='sgpi_type' phpName='SgpiType' type='VARCHAR'/>
+        <column name='sgpi_qty' phpName='SgpiQty' type='INTEGER'/>
+        <column name='dcr_id' phpName='DcrId' type='INTEGER'/>
+        <column name='dcr_date' phpName='DcrDate' type='DATE'/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR'/>
+        <column name='device_time' phpName='DeviceTime' type='TIMESTAMP'/>
+        <column name='managers' phpName='Managers' type='VARCHAR'/>
+        <column name='created_at' phpName='CreatedAt' type='TIMESTAMP'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+    </table>
+    <table name="sgpi_brand_wise_distribution" idMethod="native" phpName="SgpiBrandWiseDistribution" readOnly="true"
+           skipSql="true">
+        <column name='sgpimap_id' phpName='SgpiVoucherId' type='INTEGER'/>
+        <column name='org_data_id' phpName='OrgDataId' type='INTEGER'/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+        <column name='sgpi_status' phpName='SgpiStatus' type='VARCHAR'/>
+        <column name='company_id' phpName='CompanyId' type='INTEGER'/>
+        <column name='created_at' phpName='CreatedAt' type='VARCHAR'/>
+        <column name='updated_at' phpName='UpdatedAt' type='VARCHAR'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type='VARCHAR'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='position_name' phpName='PositionName' type='VARCHAR'/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR'/>
+        <column name='tags' phpName='Tags' type='VARCHAR'/>
+        <column name='org_potential' phpName='OrgPotential' type='VARCHAR'/>
+        <column name='brand_focus' phpName='BrandFocus' type='VARCHAR'/>
+        <column name='customer_fq' phpName='CustomerFq' type='VARCHAR'/>
+        <column name='id' phpName='OutletId' type='INTEGER'/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR'/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR'/>
+        <column name='outlettype_id' phpName='OutlettypeId' type='INTEGER'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR'/>
+        <column name='itownid' phpName='Itownid' type='INTEGER'/>
+        <column name='outlet_city' phpName='OutletCity' type='VARCHAR'/>
+        <column name='classification' phpName='Classification' type='VARCHAR'/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR'/>
+    </table>
+    <table name="sgpi_transaction_view" idMethod="native" phpName="SgpiTransactionView" readOnly="true" skipSql="true">
+        <column name='sgpi_name' phpName='SgpiName' type='VARCHAR'/>
+        <column name='cd' phpName='Cd' type='VARCHAR'/>
+        <column name='qty' phpName='Qty' type='VARCHAR'/>
+        <column name='credits' phpName='Credits' type='VARCHAR'/>
+        <column name='debits' phpName='Debits' type='VARCHAR'/>
+        <column name='employee_id' phpName='EmployeeId' type='VARCHAR'/>
+        <column name='voucher_no' phpName='VoucherNo' type='VARCHAR'/>
+        <column name='remark' phpName='Remark' type='VARCHAR'/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR'/>
+        <column name='dcr_date' phpName='DcrDate' type='VARCHAR'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR'/>
+        <column name='use_start_date' phpName='UseStartDate' type='VARCHAR'/>
+        <column name='use_end_date' phpName='UseEndDate' type='VARCHAR'/>
+        <column name='sgpi_id' phpName='SgpiId' type='VARCHAR'/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR'/>
+        <column name='created_at' phpName='CreatedTa' type='VARCHAR'/>
+        <column name='brand_name' phpName='BrandName' type='VARCHAR'/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR'/>
+    </table>
+    <table name="export_dar" idMethod="native" phpName="ExportDar" readOnly="true" skipSql="true">
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR' size="255"/>
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR' size="255"/>
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR' size="255"/>
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR' size="255"/>
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' size="255"/>
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' size="255"/>
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee' phpName='Employee' type='VARCHAR'/>
+        <column name='jw_employee_code' phpName='JwEmployeeCode' type='VARCHAR' size="255"/>
+        <column name='jw_employee' phpName='JwEmployee' type='VARCHAR'/>
+        <column name='jw_position_name' phpName='JwPositionName' type='VARCHAR' size="255"/>
+        <column name='outlet_type' phpName='OutletType' type='VARCHAR' size="255"/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR' size="255"/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' size="255"/>
+        <column name='agendacontroltype' phpName='Agendacontroltype' type='VARCHAR' size="255"/>
+        <column name='agendname' phpName='Agendname' type='VARCHAR' size="255"/>
+        <column name='stownname' phpName='Stownname' type='VARCHAR' size="255"/>
+        <column name='dcr_date' phpName='DcrDate' type='DATE'/>
+        <column name='dcr_status' phpName='DcrStatus' type='VARCHAR' size="255"/>
+        <column name='nca_comments' phpName='NcaComments' type='VARCHAR' size="255"/>
+        <column name='planned' phpName='Planned' type='VARCHAR'/>
+        <column name='managers_name' phpName='ManagersName' type='VARCHAR'/>
+        <column name='brands_detailed_name' phpName='BrandsDetailedName' type='VARCHAR'/>
+        <column name='ed_duration' phpName='EdDuration' type='INTEGER'/>
+        <column name='datetime' phpName='DateTime' type='TIMESTAMP'/>
+        <column name='emp_territory' phpName='EmpTerritory' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+        <column name='customer_town' phpName='CustomerTown' type='VARCHAR'/>
+        <column name='customer_patch' phpName='CustomerPatch' type='VARCHAR'/>
+        <column name='leave_teken' phpName='LeaveTaken' type='VARCHAR'/>
+        <column name='dcr_id' phpName='DcrId' type='INTEGER'/>
+        <column name='updated_at' phpName='UpdatedAt' type='TIMESTAMP'/>
+        <column name='isjw' phpName='IsJw' type='VARCHAR'/>
+        <column name='sgpi_out' phpName='SgpiOut' type='VARCHAR'/>
+        <column name='pob_total' phpName='PobTotal' type='INTEGER'/>
+        <column name='outlet_id' phpName='OutletId' type='INTEGER'/>
+    </table>
+    <table name="export_expense_status_view" idMethod="native" phpName="ExportExpenseStatusView" readOnly="true" skipSql="true">
+        <column name="uniqueid" phpName="Uniqueid" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='employee_id' phpName='EmployeeId' type='INTEGER'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='orgunitid' phpName='Orgunitid' type='INTEGER'/>
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee_name' phpName='EmployeeName' type='VARCHAR'/>
+        <column name='reporting_to_employee_name' phpName='ReportingToEmployeeName' type='VARCHAR'/>
+        <column name='reporting_to_employee_code' phpName='ReportingToEmployeeCode' type='VARCHAR' size="255"/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='designation' phpName='Designation' type='VARCHAR'/>
+        <column name='grade' phpName='Grade' type='VARCHAR'/>
+        <column name='status' phpName='Status' type='VARCHAR'/>
+        <column name='month' phpName='Month' type='VARCHAR'/>
+        <column name='requested_amount' phpName='RequestedAmount' type='DECIMAL'/>
+        <column name='approved_amount' phpName='ApprovedAmount' type='DECIMAL'/>
+        <column name='final_amount' phpName='FinalAmount' type='DECIMAL'/>
+        <column name='expense_status' phpName='ExpenseStatus' type='VARCHAR' size="255"/>
+        <column name='total_expenses' phpName='TotalExpenses' type='INTEGER'/>
+        <column name='expense_dates' phpName='ExpenseDates' type='VARCHAR'/>
+    </table>
+    <table name="export_expenses_summary" idMethod="native" phpName="ExportExpensesSummary" readOnly="true" skipSql="true">
+        <column name="uniqueid" phpName="Uniqueid" type="INTEGER" primaryKey="true" required="true"/>
+        <column name='employee_id' phpName='EmployeeId' type='INTEGER'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='orgunitid' phpName='Orgunitid' type='INTEGER'/>
+        <column name='bu_name' phpName='BuName' type='VARCHAR' size="255"/>
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' size="255"/>
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' size="255"/>
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' size="255"/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="255"/>
+        <column name='employee_name' phpName='EmployeeName' type='VARCHAR'/>
+        <column name='reporting_to_employee_name' phpName='ReportingToEmployeeName' type='VARCHAR'/>
+        <column name='reporting_to_employee_code' phpName='ReportingToEmployeeCode' type='VARCHAR' size="255"/>
+        <column name='emp_town' phpName='EmpTown' type='VARCHAR'/>
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR'/>
+        <column name='designation' phpName='Designation' type='VARCHAR'/>
+        <column name='grade' phpName='Grade' type='VARCHAR'/>
+        <column name='status' phpName='Status' type='VARCHAR'/>
+        <column name='month' phpName='Month' type='VARCHAR'/>
+        <column name='requested_amount' phpName='RequestedAmount' type='DECIMAL'/>
+        <column name='approved_amount' phpName='ApprovedAmount' type='DECIMAL'/>
+        <column name='final_amount' phpName='FinalAmount' type='DECIMAL'/>
+        <column name='expense_status' phpName='ExpenseStatus' type='VARCHAR' size="255"/>
+        <column name='total_expenses' phpName='TotalExpenses' type='INTEGER'/>
+        <column name='expense_dates' phpName='ExpenseDates' type='VARCHAR'/>
+        <column name='requested_da_hq_amount' phpName='RequestedDaHqAmount' type='DECIMAL'/>
+        <column name='requested_da_ex_hq_amount' phpName='RequestedDaExHqAmount' type='DECIMAL'/>
+        <column name='requested_da_os_amount' phpName='RequestedDaOsAmount' type='DECIMAL'/>
+        <column name='requested_da_transit_amount' phpName='RequestedAaTransitAmount' type='DECIMAL'/>
+        <column name='requested_da_last_day_os_amount' phpName='RequestedDaLastDayOsAmount' type='DECIMAL'/>
+        <column name='requested_ta_amount' phpName='RequestedTaAmount' type='DECIMAL'/>
+        <column name='requested_internet_bill_amount' phpName='RequestedInternetBillAmount' type='DECIMAL'/>
+        <column name='requested_os_petrol_allowance_amount' phpName='RequestedOsPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='requested_isbt_amount' phpName='RequestedIsbtAmount' type='DECIMAL'/>
+        <column name='requested_hill_allowance_amount' phpName='RequestedHillAllowanceAmount' type='DECIMAL'/>
+        <column name='requested_ilp_amount' phpName='RequestedIlpAmount' type='DECIMAL'/>
+        <column name='requested_mr_conveyance_amount' phpName='RequestedMrConveyanceAmount' type='DECIMAL'/>
+        <column name='requested_am_conveyance_amount' phpName='RequestedAmConveyanceAmount' type='DECIMAL'/>
+        <column name='requested_rm_lodging_and_food_amount' phpName='RequestedRmLodgingAndFoodAmount' type='DECIMAL'/>
+        <column name='requested_handset_amount' phpName='RequestedHandsetAmount' type='DECIMAL'/>
+        <column name='requested_hq_petrol_allowance_amount' phpName='RequestedHqPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='requested_zm_lodging_and_food_amount' phpName='RequestedZmLodgingAndFoodAmount' type='DECIMAL'/>
+        <column name='requested_rm_mobile_bill_amount' phpName='RequestedRmMobileBillAmount' type='DECIMAL'/>
+        <column name='requested_zm_local_conveyance_amount' phpName='RequestedZmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='requested_rm_local_conveyance_amount' phpName='RequestedRmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='requested_zm_mobile_bill_amount' phpName='RequestedZmMobileBillAmount' type='DECIMAL'/>
+        <column name='requested_stationery_amount' phpName='RequestedStationeryAmount' type='DECIMAL'/>
+        <column name='requested_event_amount' phpName='RequestedEventAmount' type='DECIMAL'/>
+        <column name='requested_own_stay_amount' phpName='RequestedOwnStayAmount' type='DECIMAL'/>
+        <column name='requested_other_zm_local_conveyance_amount' phpName='RequestedOtherZmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='requested_other_os_petrol_allowance_amount' phpName='RequestedOtherOsPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='requested_other_rm_local_conveyance_amount' phpName='RequestedOtherRmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='final_da_hq_amount' phpName='FinalDaHqAmount' type='DECIMAL'/>
+        <column name='final_da_ex_hq_amount' phpName='FinalDaExHqAmount' type='DECIMAL'/>
+        <column name='final_da_os_amount' phpName='FinalDaOsAmount' type='DECIMAL'/>
+        <column name='final_da_transit_amount' phpName='FinalDaTransitAmount' type='DECIMAL'/>
+        <column name='final_da_last_day_os_amount' phpName='FinalDaLastDayOsAmount' type='DECIMAL'/>
+        <column name='final_ta_amount' phpName='FinalTaAmount' type='DECIMAL'/>
+        <column name='final_internet_bill_amount' phpName='FinalInternetBillAmount' type='DECIMAL'/>
+        <column name='final_os_petrol_allowance_amount' phpName='FinalOsPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='final_isbt_amount' phpName='FinalIsbtAmount' type='DECIMAL'/>
+        <column name='final_hill_allowance_amount' phpName='FinalHillAllowanceAmount' type='DECIMAL'/>
+        <column name='final_ilp_amount' phpName='FinalIlpAmount' type='DECIMAL'/>
+        <column name='final_mr_conveyance_amount' phpName='FinalMrConveyanceAmount' type='DECIMAL'/>
+        <column name='final_am_conveyance_amount' phpName='FinalAmConveyanceAmount' type='DECIMAL'/>
+        <column name='final_rm_lodging_and_food_amount' phpName='FinalRmLodgingAndFoodAmount' type='DECIMAL'/>
+        <column name='final_handset_amount' phpName='FinalHandsetAmount' type='DECIMAL'/>
+        <column name='final_hq_petrol_allowance_amount' phpName='FinalHqPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='final_zm_lodging_and_food_amount' phpName='FinalZmLodgingAndFoodAmount' type='DECIMAL'/>
+        <column name='final_rm_mobile_bill_amount' phpName='FinalRmMobileBillAmount' type='DECIMAL'/>
+        <column name='final_zm_local_conveyance_amount' phpName='FinalZmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='final_rm_local_conveyance_amount' phpName='FinalRmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='final_zm_mobile_bill_amount' phpName='FinalZmMobileBillAmount' type='DECIMAL'/>
+        <column name='final_stationery_amount' phpName='FinalStationeryAmount' type='DECIMAL'/>
+        <column name='final_event_amount' phpName='FinalEventAmount' type='DECIMAL'/>
+        <column name='final_own_stay_amount' phpName='Final_own_stay_amount' type='DECIMAL'/>
+        <column name='final_other_zm_local_conveyance_amount' phpName='FinalOtherZmLocalConveyanceAmount' type='DECIMAL'/>
+        <column name='final_other_os_petrol_allowance_amount' phpName='FinalOtherOsPetrolAllowanceAmount' type='DECIMAL'/>
+        <column name='final_other_rm_local_conveyance_amount' phpName='FinalOtherRmLocalConveyanceAmount' type='DECIMAL'/>
+    </table>
+    <table name="expense_notification" idMethod="native" phpName="ExpenseNotification" readOnly="true" skipSql="true">
+        <column name='moye' phpName='Moye' type='VARCHAR'/>
+        <column name='pending_for_submit' phpName='PendingForSubmit' type='DECIMAL'/>
+        <column name='pending_for_approve' phpName='PendingForApprove' type='DECIMAL'/>
+        <column name='pending_for_audit' phpName='PendingForAudit' type='DECIMAL'/>
+        <column name='orgunit_id' phpName='OrgunitId' type='INTEGER' />
+        <column name='unit_name' phpName='UnitName' type='VARCHAR' />
+        <column name='pending_punchout' phpName='PendingPunchout' type='VARCHAR' />
+        <column name='unique_pending_for_submit' phpName='UniquePendingForSubmit' type='VARCHAR' />
+        <column name='unique_pending_for_approve' phpName='UniquePendingForApprove' type='VARCHAR' />
+        <column name='unique_pending_for_submit_ids' phpName='UniquePendingForSubmitIds' type='VARCHAR' />
+        <column name='unique_pending_punchout_ids' phpName='UniquePendingPunchout' type='VARCHAR' />
+        <column name='unique_pending_approval_manager_ids' phpName='UniquePendingApprovalManagerIds' type='VARCHAR' />
+    </table>
+    <table name="onboarding_request_view" idMethod="native" phpName="OnboardingRequestView" readOnly="true" skipSql="true">
+        <column name="on_board_request_id" phpName="OnBoardRequestId" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="first_name" phpName="FirstName" type="VARCHAR" />
+        <column name="last_name" phpName="LastName" type="VARCHAR" />
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR'/>
+        <column name="email" phpName="Email" type="VARCHAR" />
+        <column name="mobile" phpName="Mobile" type="VARCHAR" />
+        <column name="outlet_type_id" phpName="OutletTypeId" type='INTEGER' />
+        <column name="outlettype_name" phpName="OutlettypeName" type='VARCHAR' />
+        <column name="territory" phpName="Territory" type='INTEGER' />
+        <column name="territory_name" phpName="TerritoryName" type='VARCHAR' />
+        <column name="created_at" phpName="CreatedAt" type='Date' />
+        <column name="created_by" phpName="CreatedBy" type='VARCHAR' />
+        <column name="orgunitid" phpName="Orgunitid" type='INTEGER' />
+        <column name="unit_name" phpName="UnitName" type='VARCHAR' />
+        <column name="approved_by" phpName="ApprovedBy" type='VARCHAR' />
+        <column name="approved_at" phpName="ApprovedAt" type='Date' />
+        <column name="status" phpName="Status" type='INTEGER' />
+        <column name="operations" phpName="Operations" type='VARCHAR' />
+    </table>
+    <table name="outlet_sgpi_compliant_view" idMethod="native" phpName="OutletSgpiCompliantView" readOnly="true" skipSql="true">
+        <column name='moye' phpName='Moye' type="VARCHAR"/>
+        <column name='org_data_id' phpName='OrgDataId' type='INTEGER'/>
+        <column name='brand_id' phpName='BrandId' type='INTEGER'/>
+        <column name='sgpi_status' phpName='SgpiStatus' type="BOOLEAN" size="1"/>
+        <column name='sgpi_id' phpName='SgpiId' type='INTEGER'/>
+        <column name='sgpi_type' phpName='SgpiType' type="VARCHAR"/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='employee_id' phpName='EmployeeId' type='INTEGER'/>
+        <column name='total_qty' phpName='TotalQty' type='INTEGER'/>
+        <column name='compliant' phpName='Compliant' type='VARCHAR'/>
+    </table>
+    <table name="customerdata_view" idMethod="native" phpName="CustomerdataView" readOnly="true" skipSql="true">
+        <column name='employee_code' phpName='EmployeeCode' type="VARCHAR"/>
+        <column name='first_name' phpName='FirstName' type='VARCHAR'/>
+        <column name='last_name' phpName='LastName' type='VARCHAR'/>
+        <column name='phone' phpName='Phone' type="VARCHAR"/>
+        <column name='position_code' phpName='PositionCode' type='VARCHAR'/>
+        <column name='ood_itownid' phpName='OodItownid' type="INTEGER"/>
+        <column name='ood_town_code' phpName='OodTownCode' type="VARCHAR"/>
+        <column name='outlet_org_id' phpName='OutletOrgId' type='INTEGER'/>
+        <column name='org_unit_id' phpName='OrgUnitId' type='INTEGER'/>
+        <column name='id' phpName='Id' type='INTEGER'/>
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR'/>
+        <column name='outlet_org_code' phpName='OutletOrgCode' type='VARCHAR'/>
+        <column name='territory_id' phpName='TerritoryId' type='INTEGER'/>
+        <column name='territory_name' phpName='TerritoryName' type='VARCHAR'/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='position_name' phpName='PositionName' type='VARCHAR'/>
+        <column name='beat_id' phpName='BeatId' type='INTEGER'/>
+        <column name='beat_name' phpName='BeatName' type='VARCHAR'/>
+        <column name='tags' phpName='Tags' type='VARCHAR'/>
+        <column name='visit_fq' phpName='VisitFq' type='INTEGER'/>
+        <column name='comments' phpName='Comments' type='VARCHAR'/>
+        <column name='org_potential' phpName='OrgPotential' type='VARCHAR'/>
+        <column name='brand_focus' phpName='BrandFocus' type='VARCHAR'/>
+        <column name='customer_fq' phpName='CustomerFq' type='VARCHAR'/>
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR'/>
+        <column name='outlet_email' phpName='OutletEmail' type='VARCHAR'/>
+        <column name='outlet_salutation' phpName='OutletSalutation' type='VARCHAR'/>
+        <column name='outlet_classification' phpName='OutletClassification' type='INTEGER'/>
+        <column name='classification' phpName='Classification' type='VARCHAR'/>
+        <column name='outlet_opening_date' phpName='OutletOpeningDate' type='Date'/>
+        <column name='outlet_contact_name' phpName='OutletContactName' type='VARCHAR'/>
+        <column name='outlet_landlineno' phpName='OutletLandlineno' type='VARCHAR'/>
+        <column name='outlet_alt_landlineno' phpName='OutletAltLandlineno' type='VARCHAR'/>
+        <column name='outlet_contact_bday' phpName='OutletContactBday' type='Date'/>
+        <column name='outlet_contact_anniversary' phpName='OutletContactAnniversary' type='Date'/>
+        <column name='outlet_isd_code' phpName='OutletIsdCode' type='VARCHAR'/>
+        <column name='outlet_contact_no' phpName='OutletContactNo' type='VARCHAR'/>
+        <column name='outlet_alt_contact_no' phpName='OutletAltContactNo' type='VARCHAR'/>
+        <column name='outlettype_id' phpName='outlettype_id' type='INTEGER'/>
+        <column name='outlettype_name' phpName='OutlettypeName' type='VARCHAR'/>
+        <column name='outlet_potential' phpName='OutletPotential' type='VARCHAR'/>
+        <column name='outlet_qualification' phpName='OutletQualification' type='VARCHAR'/>
+        <column name='outlet_regno' phpName='OutletRegno' type='VARCHAR'/>
+        <column name='outlet_marital_status' phpName='OutletMaritalStatus' type="CHAR" size="1" />
+        <column name='outlet_media' phpName='OutletMedia' type='VARCHAR'/>
+        <column name='address_name' phpName='AddressName' type='VARCHAR'/>
+        <column name='outlet_address' phpName='OutletAddress' type='LONGVARCHAR'/>
+        <column name='outlet_street_name' phpName='OutletStreetName' type='VARCHAR'/>
+        <column name='outlet_city' phpName='OutletCity' type='VARCHAR'/>
+        <column name='outlet_state' phpName='OutletState' type='VARCHAR'/>
+        <column name='outlet_country' phpName='OutletCountry' type='VARCHAR'/>
+        <column name='outlet_pincode' phpName='OutletPincode' type='VARCHAR'/>
+        <column name='last_visit_date' phpName='LastVisitDate' type='TIMESTAMP'/>
+        <column name='last_visit_employee' phpName='LastVisitEmployee' type='INTEGER'/>
+        <column name='outlet_status' phpName='OutletStatus' type='VARCHAR'/>
+    </table>
+    <table name="export_brand_campaign" idMethod="native" phpName="ExportBrandCampaign" readOnly="true" skipSql="true">
+        <column name='brand_campiagn_visit_id' phpName='BrandCampiagnVisitId' type='INTEGER' primaryKey="true" />
+        <column name='brand_campiagn_id' phpName='BrandCampiagnId' type='INTEGER' />
+        <column name='brand_campiagn_visit_plan_id' phpName='BrandCampiagnVisitPlanId' type='INTEGER' />
+        <column name='outlet_org_data_id' phpName='OutletOrgDataId' type='INTEGER' />
+        <column name='dcr_id' phpName='DcrId' type='INTEGER' />
+        <column name='bu_name' phpName='BuName' type='VARCHAR' />
+        <column name='zm_manager_branch' phpName='ZmManagerBranch' type='VARCHAR' />
+        <column name='zm_manager_town' phpName='ZmManagerTown' type='VARCHAR' />
+        <column name='rm_manager_branch' phpName='RmManagerBranch' type='VARCHAR' />
+        <column name='rm_manager_town' phpName='RmManagerTown' type='VARCHAR' />
+        <column name='am_manager_branch' phpName='AmManagerBranch' type='VARCHAR' />
+        <column name='am_manager_town' phpName='AmManagerTown' type='VARCHAR' />
+        <column name='emp_position_name' phpName='EmpPositionName' type='VARCHAR' />
+        <column name='emp_branch' phpName='EmpBranch' type='VARCHAR' />
+        <column name='emp_level' phpName='EmpLevel' type='VARCHAR' />
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' />
+        <column name='employee_name' phpName='EmployeeName' type='VARCHAR' />
+        <column name='ed_duration' phpName='EdDuration' type='INTEGER' />
+        <column name='campiagn_name' phpName='CampiagnName' type='VARCHAR' />
+        <column name='focus_brands' phpName='FocusBrands' type='VARCHAR' />
+        <column name='focus_brand_ids' phpName='FocusBrandIds' type='VARCHAR' />
+        <column name='campaign_start_date' phpName='CampaignStartDate' type='Date' />
+        <column name='campaign_end_date' phpName='CampaignEndDate' type='Date' />
+        <column name='outlet_tags' phpName='OutletTags' type='VARCHAR' />
+        <column name='outlet_name' phpName='OutletName' type='VARCHAR' />
+        <column name='outlet_code' phpName='OutletCode' type='VARCHAR' />
+        <column name='outlet_org_code' phpName='OutletOrgCode' type='VARCHAR' />
+        <column name='outlet_classification' phpName='OutletClassification' type='VARCHAR' />
+        <column name='step_number' phpName='StepNumber' type='INTEGER' />
+        <column name='sgpi_to_be_given' phpName='SgpiToBeGiven' type='VARCHAR' />
+        <column name='visited_date' phpName='VisitedDate' type='Date' />
+        <column name='visited_month' phpName='VisitedMonth' type='VARCHAR' />
+        <column name='sgpi_given' phpName='SgpiGiven' type='VARCHAR' />
+        <column name='zm_position_code' phpName='ZmPositionCode' type='VARCHAR' />
+        <column name='rm_position_code' phpName='RmPositionCode' type='VARCHAR' />
+        <column name='am_position_code' phpName='AmPositionCode' type='VARCHAR' />
+        <column name='emp_position_code' phpName='EmpPositionCode' type='VARCHAR' />
+    </table>
+    <table name="jw_report_view" idMethod="native" phpName="JwReportView" readOnly="true" skipSql="true">
+        <column name='user_position_code' phpName='UserPositionCode' type="VARCHAR" size="255"/>
+        <column name='user_hq_name' phpName='UserHqName' type='VARCHAR'/>
+        <column name='user_name' phpName='UserName' type='VARCHAR'/>
+        <column name='user_emp_code' phpName='UserEmpCode' type='VARCHAR' size="50"/>
+        <column name='user_level' phpName='UserLevel' type='VARCHAR'/>        
+        <column name='jw_hq_name' phpName='JwHqName' type='VARCHAR'/>
+        <column name='jw_employee_name' phpName='JwEmployeeName' type='VARCHAR' />
+        <column name='jw_emp_code' phpName='JwEmpCode' type='VARCHAR' size="50"/>
+        <column name='jw_position_code' phpName='JwPositionCode' type='VARCHAR' size="255"/>
+        <column name='jw_emp_level' phpName='JwEmpLevel' type='VARCHAR'/>
+        <column name='no_of_jw_days_worked' phpName='NoOfJwDaysWorked' type='INTEGER'/>
+        <column name='no_of_calls_jw' phpName='NoOfCallsJw' type='INTEGER'/>
+        <column name='call_average' phpName='CallAverage' type='DECIMAL'/>
+        <column name='month_year' phpName='MonthYear' type='VARCHAR'/>
+    </table>
+    <table name="mtp_deviation_view" idMethod="native" phpName="MtpDeviationView" readOnly="true" skipSql="true">
+        <column name='bu' phpName='Bu' type="VARCHAR" size='150'/>
+        <column name='level3' phpName='Level3' type='VARCHAR' size="255"/>
+        <column name='level2' phpName='Level2' type='VARCHAR' size="255"/>
+        <column name='level1' phpName='Level1' type="VARCHAR" size="255"/>
+        <column name='position_id' phpName='PositionId' type='INTEGER'/>
+        <column name='location' phpName='Location' type="VARCHAR"/>
+        <column name='repname' phpName='Repname' type='VARCHAR'/>
+        <column name='employee_code' phpName='EmployeeCode' type='VARCHAR' size="50"/>
+        <column name='designation' phpName='Designation' type='VARCHAR' size="255"/>
+        <column name='date' phpName='Date' type='Date' size="255"/>
+        <column name='planned_activity' phpName='PlannedActivity' type='VARCHAR' />
+        <column name='actual_activity' phpName='ActualActivity' type='VARCHAR' />
+        <column name='planned_patch' phpName='PlannedPatch' type='VARCHAR' />
+        <column name='covered_patch' phpName='CoveredPatch' type='VARCHAR' />
+        <column name='plannedtown' phpName='Plannedtown' type='VARCHAR' />
+        <column name='coveredtown' phpName='Coveredtown' type='VARCHAR' />
+        <column name='totalcalls_made' phpName='TotalcallsMade' type='INTEGER'/>
+        <column name='doctor_planned' phpName='DoctorPlanned' type='INTEGER'/>
+        <column name='doctor_covered' phpName='DoctorCovered' type='INTEGER'/>
+        <column name='retailer_planned' phpName='RetailerPlanned' type='INTEGER'/>
+        <column name='retailer_covered' phpName='RetailerCovered' type='INTEGER'/>
+        <column name='stokiest_planned' phpName='StokiestPlanned' type='INTEGER'/>
+        <column name='stokiest_covered' phpName='StokiestCovered' type='INTEGER'/>
+    </table>
+
+</database>

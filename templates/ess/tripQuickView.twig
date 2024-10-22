@@ -1,0 +1,44 @@
+<div class="card-box table-responsive">            
+    <div class="col-md-12">                                    
+        <div class="pull-right">                                                                                    
+                <a href="#" onclick="closeQuickView()" class=""><i class="fa fa-remove"></i></a>                                        
+        </div>
+        <div class="profile-info-name">            
+                <div class="profile-info-detail">
+                    <h3 class="m-t-0 m-b-0">{{trip.TripOriginName}} to {{trip.TripDestinationName}}</h3>
+                    <p class="text-muted m-b-20"><i>{{trip.TripStartDate|date('d-m-Y h:i a')}} - {{trip.TripEndDate|date('d-m-Y h:i a')}}</i></p>
+                    <p>{{trip.TripReason}}</p>
+                </div>
+                <div class="clearfix"></div>
+    </div>
+    </div>
+    <div class="col-md-12 p-20">                            
+        {{trip_actions|raw}}
+        <div class="pull-right">                                                                                    
+            {% if getTripStatus  %}
+                <a href="#" class="btn btn-danger deleteTrip"><i class="fa fa-trash-o"></i> Delete </a>                                                
+            {% endif %}
+            <a href="{{router.getPath('ess_tripSingle',{id:trip.TripId}) }}" class="btn btn-purple w-md waves-effect waves-light">
+                <i class="zmdi zmdi-eye"></i>  Full View </a>                                 
+        </div>
+    </div>                            
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    
+    $(".deleteTrip").click(function(){
+        
+        deletTrip({{trip.TripId}},"Are you sure you want to delete deleteTrip for {{trip.TripDestinationName}} ?");
+    });
+    
+});
+
+function reloadExpenseSingle()
+{    
+    loadGrid();
+    quickTripView({{trip.TripId}});
+}
+
+</script>
